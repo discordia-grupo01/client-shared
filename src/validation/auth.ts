@@ -61,10 +61,12 @@ function passwordStrengthError(password: string): string | undefined {
   return undefined;
 }
 
-/** No hay minimo: el back solo exige que no quede vacio despues de normalizar. */
-function nameError(value: string): string | undefined {
+export function validateUserName(
+  value: string,
+  emptyMessage = "Ingresá un nombre de usuario",
+): string | undefined {
   const name = normalizeName(value);
-  if (name === "") return "Ingresá un nombre de usuario";
+  if (name === "") return emptyMessage;
   // Spread para contar caracteres reales y no unidades UTF-16.
   if ([...name].length > MAX_USER_NAME) {
     return `El nombre no puede superar los ${MAX_USER_NAME} caracteres`;
@@ -84,7 +86,7 @@ export function validateLogin(values: LoginValues): LoginErrors {
 
 export function validateRegister(values: RegisterValues): RegisterErrors {
   return {
-    name: nameError(values.name),
+    name: validateUserName(values.name),
     email: emailError(values.email),
     password: passwordStrengthError(values.password),
   };

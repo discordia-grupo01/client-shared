@@ -33,6 +33,12 @@ export * from "./constants/activity-status";
 
 // --- Validacion ---
 export * from "./validation/auth";
+export * from "./validation/server";
+export * from "./validation/channel";
+export * from "./validation/role";
+export * from "./validation/invite";
+export * from "./validation/image";
+export * from "./validation/user";
 
 // --- Formatters ---
 export * from "./format/date";

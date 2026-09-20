@@ -39,3 +39,21 @@ export const MAX_IMAGE_SIDE_PX = 4096;
 /** Un servidor necesita al menos 2 caracteres; un canal, 1. */
 export const MIN_SERVER_NAME = 2;
 export const MIN_CHANNEL_NAME = 1;
+
+/**
+ * Los dos backends aceptan formatos DISTINTOS, no es un descuido de este
+ * archivo:
+ *   identify-service (avatar) -> jpeg, png, gif   (profileimage/storage.go:33)
+ *   servers (icono/banner)    -> png, jpeg, webp  (iconstore/iconstore.go:12)
+ */
+export const ALLOWED_AVATAR_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+] as const;
+
+export const ALLOWED_SERVER_ICON_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+] as const;
