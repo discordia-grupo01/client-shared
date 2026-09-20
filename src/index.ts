@@ -15,6 +15,7 @@ export const SHARED_VERSION = "0.2.0";
 
 // --- Dominio ---
 export * from "./domain/errors";
+export * from "./domain/api-result";
 export * from "./domain/auth";
 export * from "./domain/user";
 export * from "./domain/role";
@@ -42,6 +43,7 @@ export * from "./validation/user";
 
 // --- Mensajes ---
 export * from "./messages/errors";
+export * from "./messages/message-for";
 
 // --- Formatters ---
 export * from "./format/date";
