@@ -5,6 +5,7 @@ import * as auth from "./auth";
 import * as errors from "./errors";
 import * as notFound from "./not-found";
 import * as permissions from "./permissions";
+import * as ui from "./ui";
 import { CHANNEL_REASONS, SERVER_REASONS, TRANSFER_REASONS } from "./reasons";
 
 /**
@@ -38,6 +39,17 @@ const SIN_TILDE = [
   /sesion(?!es)/,
   /invitacion(?!es)/,
 ];
+
+function entradasDe(exports: object, modulo: string): [string, string][] {
+  return Object.entries(exports)
+    .filter(([, valor]) => typeof valor === "string")
+    .map(([nombre, valor]) => [`${modulo}.${nombre}`, valor as string]);
+}
+
+/** Copy de pantalla: titulos y placeholders, que no llevan punto final. */
+function textosDePantalla(): [string, string][] {
+  return entradasDe(ui, "ui");
+}
 
 function todosLosMensajes(): [string, string][] {
   const modulos = { actions, auth, errors, notFound, permissions };
@@ -75,6 +87,22 @@ describe("mensajes al usuario", () => {
 
   it.each(mensajes)("%s termina en punto", (_nombre, texto) => {
     expect(texto.trim()).toMatch(/\.$/);
+  });
+});
+
+/**
+ * El copy de pantalla pasa por los mismos chequeos de idioma, pero no por el
+ * del punto final: "Crear mi primer servidor" es un titulo de boton.
+ */
+describe("copy de pantalla", () => {
+  const textos = textosDePantalla();
+
+  it.each(textos)("%s esta en voseo", (_nombre, texto) => {
+    for (const forma of TUTEO) expect(texto).not.toContain(forma);
+  });
+
+  it.each(textos)("%s no perdio las tildes", (_nombre, texto) => {
+    for (const forma of SIN_TILDE) expect(texto).not.toMatch(forma);
   });
 });
 

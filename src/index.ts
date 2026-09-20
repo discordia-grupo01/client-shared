@@ -11,7 +11,7 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.3.0";
+export const SHARED_VERSION = "0.4.0";
 
 // --- Dominio ---
 export * from "./domain/errors";
@@ -49,6 +49,7 @@ export * from "./messages/actions";
 export * from "./messages/auth";
 export * from "./messages/permissions";
 export * from "./messages/not-found";
+export * from "./messages/ui";
 
 // --- Formatters ---
 export * from "./format/date";
