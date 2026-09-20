@@ -15,3 +15,12 @@ export function formatMemberSince(isoDate: string): string {
     year: "numeric",
   }).format(date);
 }
+
+/**
+ * Dias que faltan para una fecha ISO, redondeado. Nunca negativo: si ya paso,
+ * devuelve 0 y el llamador muestra "vencida" por otro lado.
+ */
+export function daysUntil(iso: string): number {
+  const ms = new Date(iso).getTime() - Date.now();
+  return Math.max(0, Math.round(ms / (24 * 60 * 60 * 1000)));
+}
