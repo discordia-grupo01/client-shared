@@ -15,6 +15,7 @@ import {
 import { formatImageTypes } from "../format/image";
 
 import type { ReasonCatalog } from "./message-for";
+import { NOT_A_MEMBER, SERVER_NOT_FOUND } from "./not-found";
 
 export const SERVER_REASONS: ReasonCatalog = {
   name_required: "Ingresá un nombre para el servidor.",
@@ -58,7 +59,7 @@ export const INVITE_REASONS: ReasonCatalog = {
   max_uses_invalid: "El límite de usos debe ser un número entero mayor a 0.",
   invite_permission_denied:
     "Tenés que ser miembro de este servidor para invitar gente.",
-  server_not_found: "Este servidor ya no existe.",
+  server_not_found: SERVER_NOT_FOUND,
   invitation_invalid: "Este enlace de invitación no es válido o expiró.",
   user_banned: "No podés unirte a este servidor.",
 };
@@ -78,5 +79,5 @@ export const TRANSFER_REASONS: ReasonCatalog = {
 };
 
 export const MEMBER_REASONS: ReasonCatalog = {
-  forbidden_not_member: "Ya no sos miembro de este servidor.",
+  forbidden_not_member: NOT_A_MEMBER,
 };

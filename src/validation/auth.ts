@@ -28,6 +28,15 @@ const HAS_LOWERCASE = /[a-z]/;
 const HAS_DIGIT = /\d/;
 
 /**
+ * La regla en palabras. Se arma desde `PASSWORD_MIN` y no a mano para que no
+ * pueda quedar diciendo otro numero que el que valida.
+ *
+ * Exportada porque el BFF de `web-client` tambien la muestra cuando el back
+ * rechaza la contraseña, y la decia con un tercer texto distinto.
+ */
+export const PASSWORD_RULE_MESSAGE = `Usá ${PASSWORD_MIN}+ caracteres con una mayúscula, una minúscula y un número`;
+
+/**
  * Misma lista blanca que `normalizeProfileName` en identify-service: letras,
  * marcas diacriticas, digitos, y ` ' - .`. No entran guion bajo ni emoji.
  */
@@ -56,7 +65,7 @@ function passwordStrengthError(password: string): string | undefined {
     !HAS_LOWERCASE.test(password) ||
     !HAS_DIGIT.test(password)
   ) {
-    return "Usá 8+ caracteres con una mayúscula, una minúscula y un número";
+    return PASSWORD_RULE_MESSAGE;
   }
   return undefined;
 }
