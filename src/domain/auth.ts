@@ -44,3 +44,49 @@ export type ForgotPasswordResult =
   { ok: true } | { ok: false; message: string };
 
 export type ResetPasswordResult = { ok: true } | { ok: false; message: string };
+
+/**
+ * Formas de los formularios: lo que el usuario tipea (`*Values`) y que esta
+ * mal en cada campo (`*Errors`). No viajan por la red; las produce y consume
+ * `validation/auth.ts`.
+ */
+
+export interface LoginValues {
+  email: string;
+  password: string;
+}
+
+export interface LoginErrors {
+  email?: string;
+  password?: string;
+}
+
+export interface RegisterValues {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
+export interface ForgotPasswordValues {
+  email: string;
+}
+
+export interface ForgotPasswordErrors {
+  email?: string;
+}
+
+export interface ResetPasswordValues {
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ResetPasswordErrors {
+  newPassword?: string;
+  confirmPassword?: string;
+}

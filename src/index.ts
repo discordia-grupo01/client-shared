@@ -31,6 +31,9 @@ export * from "./constants/limits";
 export * from "./constants/roles";
 export * from "./constants/activity-status";
 
+// --- Validacion ---
+export * from "./validation/auth";
+
 // --- Formatters ---
 export * from "./format/date";
 export * from "./format/color";
