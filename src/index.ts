@@ -44,6 +44,7 @@ export * from "./validation/user";
 // --- Mensajes ---
 export * from "./messages/errors";
 export * from "./messages/message-for";
+export * from "./messages/reasons";
 
 // --- Formatters ---
 export * from "./format/date";
