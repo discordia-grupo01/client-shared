@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Autoformatea los archivos staged antes de cada commit.
+# Se activa una vez por clone con: git config core.hooksPath .githooks
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM -- "*.ts" "*.tsx" "*.js" "*.jsx")
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+echo "Formateando con prettier..."
+npx prettier --write $STAGED
+
+git add $STAGED
+
+exit 0
