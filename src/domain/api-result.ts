@@ -49,9 +49,24 @@ export function networkFailure(
   return { ok: false, status: 0, code: "NETWORK_ERROR", message };
 }
 
-/** Forma del body de error de los dos backends. */
-interface ApiErrorBody {
-  error?: { code?: string | number; message?: string };
+/**
+ * Forma del body de error de los dos backends.
+ *
+ * Exportada porque las dos apps la necesitan fuera de `toApiResult`: en los
+ * caminos que no pasan por el cliente HTTP normal, como la subida de imagenes
+ * con `FileSystem.uploadAsync` en mobile. Estaba definida tres veces
+ * (`app-mobile/features/auth/types.ts`, `web-client/types/profile.types.ts` y
+ * `web-client/types/server.types.ts`).
+ *
+ * Todo opcional a proposito: un 502 de un proxy o una pagina de error de nginx
+ * tambien caen por aca y no tienen nada de esto.
+ */
+export interface ApiErrorBody {
+  error?: {
+    code?: string | number;
+    message?: string;
+    details?: ApiErrorDetails;
+  };
 }
 
 /**

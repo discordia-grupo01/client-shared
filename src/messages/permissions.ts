@@ -12,7 +12,9 @@
  *     }
  *
  * `RequireManageChannels` y `RequireManageServer` son iguales. El catalogo de
- * permisos (`model/role/permission.go`) existe pero ningun handler lo lee.
+ * permisos (`model/role/permission.go`) existe y el bitmask se guarda, pero
+ * ningun servicio lo lee para autorizar: esa parte del back esta pendiente y
+ * los toggles del modal de roles estan maquetados esperandola.
  *
  * TODO: cuando `RequireManageX` empiece a mirar el bitmask, estos textos
  * vuelven a ser "No tenés permiso para ..." y se cambian solo aca.
