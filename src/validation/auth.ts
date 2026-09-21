@@ -6,7 +6,11 @@
  * unica autoridad; aca solo evitamos requests obviamente invalidos y le damos
  * feedback inmediato al usuario.
  */
-import { MAX_USER_NAME, PIN_MAX_LENGTH, PIN_MIN_LENGTH } from "../constants/limits";
+import {
+  MAX_USER_NAME,
+  PIN_MAX_LENGTH,
+  PIN_MIN_LENGTH,
+} from "../constants/limits";
 import type {
   ForgotPasswordErrors,
   ForgotPasswordValues,
