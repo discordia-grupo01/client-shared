@@ -11,7 +11,7 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.7.0";
+export const SHARED_VERSION = "0.8.0";
 
 // --- Dominio ---
 export * from "./domain/errors";

@@ -79,6 +79,19 @@ El repo es privado. Para trabajar en local no hace falta ningun token: `npm`
 resuelve la dependencia con la misma llave SSH que ya usas para clonar los
 repos del grupo. Las credenciales solo hacen falta en CI y en los deploys.
 
+### Theme
+
+Los colores de cada tema estan en `src/theme/tokens.ts`. Ademas, `theme.css`
+(en la raiz, fuera de `dist`) define los nombres de clase de Tailwind que usan
+las dos apps (`bg-surface`, `text-content-muted`, `border-line`...):
+
+```css
+@import "@discordia/client-shared/theme.css";
+```
+
+Web lo importa en `globals.css` y mobile en `global.css` (NativeWind). Si se
+agrega un token, sumarle su clase en `theme.css`; un test lo verifica.
+
 Cada cambio que las apps tengan que ver necesita un **tag nuevo**:
 
 ```bash
