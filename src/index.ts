@@ -11,4 +11,52 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.1.0";
+export const SHARED_VERSION = "0.8.0";
+
+// --- Dominio ---
+export * from "./domain/errors";
+export * from "./domain/api-result";
+export * from "./domain/auth";
+export * from "./domain/user";
+export * from "./domain/role";
+export * from "./domain/member";
+export * from "./domain/category";
+export * from "./domain/channel";
+export * from "./domain/server";
+export * from "./domain/invite";
+export * from "./domain/ownership-transfer";
+
+// --- Constantes ---
+export * from "./constants/app";
+export * from "./constants/limits";
+export * from "./constants/roles";
+export * from "./constants/activity-status";
+
+// --- Validacion ---
+export * from "./validation/auth";
+export * from "./validation/server";
+export * from "./validation/channel";
+export * from "./validation/role";
+export * from "./validation/invite";
+export * from "./validation/image";
+export * from "./validation/user";
+
+// --- Mensajes ---
+export * from "./messages/errors";
+export * from "./messages/message-for";
+export * from "./messages/reasons";
+export * from "./messages/actions";
+export * from "./messages/auth";
+export * from "./messages/permissions";
+export * from "./messages/not-found";
+export * from "./messages/ui";
+
+// --- Formatters ---
+export * from "./format/date";
+export * from "./format/color";
+export * from "./format/image";
+export * from "./format/invite-link";
+export * from "./format/list";
+
+// --- Theme ---
+export * from "./theme/tokens";

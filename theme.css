@@ -1,0 +1,40 @@
+/* ────────────────────────────────────────────────────────────
+   Puente de los design tokens hacia Tailwind v4. Lo importan
+   web-client (globals.css) y app-mobile (global.css, NativeWind),
+   asi las dos apps usan los mismos nombres de clase:
+   `bg-surface-raised`, `text-content-muted`, `border-line`...
+
+   Solo define nombres. Los valores de `--accent`, `--bg-chat`, etc.
+   salen de src/theme/tokens.ts: web los inyecta con `themeToCss()` y
+   mobile con `themeVars()` en su ThemeProvider.
+
+   `inline` resuelve la var en el punto de uso, asi el cambio de tema
+   se refleja sin recompilar utilidades.
+   ──────────────────────────────────────────────────────────── */
+@theme inline {
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-bright);
+  --color-highlight: var(--highlight);
+  --color-sky: var(--sky);
+  --color-info: var(--info);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-bright);
+  --color-on-accent: var(--on-accent);
+
+  --color-surface: var(--bg-chat);
+  --color-surface-raised: var(--bg-card);
+  --color-surface-sunken: var(--bg-channels);
+  --color-surface-input: var(--bg-input);
+  --color-surface-hover: var(--bg-hover);
+  --color-surface-servers: var(--bg-servers);
+  --color-surface-panel: var(--bg-user-panel);
+  --color-surface-modal: var(--bg-modal);
+
+  --color-content: var(--text);
+  --color-content-muted: var(--text-2);
+  --color-content-subtle: var(--text-3);
+
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+}
