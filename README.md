@@ -58,10 +58,13 @@ en runtime del lado de mobile.
 ### Que va y que no va aca
 
 **Va:** tipos de dominio, validaciones de formularios (funciones puras),
-constantes y catalogos, helpers puros, paths y codigos de error del backend.
+constantes y catalogos, helpers puros, paths y codigos de error del backend,
+design tokens (colores de cada tema, en `src/theme/tokens.ts`) como valores
+planos.
 
 **No va:** componentes de UI (React y React Native no comparten primitivas),
-themes y clases de Tailwind, almacenamiento (`expo-secure-store`, cookies),
+clases de Tailwind o StyleSheets (cada app aplica los tokens a su manera),
+almacenamiento (`expo-secure-store`, cookies),
 clientes HTTP. El contrato se comparte; el transporte no.
 
 ## Como lo consumen las apps

@@ -11,7 +11,7 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.6.0";
+export const SHARED_VERSION = "0.7.0";
 
 // --- Dominio ---
 export * from "./domain/errors";
@@ -57,3 +57,6 @@ export * from "./format/color";
 export * from "./format/image";
 export * from "./format/invite-link";
 export * from "./format/list";
+
+// --- Theme ---
+export * from "./theme/tokens";
