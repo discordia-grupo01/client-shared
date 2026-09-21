@@ -6,12 +6,16 @@
  * unica autoridad; aca solo evitamos requests obviamente invalidos y le damos
  * feedback inmediato al usuario.
  */
-import { MAX_USER_NAME } from "../constants/limits";
+import { MAX_USER_NAME, PIN_MAX_LENGTH, PIN_MIN_LENGTH } from "../constants/limits";
 import type {
   ForgotPasswordErrors,
   ForgotPasswordValues,
   LoginErrors,
   LoginValues,
+  PinLoginErrors,
+  PinLoginValues,
+  PinSetupErrors,
+  PinSetupValues,
   RegisterErrors,
   RegisterValues,
   ResetPasswordErrors,
@@ -42,6 +46,9 @@ export const PASSWORD_RULE_MESSAGE = `Usá ${PASSWORD_MIN}+ caracteres con una m
  */
 const NAME_ALLOWED = /^[\p{L}\p{M}\p{Nd} '\-.]+$/u;
 
+/** Solo dígitos, entre `PIN_MIN_LENGTH` y `PIN_MAX_LENGTH` */
+const PIN_DIGITS_ONLY = /^\d+$/;
+
 /**
  * Colapsa espacios y recorta, igual que `strings.Fields` del back: el nombre
  * se guarda normalizado, asi que se valida normalizado.
@@ -66,6 +73,15 @@ function passwordStrengthError(password: string): string | undefined {
     !HAS_DIGIT.test(password)
   ) {
     return PASSWORD_RULE_MESSAGE;
+  }
+  return undefined;
+}
+
+function pinFormatError(pin: string): string | undefined {
+  if (pin === "") return "Ingresá un PIN";
+  if (!PIN_DIGITS_ONLY.test(pin)) return "El PIN solo puede tener números";
+  if (pin.length < PIN_MIN_LENGTH || pin.length > PIN_MAX_LENGTH) {
+    return `El PIN tiene que tener entre ${PIN_MIN_LENGTH} y ${PIN_MAX_LENGTH} dígitos`;
   }
   return undefined;
 }
@@ -122,9 +138,33 @@ export function validateResetPassword(
   return errors;
 }
 
+export function validatePinSetup(values: PinSetupValues): PinSetupErrors {
+  const errors: PinSetupErrors = {};
+  errors.pin = pinFormatError(values.pin);
+
+  if (!errors.pin) {
+    if (values.confirmPin === "") {
+      errors.confirmPin = "Confirmá tu PIN";
+    } else if (values.confirmPin !== values.pin) {
+      errors.confirmPin = "Los PIN no coinciden";
+    }
+  }
+
+  return errors;
+}
+
+export function validatePinLogin(values: PinLoginValues): PinLoginErrors {
+  return { pin: pinFormatError(values.pin) };
+}
+
 export function hasErrors(
   errors:
-    LoginErrors | RegisterErrors | ForgotPasswordErrors | ResetPasswordErrors,
+    | LoginErrors
+    | RegisterErrors
+    | ForgotPasswordErrors
+    | ResetPasswordErrors
+    | PinSetupErrors
+    | PinLoginErrors,
 ): boolean {
   return Object.values(errors).some((value) => value !== undefined);
 }

@@ -67,3 +67,10 @@ export const ALLOWED_SERVER_ICON_TYPES = [
   "image/jpeg",
   "image/webp",
 ] as const;
+
+/**
+ * PIN de acceso rápido (historia "Registro con PIN", solo app-mobile). CA1
+ * pide "al menos 6 dígitos"; el tope de 8 para que siga siendo rápido de tipear
+ */
+export const PIN_MIN_LENGTH = 6;
+export const PIN_MAX_LENGTH = 8;
