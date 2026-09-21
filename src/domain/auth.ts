@@ -90,3 +90,26 @@ export interface ResetPasswordErrors {
   newPassword?: string;
   confirmPassword?: string;
 }
+
+/**
+ * Activar el PIN de acceso rápido (historia "Registro con PIN"). Solo se usa
+ * en app-mobile
+ */
+export interface PinSetupValues {
+  pin: string;
+  confirmPin: string;
+}
+
+export interface PinSetupErrors {
+  pin?: string;
+  confirmPin?: string;
+}
+
+/** Login rápido con PIN: sin email, se resuelve por `device_id` (CA2). */
+export interface PinLoginValues {
+  pin: string;
+}
+
+export interface PinLoginErrors {
+  pin?: string;
+}
