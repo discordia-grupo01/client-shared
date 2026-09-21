@@ -65,3 +65,11 @@ export const GOOGLE_VERIFY_FAILED = `No pudimos verificar tu cuenta de Google. $
  * asi que no hubo request al backend. Por eso no comparte texto con el 401.
  */
 export const GOOGLE_CONNECT_FAILED = `No pudimos conectar con Google. ${FALL_BACK_TO_PASSWORD}`;
+
+/**
+ * 401 en `POST /v1/pin/login` (historia "Registro con PIN"). Igual que
+ * `INVALID_CREDENTIALS`, no distingue "PIN incorrecto" de "este dispositivo
+ * no tiene un PIN configurado"
+ */
+export const PIN_LOGIN_FAILED =
+  "El PIN no es correcto, o este dispositivo no tiene un PIN activado.";
