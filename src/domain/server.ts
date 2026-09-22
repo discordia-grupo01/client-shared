@@ -6,6 +6,7 @@ export interface ServerSummary {
   id: string;
   name: string;
   icon_url: string | null;
+  banner_url: string | null;
   owner_id: string;
   created_at: string;
   channels: Channel[];
@@ -26,6 +27,16 @@ export type ListServersResult =
 
 export type GetServerResult =
   { ok: true; server: ServerSummary } | { ok: false; message: string };
+
+export interface UpdateServerFieldErrors {
+  name?: string;
+  icon?: string;
+  banner?: string;
+}
+
+export type UpdateServerResult =
+  | { ok: true; server: ServerSummary }
+  | { ok: false; message: string; fieldErrors?: UpdateServerFieldErrors };
 
 /**
  * El owner no puede irse: 409 con `details.reason`. `reason` espeja ese valor
