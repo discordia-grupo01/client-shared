@@ -33,3 +33,7 @@ export function validateAvatar(file: ImageFile): string | undefined {
 export function validateServerIcon(file: ImageFile): string | undefined {
   return validateImageFile(file, ALLOWED_SERVER_ICON_TYPES, MAX_ICON_FILE_MB);
 }
+
+export function validateServerBanner(file: ImageFile): string | undefined {
+  return validateImageFile(file, ALLOWED_SERVER_ICON_TYPES, MAX_ICON_FILE_MB);
+}
