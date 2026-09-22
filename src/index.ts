@@ -11,7 +11,7 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.10.0";
+export const SHARED_VERSION = "0.11.0";
 
 // --- Dominio ---
 export * from "./domain/errors";
@@ -31,6 +31,7 @@ export * from "./constants/app";
 export * from "./constants/limits";
 export * from "./constants/roles";
 export * from "./constants/activity-status";
+export * from "./constants/server-banner-presets";
 
 // --- Validacion ---
 export * from "./validation/auth";
