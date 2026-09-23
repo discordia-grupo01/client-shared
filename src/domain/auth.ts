@@ -45,6 +45,17 @@ export type ForgotPasswordResult =
 
 export type ResetPasswordResult = { ok: true } | { ok: false; message: string };
 
+export interface EmailConfirmationRequest {
+  email: string;
+}
+
+export interface EmailConfirmationTokenRequest {
+  token: string;
+}
+
+export type EmailConfirmationResult =
+  { ok: true } | { ok: false; message: string };
+
 /**
  * Formas de los formularios: lo que el usuario tipea (`*Values`) y que esta
  * mal en cada campo (`*Errors`). No viajan por la red; las produce y consume
