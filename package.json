@@ -1,6 +1,6 @@
 {
   "name": "@discordia/client-shared",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "description": "Tipos, validaciones y logica compartida entre web-client y app-mobile",
   "main": "dist/index.js",
