@@ -50,3 +50,15 @@ export const CHANNEL_START_NOTICE =
   "Este es el comienzo del canal. El chat todavía no está conectado en esta versión.";
 export const VOICE_NOT_IMPLEMENTED =
   "La conexión de voz todavía no está implementada en esta versión.";
+
+// --- Transferencia de propiedad ---
+export const TRANSFER_CHOOSE_NEW_OWNER = "Elegí el nuevo propietario";
+export const TRANSFER_NO_OTHER_MEMBERS =
+  "No hay otros miembros en este servidor todavía.";
+export const TRANSFER_PENDING_OTHER_VIEWER =
+  "Hay una transferencia de propiedad pendiente para este servidor.";
+export const TRANSFER_NONE_PENDING =
+  "No hay ninguna transferencia de propiedad pendiente.";
+
+// --- Roles ---
+export const NO_ROLES_YET = "Todavía no hay roles.";
