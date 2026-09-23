@@ -20,7 +20,7 @@ describe("theme.css", () => {
       [...css.matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]),
     );
     const missing = Object.values(THEME_CSS_VARS).filter(
-      (name) => !used.has(name) && !name.startsWith("--accent-gradient"),
+      (name) => !used.has(name),
     );
     expect(missing).toEqual([]);
   });

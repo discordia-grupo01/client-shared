@@ -21,6 +21,8 @@
   --color-danger: var(--danger);
   --color-danger-strong: var(--danger-bright);
   --color-on-accent: var(--on-accent);
+  --color-accent-gradient-start: var(--accent-gradient-start);
+  --color-accent-gradient-end: var(--accent-gradient-end);
 
   --color-surface: var(--bg-chat);
   --color-surface-raised: var(--bg-card);
