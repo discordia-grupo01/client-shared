@@ -20,6 +20,10 @@ export const EMAIL_ALREADY_REGISTERED =
 export const INVALID_CREDENTIALS =
   "El correo electrónico o la contraseña son incorrectos.";
 
+/** 403 en `POST /v1/login` y `POST /v1/pin/login`. */
+export const EMAIL_NOT_VERIFIED =
+  "Tu cuenta ya está registrada, pero debes confirmar tu correo electrónico antes de iniciar sesión.";
+
 /** 400 en `POST /v1/password-recovery`. */
 export const INVALID_EMAIL_MESSAGE = "Ingresá un correo electrónico válido.";
 
