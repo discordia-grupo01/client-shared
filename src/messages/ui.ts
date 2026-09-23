@@ -62,3 +62,22 @@ export const TRANSFER_NONE_PENDING =
 
 // --- Roles ---
 export const NO_ROLES_YET = "Todavía no hay roles.";
+
+/**
+ * --- Configuracion del servidor ---
+ *
+ * Solo lo que las dos apps dicen IGUAL. El titulo del modal y su subtitulo no
+ * estan aca: el titulo es un string suelto que cada app escribe donde lo usa, y
+ * el subtitulo cambia por plataforma (mobile dice "Tocá el banner o el ícono
+ * para cambiarlos" y en web no se toca nada).
+ *
+ * Las etiquetas de seccion se guardan en capitalizacion normal; que se vean en
+ * mayusculas es decision de cada app (CSS en web, `textTransform` en mobile).
+ */
+export const SERVER_NAME_LABEL = "Nombre del servidor";
+export const SERVER_NAME_PLACEHOLDER = "Mi servidor épico";
+export const BANNER_PRESETS_LABEL = "O elegí un fondo";
+export const ADD_BANNER_LABEL = "Agregar banner";
+export const CHANGE_BANNER_LABEL = "Cambiar banner";
+export const REMOVE_BANNER_LABEL = "Quitar banner";
+export const CHANGE_SERVER_ICON_LABEL = "Cambiar ícono";

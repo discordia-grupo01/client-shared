@@ -29,6 +29,14 @@ export const SERVER_UPDATE_FAILED = failedTo("actualizar el servidor");
 export const SERVER_UPDATE_FORBIDDEN =
   "No tenés permisos para editar la configuración de este servidor.";
 
+/**
+ * Elegir un fondo fijo falla antes de salir del dispositivo: hay que
+ * materializar el PNG del preset (a un archivo de cache en mobile, a un `File`
+ * en web) y eso puede romperse sin que el backend se entere.
+ */
+export const PRESET_BANNER_FAILED =
+  "No pudimos preparar ese fondo. Probá de nuevo.";
+
 // --- Canales y categorias ---
 export const CHANNEL_CREATE_FAILED = failedTo("crear el canal");
 export const CHANNEL_UPDATE_FAILED = failedTo("editar el canal");
