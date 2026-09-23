@@ -64,4 +64,3 @@ jobs:
           NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.type }} -m "chore: bump version to %s [skip ci]")
           git push origin HEAD:main
           git push origin "$NEW_VERSION"
-          
