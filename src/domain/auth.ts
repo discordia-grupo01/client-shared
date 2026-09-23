@@ -54,8 +54,7 @@ export interface EmailConfirmationTokenRequest {
 }
 
 export type EmailConfirmationResult =
-  | { ok: true }
-  | { ok: false; message: string };
+  { ok: true } | { ok: false; message: string };
 
 /**
  * Formas de los formularios: lo que el usuario tipea (`*Values`) y que esta
