@@ -74,3 +74,23 @@ export const ALLOWED_SERVER_ICON_TYPES = [
  */
 export const PIN_MIN_LENGTH = 6;
 export const PIN_MAX_LENGTH = 8;
+
+/**
+ * Segundo factor (TOTP). Los tres valores replican lo que hace
+ * identify-service (`internal/utils/twofactor`): 6 dígitos es el estándar de
+ * RFC 6238 que asumen todas las apps autenticadoras, y los códigos de
+ * recuperación son 10 caracteres entregados de a 10.
+ */
+export const TOTP_CODE_LENGTH = 6;
+export const RECOVERY_CODE_LENGTH = 10;
+export const RECOVERY_CODE_COUNT = 10;
+
+/**
+ * Alfabeto de los códigos de recuperación: Crockford base32 sin I, L, O ni U,
+ * que se confunden con 1, 0 y V al copiarlos a mano.
+ *
+ * Siempre tiene letras, y eso no es cosmético: es lo que permite que el mismo
+ * campo acepte un TOTP de 6 dígitos y un código de recuperación sin
+ * preguntarle al usuario cuál está ingresando.
+ */
+export const RECOVERY_CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";

@@ -11,12 +11,13 @@
  */
 
 /** Sirve para verificar que la integracion del paquete funciona end-to-end. */
-export const SHARED_VERSION = "0.12.0";
+export const SHARED_VERSION = "0.13.0";
 
 // --- Dominio ---
 export * from "./domain/errors";
 export * from "./domain/api-result";
 export * from "./domain/auth";
+export * from "./domain/two-factor";
 export * from "./domain/user";
 export * from "./domain/role";
 export * from "./domain/member";
@@ -35,6 +36,7 @@ export * from "./constants/server-banner-presets";
 
 // --- Validacion ---
 export * from "./validation/auth";
+export * from "./validation/two-factor";
 export * from "./validation/server";
 export * from "./validation/channel";
 export * from "./validation/role";
@@ -48,6 +50,7 @@ export * from "./messages/message-for";
 export * from "./messages/reasons";
 export * from "./messages/actions";
 export * from "./messages/auth";
+export * from "./messages/two-factor";
 export * from "./messages/permissions";
 export * from "./messages/not-found";
 export * from "./messages/ui";
