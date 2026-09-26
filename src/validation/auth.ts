@@ -25,6 +25,10 @@ import type {
   ResetPasswordErrors,
   ResetPasswordValues,
 } from "../domain/auth";
+import type {
+  TwoFactorCodeErrors,
+  TwoFactorPasswordErrors,
+} from "../domain/two-factor";
 
 /** Suficiente para descartar tipeos: algo@algo.algo. */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -168,7 +172,9 @@ export function hasErrors(
     | ForgotPasswordErrors
     | ResetPasswordErrors
     | PinSetupErrors
-    | PinLoginErrors,
+    | PinLoginErrors
+    | TwoFactorCodeErrors
+    | TwoFactorPasswordErrors,
 ): boolean {
   return Object.values(errors).some((value) => value !== undefined);
 }
