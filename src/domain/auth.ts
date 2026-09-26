@@ -16,12 +16,10 @@ export interface SessionBase {
   user: User;
 }
 
-/**
- * Login en web-client: el BFF se queda el token en la cookie httpOnly y el
- * navegador nunca lo ve.
- */
 export type LoginResult =
-  { ok: true; user: User } | { ok: false; message: string };
+  | { ok: true; twoFactorRequired?: false; user: User }
+  | { ok: true; twoFactorRequired: true }
+  | { ok: false; message: string };
 
 /**
  * Login en app-mobile: sin servidor propio en el medio, el token tiene que
@@ -29,9 +27,14 @@ export type LoginResult =
  *
  * Es un tipo aparte y no un `token?` opcional para que web no pueda leer un
  * campo que ahi siempre seria undefined.
+ *
+ * Por lo mismo, aca la rama de segundo factor si trae `challengeToken`: sin un
+ * BFF que se lo guarde, la app tiene que sostenerlo entre los dos pasos.
  */
 export type LoginResultWithToken =
-  { ok: true; user: User; token: string } | { ok: false; message: string };
+  | { ok: true; twoFactorRequired?: false; user: User; token: string }
+  | { ok: true; twoFactorRequired: true; challengeToken: string }
+  | { ok: false; message: string };
 
 /** Registrarse no deja logueado: `POST /v1/users` ya no devuelve token. */
 export type RegisterResult = { ok: true } | { ok: false; message: string };
