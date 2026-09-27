@@ -7,7 +7,10 @@
  * la misma pantalla) o "el desafio vencio" (hay que volver al login), y
  * confundirlos deja al usuario tipeando codigos en una pantalla muerta.
  */
-import { RECOVERY_CODE_COUNT } from "../constants/limits";
+import {
+  RECOVERY_CODE_COUNT,
+  RECOVERY_CODES_LOW_THRESHOLD,
+} from "../constants/limits";
 
 /** 401 con `INVALID_TWO_FACTOR_CODE` en `POST /v1/login/2fa` (CA3). */
 export const TWO_FACTOR_CODE_INVALID =
@@ -93,5 +96,8 @@ export function twoFactorRecoveryCodesRemaining(remaining: number): string {
   if (remaining === 1) {
     return "Te queda 1 código de recuperación. Te conviene generar una lista nueva.";
   }
-  return `Te quedan ${remaining} códigos de recuperación. Te conviene generar una lista nueva.`;
+  if (remaining <= RECOVERY_CODES_LOW_THRESHOLD) {
+    return `Te quedan ${remaining} códigos de recuperación. Te conviene generar una lista nueva.`;
+  }
+  return `Te quedan ${remaining} códigos de recuperación.`;
 }

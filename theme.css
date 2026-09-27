@@ -20,6 +20,11 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-danger-strong: var(--danger-bright);
+  --color-server-pill: var(--server-pill);
+  --color-rail-surface: var(--rail-surface);
+  --color-rail-surface-hover: var(--rail-surface-hover);
+  --color-rail-active-bg: var(--rail-active-bg);
+  --color-rail-active-text: var(--rail-active-text);
   --color-on-accent: var(--on-accent);
   --color-on-accent-muted: var(--on-accent-muted);
   --color-on-accent-subtle: var(--on-accent-subtle);
