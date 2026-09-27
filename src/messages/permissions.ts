@@ -2,44 +2,33 @@
  * Mensajes sobre permisos: los 403 y el rechazo de un permiso invalido al
  * editar un rol.
  *
- * `web-client` decia "No tenés permisos de administración para crear roles",
- * que describe un modelo que todavia no existe: hace creer que alguien te
- * puede dar ese permiso. Hoy `servers` chequea solo la propiedad:
+ * El owner sigue pudiendo todo, pero cualquier miembro con el permiso puntual 
+ * (via alguno de sus roles) tambien
  *
- *     // internal/service/authz.go
- *     func RequireManageRoles(srv model.Server, userID string) error {
- *         if srv.OwnerID != userID { return model.ErrForbiddenNotOwner }
- *     }
- *
- * `RequireManageChannels` y `RequireManageServer` son iguales. El catalogo de
- * permisos (`model/role/permission.go`) existe y el bitmask se guarda, pero
- * ningun servicio lo lee para autorizar: esa parte del back esta pendiente y
- * los toggles del modal de roles estan maquetados esperandola.
- *
- * TODO: cuando `RequireManageX` empiece a mirar el bitmask, estos textos
- * vuelven a ser "No tenés permiso para ..." y se cambian solo aca.
+ * La transferencia de servidor (`OWNER_ONLY_TRANSFER`) es aparte: no es un
+ * permiso del catalogo de roles, sigue siendo exclusiva del owner.
  */
 
-function ownerOnly(action: string): string {
-  return `Solo el propietario puede ${action}.`;
+function noPermissionFor(action: string): string {
+  return `No tenés permiso para ${action}.`;
 }
 
-export const OWNER_ONLY_CREATE_ROLE = ownerOnly("crear roles");
-export const OWNER_ONLY_UPDATE_ROLE = ownerOnly("editar roles");
-export const OWNER_ONLY_DELETE_ROLE = ownerOnly("eliminar roles");
-export const OWNER_ONLY_ASSIGN_ROLE = ownerOnly("asignar roles");
-export const OWNER_ONLY_REMOVE_ROLE = ownerOnly("quitar roles");
-export const OWNER_ONLY_SET_DEFAULT_ROLE = ownerOnly(
+export const OWNER_ONLY_CREATE_ROLE = noPermissionFor("crear roles");
+export const OWNER_ONLY_UPDATE_ROLE = noPermissionFor("editar roles");
+export const OWNER_ONLY_DELETE_ROLE = noPermissionFor("eliminar roles");
+export const OWNER_ONLY_ASSIGN_ROLE = noPermissionFor("asignar roles");
+export const OWNER_ONLY_REMOVE_ROLE = noPermissionFor("quitar roles");
+export const OWNER_ONLY_SET_DEFAULT_ROLE = noPermissionFor(
   "definir el rol por defecto",
 );
 
-export const OWNER_ONLY_CREATE_CHANNEL = ownerOnly("crear canales");
-export const OWNER_ONLY_UPDATE_CHANNEL = ownerOnly("editar canales");
-export const OWNER_ONLY_DELETE_CHANNEL = ownerOnly("eliminar canales");
-export const OWNER_ONLY_REORDER_CHANNEL = ownerOnly("reordenar canales");
-export const OWNER_ONLY_CREATE_CATEGORY = ownerOnly("crear categorías");
+export const OWNER_ONLY_CREATE_CHANNEL = noPermissionFor("crear canales");
+export const OWNER_ONLY_UPDATE_CHANNEL = noPermissionFor("editar canales");
+export const OWNER_ONLY_DELETE_CHANNEL = noPermissionFor("eliminar canales");
+export const OWNER_ONLY_REORDER_CHANNEL = noPermissionFor("reordenar canales");
+export const OWNER_ONLY_CREATE_CATEGORY = noPermissionFor("crear categorías");
 
-export const OWNER_ONLY_TRANSFER = ownerOnly("transferir este servidor");
+export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 
 /** La transferencia tiene dos partes y cada una puede hacer cosas distintas. */
 export const TRANSFER_ONLY_TARGET_ACCEPTS =
