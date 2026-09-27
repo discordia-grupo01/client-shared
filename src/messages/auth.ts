@@ -42,6 +42,13 @@ export const RESET_LINK_INVALID =
  */
 export const PASSWORD_TOO_WEAK = `${PASSWORD_RULE_MESSAGE}.`;
 
+/**
+ * 409 en `POST /v1/me/password`: no es un cambio de contraseña, asi que una
+ * cuenta que ya tiene una no puede volver a pasar por aca.
+ */
+export const PASSWORD_ALREADY_SET =
+  "Tu cuenta ya tiene una contraseña configurada.";
+
 // --- El servicio no responde (5xx, timeout, red caida) ---
 export const LOGIN_UNAVAILABLE =
   "No pudimos iniciar sesión en este momento. Intentá de nuevo más tarde.";
@@ -51,6 +58,8 @@ export const PASSWORD_UPDATE_UNAVAILABLE =
   "No pudimos actualizar tu contraseña en este momento. Intentá de nuevo más tarde.";
 export const RECOVERY_UNAVAILABLE =
   "No pudimos procesar la solicitud. Intentá de nuevo más tarde.";
+export const SET_PASSWORD_UNAVAILABLE =
+  "No pudimos configurar tu contraseña en este momento. Intentá de nuevo más tarde.";
 
 /**
  * Los tres mensajes de Google ofrecen la alternativa de email y contraseña
@@ -77,3 +86,13 @@ export const GOOGLE_CONNECT_FAILED = `No pudimos conectar con Google. ${FALL_BAC
  */
 export const PIN_LOGIN_FAILED =
   "El PIN no es correcto, o este dispositivo no tiene un PIN activado.";
+
+export const PIN_LOCKED =
+  "Demasiados intentos fallidos. El acceso por PIN quedó bloqueado temporalmente: iniciá sesión con tu email y contraseña.";
+
+export function formatPinLockRemaining(secondsLeft: number): string {
+  const clamped = Math.max(0, Math.round(secondsLeft));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}

@@ -111,6 +111,30 @@ export interface ResetPasswordErrors {
 }
 
 /**
+ * `POST /v1/me/password`: le da una contraseña a una cuenta que nunca tuvo
+ * una (alta puramente federada por Google). No es un cambio de contraseña
+ * -- el backend la rechaza si la cuenta ya tiene una.
+ */
+export interface SetPasswordValues {
+  password: string;
+  confirmPassword: string;
+}
+
+export interface SetPasswordErrors {
+  password?: string;
+  confirmPassword?: string;
+}
+
+/**
+ * `alreadySet` distingue el 409 de una carrera entre pestañas/dispositivos
+ * (la cuenta consiguio contraseña propia mientras se completaba este paso):
+ * ahi no es un error bloqueante, la pantalla puede ofrecer seguir directo
+ * al paso siguiente en vez de hacer reintentar el formulario.
+ */
+export type SetPasswordResult =
+  { ok: true } | { ok: false; message: string; alreadySet?: boolean };
+
+/**
  * Activar el PIN de acceso rápido (historia "Registro con PIN"). Solo se usa
  * en app-mobile
  */
@@ -132,3 +156,11 @@ export interface PinLoginValues {
 export interface PinLoginErrors {
   pin?: string;
 }
+export interface PinLockedResult {
+  ok: false;
+  locked: true;
+  message: string;
+  retryAfterSeconds: number;
+}
+
+export type PinLoginResult = LoginResultWithToken | PinLockedResult;

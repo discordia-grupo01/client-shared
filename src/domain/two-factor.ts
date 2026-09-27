@@ -90,8 +90,14 @@ export type TwoFactorVerifyResultWithToken =
 export type TwoFactorStatusResult =
   { ok: true; status: TwoFactorStatus } | { ok: false; message: string };
 
+/**
+ * `passwordRequired` distingue el 409 de una cuenta sin contraseña propia
+ * (alta puramente federada por Google): ahi la pantalla no muestra un error,
+ * ofrece configurar una contraseña y despues reintenta el setup sola.
+ */
 export type TwoFactorSetupResult =
-  { ok: true; setup: TwoFactorSetup } | { ok: false; message: string };
+  | { ok: true; setup: TwoFactorSetup }
+  | { ok: false; message: string; passwordRequired?: boolean };
 
 export type TwoFactorRecoveryCodesResult =
   { ok: true; recoveryCodes: string[] } | { ok: false; message: string };
