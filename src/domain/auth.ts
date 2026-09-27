@@ -18,7 +18,7 @@ export interface SessionBase {
 
 export type LoginResult =
   | { ok: true; twoFactorRequired?: false; user: User }
-  | { ok: true; twoFactorRequired: true }
+  | { ok: true; twoFactorRequired: true; expiresIn: number }
   | { ok: false; message: string };
 
 /**
@@ -33,7 +33,12 @@ export type LoginResult =
  */
 export type LoginResultWithToken =
   | { ok: true; twoFactorRequired?: false; user: User; token: string }
-  | { ok: true; twoFactorRequired: true; challengeToken: string }
+  | {
+      ok: true;
+      twoFactorRequired: true;
+      challengeToken: string;
+      expiresIn: number;
+    }
   | { ok: false; message: string };
 
 /** Registrarse no deja logueado: `POST /v1/users` ya no devuelve token. */
