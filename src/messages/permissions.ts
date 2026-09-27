@@ -2,7 +2,7 @@
  * Mensajes sobre permisos: los 403 y el rechazo de un permiso invalido al
  * editar un rol.
  *
- * El owner sigue pudiendo todo, pero cualquier miembro con el permiso puntual 
+ * El owner sigue pudiendo todo, pero cualquier miembro con el permiso puntual
  * (via alguno de sus roles) tambien
  *
  * La transferencia de servidor (`OWNER_ONLY_TRANSFER`) es aparte: no es un
