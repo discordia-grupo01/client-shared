@@ -48,6 +48,7 @@ export const CATEGORY_REASONS: ReasonCatalog = {
   name_required: "Ingresá un nombre para la categoría.",
   name_too_long: "El nombre es demasiado largo.",
   name_invalid_chars: "El nombre tiene caracteres inválidos.",
+  name_taken: "Ya existe una categoría con ese nombre.",
 };
 
 export const ROLE_REASONS: ReasonCatalog = {
