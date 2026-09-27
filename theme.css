@@ -21,6 +21,8 @@
   --color-danger: var(--danger);
   --color-danger-strong: var(--danger-bright);
   --color-on-accent: var(--on-accent);
+  --color-on-accent-muted: var(--on-accent-muted);
+  --color-on-accent-subtle: var(--on-accent-subtle);
   --color-accent-gradient-start: var(--accent-gradient-start);
   --color-accent-gradient-end: var(--accent-gradient-end);
 
@@ -28,6 +30,7 @@
   --color-surface-raised: var(--bg-card);
   --color-surface-sunken: var(--bg-channels);
   --color-surface-input: var(--bg-input);
+  --color-surface-input-on-accent: var(--bg-input-on-accent);
   --color-surface-hover: var(--bg-hover);
   --color-surface-servers: var(--bg-servers);
   --color-surface-panel: var(--bg-user-panel);
@@ -39,4 +42,6 @@
 
   --color-line: var(--border);
   --color-line-strong: var(--border-strong);
+  --color-line-on-accent: var(--border-on-accent);
+  --color-line-on-accent-strong: var(--border-on-accent-strong);
 }
