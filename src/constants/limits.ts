@@ -85,6 +85,9 @@ export const TOTP_CODE_LENGTH = 6;
 export const RECOVERY_CODE_LENGTH = 10;
 export const RECOVERY_CODE_COUNT = 10;
 
+/** A partir de cuántos códigos sin usar se sugiere regenerar la lista. */
+export const RECOVERY_CODES_LOW_THRESHOLD = 3;
+
 /**
  * Alfabeto de los códigos de recuperación: Crockford base32 sin I, L, O ni U,
  * que se confunden con 1, 0 y V al copiarlos a mano.
