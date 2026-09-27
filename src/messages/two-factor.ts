@@ -7,7 +7,7 @@
  * la misma pantalla) o "el desafio vencio" (hay que volver al login), y
  * confundirlos deja al usuario tipeando codigos en una pantalla muerta.
  */
-import { RECOVERY_CODE_COUNT, TOTP_CODE_LENGTH } from "../constants/limits";
+import { RECOVERY_CODE_COUNT } from "../constants/limits";
 
 /** 401 con `INVALID_TWO_FACTOR_CODE` en `POST /v1/login/2fa` (CA3). */
 export const TWO_FACTOR_CODE_INVALID =
@@ -56,7 +56,8 @@ export const TWO_FACTOR_DISABLE_UNAVAILABLE =
 export const TWO_FACTOR_SCAN_INSTRUCTIONS =
   "Escaneá este código con Google Authenticator, Authy o la app que uses. Si no podés escanearlo, ingresá la clave a mano.";
 
-export const TWO_FACTOR_VERIFY_INSTRUCTIONS = `Ingresá los ${TOTP_CODE_LENGTH} dígitos que muestra tu app autenticadora.`;
+export const TWO_FACTOR_VERIFY_INSTRUCTIONS =
+  "Ingresá el código de tu app autenticadora o uno de tus códigos de recuperación.";
 
 export const TWO_FACTOR_RECOVERY_CODES_TITLE = "Códigos de recuperación";
 
@@ -69,6 +70,13 @@ export const TWO_FACTOR_RECOVERY_CODES_WARNING = `Guardá estos ${RECOVERY_CODE_
 /** CA4: el aviso después de entrar con un código de recuperación. */
 export const TWO_FACTOR_RECOVERY_CODE_USED =
   "Entraste con un código de recuperación y ese código ya no sirve más.";
+
+export function formatTwoFactorChallengeCountdown(secondsLeft: number): string {
+  const clamped = Math.max(0, Math.round(secondsLeft));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
 
 export function twoFactorRecoveryCodesRemaining(remaining: number): string {
   if (remaining === 0) {
