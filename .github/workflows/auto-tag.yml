@@ -64,3 +64,14 @@ jobs:
           NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.type }} -m "chore: bump version to %s [skip ci]")
           git push origin HEAD:main
           git push origin "$NEW_VERSION"
+
+      - name: Sync develop with the version bump
+        run: |
+          git fetch origin develop main
+          git checkout -B develop origin/develop
+          if git merge --no-edit origin/main; then
+            git push origin develop
+          else
+            echo "::error::Merging main into develop produced conflicts after the version bump. Resolve manually: git checkout develop && git merge main."
+            exit 1
+          fi
