@@ -24,6 +24,8 @@ import type {
   RegisterValues,
   ResetPasswordErrors,
   ResetPasswordValues,
+  SetPasswordErrors,
+  SetPasswordValues,
 } from "../domain/auth";
 import type {
   TwoFactorCodeErrors,
@@ -146,6 +148,21 @@ export function validateResetPassword(
   return errors;
 }
 
+export function validateSetPassword(
+  values: SetPasswordValues,
+): SetPasswordErrors {
+  const errors: SetPasswordErrors = {};
+  errors.password = passwordStrengthError(values.password);
+
+  if (values.confirmPassword === "") {
+    errors.confirmPassword = "Confirmá tu contraseña";
+  } else if (values.confirmPassword !== values.password) {
+    errors.confirmPassword = "Las contraseñas no coinciden";
+  }
+
+  return errors;
+}
+
 export function validatePinSetup(values: PinSetupValues): PinSetupErrors {
   const errors: PinSetupErrors = {};
   errors.pin = pinFormatError(values.pin);
@@ -171,6 +188,7 @@ export function hasErrors(
     | RegisterErrors
     | ForgotPasswordErrors
     | ResetPasswordErrors
+    | SetPasswordErrors
     | PinSetupErrors
     | PinLoginErrors
     | TwoFactorCodeErrors

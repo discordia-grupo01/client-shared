@@ -43,6 +43,14 @@ export const TWO_FACTOR_NOT_ENABLED =
 export const TWO_FACTOR_SETUP_MISSING =
   "Volvé a escanear el código QR para activar el segundo factor.";
 
+/**
+ * 409 con `PASSWORD_REQUIRED_FOR_TWO_FACTOR`: cuenta puramente federada
+ * (alta por Google), sin contraseña propia. Sin una, no habría forma de
+ * reingresarla despues para desactivar el 2FA o regenerar los códigos.
+ */
+export const TWO_FACTOR_PASSWORD_REQUIRED =
+  "Tu cuenta no tiene una contraseña propia todavía. Configurá una para poder activar el segundo factor.";
+
 // --- El servicio no responde (5xx, timeout, red caída) ---
 export const TWO_FACTOR_UNAVAILABLE =
   "No pudimos verificar el código en este momento. Intentá de nuevo más tarde.";
