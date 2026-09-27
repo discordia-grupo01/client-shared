@@ -86,3 +86,13 @@ export const GOOGLE_CONNECT_FAILED = `No pudimos conectar con Google. ${FALL_BAC
  */
 export const PIN_LOGIN_FAILED =
   "El PIN no es correcto, o este dispositivo no tiene un PIN activado.";
+
+export const PIN_LOCKED =
+  "Demasiados intentos fallidos. El acceso por PIN quedó bloqueado temporalmente: iniciá sesión con tu email y contraseña.";
+
+export function formatPinLockRemaining(secondsLeft: number): string {
+  const clamped = Math.max(0, Math.round(secondsLeft));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}

@@ -156,3 +156,11 @@ export interface PinLoginValues {
 export interface PinLoginErrors {
   pin?: string;
 }
+export interface PinLockedResult {
+  ok: false;
+  locked: true;
+  message: string;
+  retryAfterSeconds: number;
+}
+
+export type PinLoginResult = LoginResultWithToken | PinLockedResult;

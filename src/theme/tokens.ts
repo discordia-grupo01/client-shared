@@ -21,6 +21,8 @@ export interface ThemeColors {
   accentGradientEnd: string;
   /** Texto e iconos sobre fondos `accent` o `danger`. */
   onAccent: string;
+  onAccentMuted: string;
+  onAccentSubtle: string;
   highlight: string;
   sky: string;
   success: string;
@@ -34,6 +36,7 @@ export interface ThemeColors {
   bgHover: string;
   bgUserPanel: string;
   bgInput: string;
+  bgInputOnAccent: string;
   bgCard: string;
   bgModal: string;
 
@@ -43,6 +46,8 @@ export interface ThemeColors {
 
   border: string;
   borderStrong: string;
+  borderOnAccent: string;
+  borderOnAccentStrong: string;
 }
 
 const dark: ThemeColors = {
@@ -51,6 +56,8 @@ const dark: ThemeColors = {
   accentGradientStart: "#245c6b",
   accentGradientEnd: "#1a4050",
   onAccent: "#ffffff",
+  onAccentMuted: "#a8c6df",
+  onAccentSubtle: "rgba(168, 198, 223, 0.55)",
   highlight: "#fce3a4",
   sky: "#a8c6df",
   success: "#38a169",
@@ -64,6 +71,7 @@ const dark: ThemeColors = {
   bgHover: "#273d52",
   bgUserPanel: "#111e2c",
   bgInput: "rgba(168, 198, 223, 0.07)",
+  bgInputOnAccent: "rgba(168, 198, 223, 0.10)",
   bgCard: "#1a2e40",
   bgModal: "#162435",
 
@@ -73,6 +81,8 @@ const dark: ThemeColors = {
 
   border: "rgba(168, 198, 223, 0.08)",
   borderStrong: "rgba(168, 198, 223, 0.18)",
+  borderOnAccent: "rgba(168, 198, 223, 0.25)",
+  borderOnAccentStrong: "#a8c6df",
 };
 
 const light: ThemeColors = {
@@ -81,6 +91,8 @@ const light: ThemeColors = {
   accentGradientStart: "#245c6b",
   accentGradientEnd: "#1d4e5a",
   onAccent: "#ffffff",
+  onAccentMuted: "#a8c6df",
+  onAccentSubtle: "rgba(168, 198, 223, 0.55)",
   highlight: "#e8a800",
   sky: "#6b95bd",
   success: "#38a169",
@@ -94,6 +106,7 @@ const light: ThemeColors = {
   bgHover: "#ddd9cf",
   bgUserPanel: "#d5d1c6",
   bgInput: "rgba(36, 92, 107, 0.07)",
+  bgInputOnAccent: "rgba(168, 198, 223, 0.10)",
   bgCard: "#ffffff",
   bgModal: "#ffffff",
 
@@ -103,6 +116,8 @@ const light: ThemeColors = {
 
   border: "rgba(36, 92, 107, 0.12)",
   borderStrong: "rgba(36, 92, 107, 0.22)",
+  borderOnAccent: "rgba(168, 198, 223, 0.25)",
+  borderOnAccentStrong: "#a8c6df",
 };
 
 export const THEMES: Record<ThemeName, ThemeColors> = { dark, light };
@@ -117,6 +132,8 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   accentGradientStart: "--accent-gradient-start",
   accentGradientEnd: "--accent-gradient-end",
   onAccent: "--on-accent",
+  onAccentMuted: "--on-accent-muted",
+  onAccentSubtle: "--on-accent-subtle",
   highlight: "--highlight",
   sky: "--sky",
   success: "--success",
@@ -130,6 +147,7 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   bgHover: "--bg-hover",
   bgUserPanel: "--bg-user-panel",
   bgInput: "--bg-input",
+  bgInputOnAccent: "--bg-input-on-accent",
   bgCard: "--bg-card",
   bgModal: "--bg-modal",
 
@@ -139,6 +157,8 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
 
   border: "--border",
   borderStrong: "--border-strong",
+  borderOnAccent: "--border-on-accent",
+  borderOnAccentStrong: "--border-on-accent-strong",
 };
 
 /**
