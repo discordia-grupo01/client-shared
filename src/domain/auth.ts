@@ -125,7 +125,14 @@ export interface SetPasswordErrors {
   confirmPassword?: string;
 }
 
-export type SetPasswordResult = { ok: true } | { ok: false; message: string };
+/**
+ * `alreadySet` distingue el 409 de una carrera entre pestañas/dispositivos
+ * (la cuenta consiguio contraseña propia mientras se completaba este paso):
+ * ahi no es un error bloqueante, la pantalla puede ofrecer seguir directo
+ * al paso siguiente en vez de hacer reintentar el formulario.
+ */
+export type SetPasswordResult =
+  { ok: true } | { ok: false; message: string; alreadySet?: boolean };
 
 /**
  * Activar el PIN de acceso rápido (historia "Registro con PIN"). Solo se usa
