@@ -40,7 +40,7 @@ export const CHANNEL_REASONS: ReasonCatalog = {
   name_taken: "Ya existe un canal con ese nombre en esa categoría.",
   kind_invalid: "El tipo de canal debe ser texto o voz.",
   category_server_mismatch: "Esa categoría no pertenece a este servidor.",
-  channel_set_mismatch:
+  reorder_invalid:
     "La lista de canales cambió mientras reordenabas. Recargá e intentá de nuevo.",
 };
 
@@ -49,6 +49,10 @@ export const CATEGORY_REASONS: ReasonCatalog = {
   name_too_long: "El nombre es demasiado largo.",
   name_invalid_chars: "El nombre tiene caracteres inválidos.",
   name_taken: "Ya existe una categoría con ese nombre.",
+  // Misma key que channel_ids ("reorder_invalid"), ver
+  // apierr.WriteDomainError en `servers`, caso ErrCategoryReorderInvalid.
+  reorder_invalid:
+    "La lista de categorías cambió mientras reordenabas. Recargá e intentá de nuevo.",
 };
 
 export const ROLE_REASONS: ReasonCatalog = {
