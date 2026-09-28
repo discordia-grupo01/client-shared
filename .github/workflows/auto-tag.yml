@@ -60,10 +60,12 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Bump version and tag
+        id: bump
         run: |
           NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.type }} -m "chore: bump version to %s [skip ci]")
           git push origin HEAD:main
           git push origin "$NEW_VERSION"
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Sync develop with the version bump
         run: |
@@ -75,3 +77,13 @@ jobs:
             echo "::error::Merging main into develop produced conflicts after the version bump. Resolve manually: git checkout develop && git merge main."
             exit 1
           fi
+
+      - name: Notify downstream repos of the new release
+        env:
+          GH_TOKEN: ${{ secrets.CROSS_REPO_DISPATCH_TOKEN }}
+        run: |
+          for repo in web-client app-mobile; do
+            gh api "repos/discordia-grupo01/$repo/dispatches" \
+              -f event_type=client-shared-released \
+              -F "client_payload[version]=${{ steps.bump.outputs.version }}"
+          done
