@@ -27,6 +27,9 @@ export const OWNER_ONLY_UPDATE_CHANNEL = noPermissionFor("editar canales");
 export const OWNER_ONLY_DELETE_CHANNEL = noPermissionFor("eliminar canales");
 export const OWNER_ONLY_REORDER_CHANNEL = noPermissionFor("reordenar canales");
 export const OWNER_ONLY_CREATE_CATEGORY = noPermissionFor("crear categorías");
+export const OWNER_ONLY_REORDER_CATEGORY = noPermissionFor(
+  "reordenar categorías",
+);
 
 export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 

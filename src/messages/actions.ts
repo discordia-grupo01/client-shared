@@ -45,6 +45,7 @@ export const CHANNEL_REORDER_FAILED = failedTo("reordenar los canales");
 export const CHANNEL_MOVE_FAILED = failedTo("mover el canal");
 export const CATEGORY_CREATE_FAILED = failedTo("crear la categoría");
 export const CATEGORY_UPDATE_FAILED = failedTo("editar la categoría");
+export const CATEGORY_REORDER_FAILED = failedTo("reordenar las categorías");
 
 // --- Roles ---
 export const ROLES_LOAD_FAILED = failedTo("cargar los roles");

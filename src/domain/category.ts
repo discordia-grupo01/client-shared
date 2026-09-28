@@ -16,3 +16,6 @@ export type CreateCategoryResult =
 export type UpdateCategoryResult =
   | { ok: true; category: Category }
   | { ok: false; message: string; fieldErrors?: CategoryFieldErrors };
+
+export type ReorderCategoriesResult =
+  { ok: true } | { ok: false; message: string };
