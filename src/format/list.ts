@@ -1,3 +1,5 @@
+import { UNASSIGNED_CATEGORY_NAME } from "../constants/app";
+import type { Category } from "../domain/category";
 import type { Channel } from "../domain/channel";
 
 /**
@@ -24,6 +26,43 @@ export function channelsOfCategory(
 ): Channel[] {
   return sortByPosition(
     channels.filter((channel) => channel.category_id === categoryId),
+  );
+}
+
+/**
+ * "Sin asignar" es una categoria real (el backend la crea en todo server,
+ * como fallback para canales sin categoria explicita), pero en la UI no se
+ * muestra como una categoria mas: sus canales van en la seccion de arriba,
+ * sin el header/menu de una categoria real. La API no manda ningun flag
+ * para esto, asi que se distingue por nombre exacto.
+ */
+export function isUnassignedCategory(category: Category): boolean {
+  return category.name === UNASSIGNED_CATEGORY_NAME;
+}
+
+/**
+ * Las categorias que se muestran como secciones propias (con su header):
+ * todas menos "Sin asignar".
+ */
+export function visibleCategories(categories: readonly Category[]): Category[] {
+  return categories.filter((category) => !isUnassignedCategory(category));
+}
+
+/**
+ * Los canales de la seccion de arriba, sin agrupar bajo ninguna categoria:
+ * los que no tienen category_id (hoy solo pasa si se borro la categoria
+ * "Sin asignar" del server) mas los que estan en "Sin asignar".
+ */
+export function topLevelChannels(
+  channels: readonly Channel[],
+  categories: readonly Category[],
+): Channel[] {
+  const unassigned = categories.find(isUnassignedCategory);
+  return sortByPosition(
+    channels.filter(
+      (channel) =>
+        channel.category_id === null || channel.category_id === unassigned?.id,
+    ),
   );
 }
 
