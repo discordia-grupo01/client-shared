@@ -24,10 +24,6 @@ export const PERMISSION_COPY: Record<
   RolePermission,
   { label: string; desc: string }
 > = {
-  VIEW_CHANNELS: {
-    label: "Ver canales",
-    desc: "Permite ver los canales del servidor.",
-  },
   SEND_MESSAGES: {
     label: "Enviar mensajes",
     desc: "Permite enviar mensajes en canales de texto.",
@@ -51,5 +47,9 @@ export const PERMISSION_COPY: Record<
   MANAGE_SERVER: {
     label: "Gestionar el servidor",
     desc: "Puede cambiar la configuración del servidor.",
+  },
+  CREATE_INVITE: {
+    label: "Crear invitación",
+    desc: "Puede generar y revocar enlaces de invitación al servidor.",
   },
 };
