@@ -1,22 +1,29 @@
 /**
  * Catalogo cerrado de permisos que el front puede editar. El back tiene
- * ademas ADMINISTRATOR (implica todos los demas) y CREATE_INVITE, pero
- * ninguno de los dos se expone en esta pantalla: ADMINISTRATOR queda
- * reservado (solo lo tiene el owner) y CREATE_INVITE se gestiona desde el
- * flujo de invitaciones, no desde "Editar rol".
+ * ademas ADMINISTRATOR (implica todos los demas), que queda reservado: no se
+ * expone en esta pantalla, solo lo tiene el owner.
  *
  * Cada uno de estos bits habilita su propia accion en el back
- * (`service.RequireManageChannels/Roles/Server`, etc.): no hace falta
- * ADMINISTRATOR para ejercerlos, alcanza con que el rol lo tenga asignado.
+ * (`service.RequireManageChannels/Roles/Server`, `RequireCreateInvite`,
+ * etc.): no hace falta ADMINISTRATOR para ejercerlos, alcanza con que el rol
+ * lo tenga asignado. CREATE_INVITE sigue este mismo patron -- se agrega o
+ * quita como cualquier otro permiso desde "Editar rol", no hay un flujo
+ * aparte para el.
+ *
+ * VIEW_CHANNELS existe en el back (`role.PermViewChannels`) pero se sacó de
+ * aca a proposito: ningun endpoint lo consulta todavia (ni `GetServer` ni
+ * `channel_service` filtran canales por el), asi que mostrarlo como toggle
+ * hacia creer que ya restringe el acceso cuando en realidad no hace nada. Si
+ * algun dia se cablea del lado del servidor, se vuelve a agregar aca.
  */
 export const ROLE_PERMISSIONS = [
-  "VIEW_CHANNELS",
   "SEND_MESSAGES",
   "MANAGE_CHANNELS",
   "MANAGE_ROLES",
   "KICK_MEMBERS",
   "BAN_MEMBERS",
   "MANAGE_SERVER",
+  "CREATE_INVITE",
 ] as const;
 
 export type RolePermission = (typeof ROLE_PERMISSIONS)[number];
