@@ -80,8 +80,12 @@ describe("channelsOfCategory", () => {
 
 describe("isUnassignedCategory", () => {
   it("es true solo para la categoria llamada exactamente 'Sin asignar'", () => {
-    expect(isUnassignedCategory(categoria({ id: "c1", name: "Sin asignar" }))).toBe(true);
-    expect(isUnassignedCategory(categoria({ id: "c2", name: "Anuncios" }))).toBe(false);
+    expect(
+      isUnassignedCategory(categoria({ id: "c1", name: "Sin asignar" })),
+    ).toBe(true);
+    expect(
+      isUnassignedCategory(categoria({ id: "c2", name: "Anuncios" })),
+    ).toBe(false);
   });
 });
 
@@ -92,7 +96,10 @@ describe("visibleCategories", () => {
       categoria({ id: "c2", name: "Canales de texto" }),
       categoria({ id: "c3", name: "Canales de voz" }),
     ];
-    expect(visibleCategories(categorias).map((c) => c.id)).toEqual(["c2", "c3"]);
+    expect(visibleCategories(categorias).map((c) => c.id)).toEqual([
+      "c2",
+      "c3",
+    ]);
   });
 });
 
@@ -119,9 +126,9 @@ describe("topLevelChannels", () => {
       canal({ id: "sin-categoria", category_id: null }),
       canal({ id: "en-cat1", category_id: "cat1" }),
     ];
-    expect(topLevelChannels(canales, [categorias[1]]).map((c) => c.id)).toEqual([
-      "sin-categoria",
-    ]);
+    expect(topLevelChannels(canales, [categorias[1]]).map((c) => c.id)).toEqual(
+      ["sin-categoria"],
+    );
   });
 });
 
