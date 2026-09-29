@@ -81,3 +81,17 @@ export const ADD_BANNER_LABEL = "Agregar banner";
 export const CHANGE_BANNER_LABEL = "Cambiar banner";
 export const REMOVE_BANNER_LABEL = "Quitar banner";
 export const CHANGE_SERVER_ICON_LABEL = "Cambiar ícono";
+
+// --- Chat de un canal de texto ---
+export const channelWelcomeTitle = (channelName: string) =>
+  `Bienvenido a #${channelName}`;
+export const channelWelcomeSubtitle = (channelName: string) =>
+  `Este es el comienzo del canal #${channelName}.`;
+export const messageInputPlaceholder = (channelName: string) =>
+  `Escribí un mensaje en #${channelName}`;
+export const SEND_MESSAGE_LABEL = "Enviar mensaje";
+export const ADD_REACTION_LABEL = "Agregar reacción";
+export const ATTACH_FILE_LABEL = "Adjuntar archivo";
+export const EMOJI_PICKER_LABEL = "Emojis";
+/** Adjuntos y selector de emojis todavia no existen. */
+export const CHAT_FEATURE_NOT_AVAILABLE = "Todavía no está disponible";
