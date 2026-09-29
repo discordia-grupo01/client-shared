@@ -97,3 +97,11 @@ export const RECOVERY_CODES_LOW_THRESHOLD = 3;
  * preguntarle al usuario cuál está ingresando.
  */
 export const RECOVERY_CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+/**
+ * Contenido de un mensaje, en runas.
+ *
+ * TODO: el servicio de mensajes todavia no existe; 2000 es el valor de
+ * referencia hasta que el back fije el suyo.
+ */
+export const MAX_MESSAGE_LENGTH = 2000;
