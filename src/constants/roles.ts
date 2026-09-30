@@ -52,4 +52,12 @@ export const PERMISSION_COPY: Record<
     label: "Crear invitación",
     desc: "Puede generar y revocar enlaces de invitación al servidor.",
   },
+  MANAGE_MESSAGES: {
+    label: "Gestionar mensajes",
+    desc: "Puede eliminar mensajes de otros miembros en los canales.",
+  },
+  MENTION_EVERYONE: {
+    label: "Mencionar a todo el servidor",
+    desc: "Puede usar @everyone para notificar a todos los miembros del canal.",
+  },
 };

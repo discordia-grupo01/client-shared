@@ -6,7 +6,12 @@ import * as errors from "./errors";
 import * as notFound from "./not-found";
 import * as permissions from "./permissions";
 import * as ui from "./ui";
-import { CHANNEL_REASONS, SERVER_REASONS, TRANSFER_REASONS } from "./reasons";
+import {
+  BAN_REASONS,
+  CHANNEL_REASONS,
+  SERVER_REASONS,
+  TRANSFER_REASONS,
+} from "./reasons";
 
 /**
  * Se comparan substrings y no `\bIntenta\b`: en JavaScript sin la flag `u`,
@@ -53,7 +58,12 @@ function textosDePantalla(): [string, string][] {
 
 function todosLosMensajes(): [string, string][] {
   const modulos = { actions, auth, errors, notFound, permissions };
-  const catalogos = { SERVER_REASONS, CHANNEL_REASONS, TRANSFER_REASONS };
+  const catalogos = {
+    SERVER_REASONS,
+    CHANNEL_REASONS,
+    TRANSFER_REASONS,
+    BAN_REASONS,
+  };
 
   const entradas: [string, string][] = [];
   for (const [modulo, exports] of Object.entries(modulos)) {

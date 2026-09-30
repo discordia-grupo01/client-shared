@@ -60,6 +60,56 @@ export const TRANSFER_PENDING_OTHER_VIEWER =
 export const TRANSFER_NONE_PENDING =
   "No hay ninguna transferencia de propiedad pendiente.";
 
+// --- Baneos ---
+export const BANS_TITLE = "Gestionar baneos";
+export const BANS_SUBTITLE = "Consultá y revocá los baneos del servidor";
+export const BANS_REVOKE_HINT =
+  "Revocar un baneo permite volver con una invitación válida, sin restaurar la membresía ni los roles anteriores.";
+export const BANS_SEARCH_LABEL = "Buscar baneados por nombre de usuario";
+export const BANS_SEARCH_PLACEHOLDER = "Buscar por nombre de usuario...";
+export const BANS_EMPTY = "No hay usuarios baneados.";
+export const BANS_EMPTY_SEARCH =
+  "No hay baneados que coincidan con la búsqueda.";
+export const BAN_NO_REASON = "Sin motivo indicado";
+export const BAN_REVOKE_LABEL = "Revocar";
+export const BAN_MEMBER_TITLE = "Banear miembro";
+export const BAN_MEMBER_SUBTITLE =
+  "Esta acción restringe el acceso al servidor";
+export const BAN_MEMBER_CONSEQUENCES =
+  "Perderá su membresía y sus roles. No podrá volver con ninguna invitación mientras esté baneado. Si hay una transferencia de propiedad pendiente hacia esta persona, se cancelará.";
+export const BAN_REASON_LABEL = "Motivo del baneo";
+export const BAN_REASON_PLACEHOLDER =
+  "Contá por qué se banea a este miembro...";
+export const BAN_CONFIRM_LABEL = "Confirmar baneo";
+export const BAN_ACTION_LABEL = "Banear";
+
+export function banSuccessNotice(name: string): string {
+  return `${name} fue baneado del servidor. Las invitaciones existentes ya no le permiten entrar.`;
+}
+export function unbanSuccessNotice(name: string): string {
+  return `Se revocó el baneo de ${name}. Puede volver con una invitación válida.`;
+}
+
+// --- Paginacion ---
+export const PAGINATION_PREVIOUS = "Anterior";
+export const PAGINATION_NEXT = "Siguiente";
+export const PAGE_SIZE_LABEL = "Elementos por página";
+
+export function pageSizeOptionLabel(size: number): string {
+  return `${size} por página`;
+}
+export function paginationSummary(
+  from: number,
+  to: number,
+  total: number,
+  noun: string,
+): string {
+  return `Mostrando ${from}–${to} de ${total} ${noun}`;
+}
+export function searchResultsSummary(matches: number, total: number): string {
+  return `${matches} ${matches === 1 ? "resultado" : "resultados"} de ${total} baneados`;
+}
+
 // --- Roles ---
 export const NO_ROLES_YET = "Todavía no hay roles.";
 
@@ -95,3 +145,26 @@ export const ATTACH_FILE_LABEL = "Adjuntar archivo";
 export const EMOJI_PICKER_LABEL = "Emojis";
 /** Adjuntos y selector de emojis todavia no existen. */
 export const CHAT_FEATURE_NOT_AVAILABLE = "Todavía no está disponible";
+
+// --- Editar / eliminar mensaje ---
+export const EDIT_MESSAGE_LABEL = "Editar mensaje";
+export const DELETE_MESSAGE_LABEL = "Eliminar mensaje";
+export const MESSAGE_EDITED_LABEL = "(editado)";
+export const MESSAGE_DELETED_NOTICE = "Mensaje eliminado.";
+export const EDIT_MESSAGE_HINT = "Esc para cancelar · Enter para guardar";
+
+// --- Mensajes directos ---
+export const DIRECT_MESSAGES_TITLE = "Mensajes directos";
+export const NEW_DIRECT_MESSAGE_LABEL = "Nuevo mensaje directo";
+export const SELECT_CONVERSATION_NOTICE =
+  "Seleccioná una conversación para empezar";
+export const NO_CONVERSATIONS_YET = "Todavía no tenés conversaciones directas.";
+export const dmConversationStart = (name: string) =>
+  `Este es el comienzo de tu conversación directa con ${name}.`;
+export const dmInputPlaceholder = (name: string) => `Mensaje directo a ${name}`;
+/** El usuario actual bloqueó al destinatario: no puede escribirle. */
+export const DM_BLOCKED_CANNOT_SEND =
+  "No podés enviar mensajes directos a este usuario.";
+/** El destinatario bloqueó al usuario actual: el envío no se entrega. */
+export const DM_MESSAGE_BLOCKED_NOTICE =
+  "No se pudo entregar el mensaje. Este usuario te bloqueó.";
