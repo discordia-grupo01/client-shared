@@ -60,6 +60,10 @@ export const TRANSFER_PENDING_OTHER_VIEWER =
 export const TRANSFER_NONE_PENDING =
   "No hay ninguna transferencia de propiedad pendiente.";
 
+// --- Usuarios ---
+/** Nombre de un usuario cuyo perfil todavia no se replico en el back (`profile: null`). */
+export const UNKNOWN_USER_NAME = "Usuario desconocido";
+
 // --- Baneos ---
 export const BANS_TITLE = "Gestionar baneos";
 export const BANS_SUBTITLE = "Consultá y revocá los baneos del servidor";
@@ -67,7 +71,7 @@ export const BANS_REVOKE_HINT =
   "Revocar un baneo permite volver con una invitación válida, sin restaurar la membresía ni los roles anteriores.";
 export const BANS_TAB_MEMBERS = "Banear miembro";
 export const BANS_MEMBERS_HINT =
-  "Abrí el perfil del miembro para banearlo desde allí.";
+  "Mirá el perfil de un miembro o banealo directamente.";
 export const BANS_MEMBERS_EMPTY = "No hay miembros que puedas banear.";
 export const BANS_MEMBERS_EMPTY_SEARCH =
   "No hay miembros que coincidan con la búsqueda.";

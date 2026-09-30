@@ -1,11 +1,16 @@
-/**
- * El backend solo conoce el `user_id`: el nombre y el avatar se resuelven
- * aparte contra `GET /v1/users/:id`, uno por miembro -- no hay endpoint batch.
- */
+export interface MemberProfile {
+  name: string;
+  avatar_url: string;
+  description: string;
+  status_text: string;
+  status_emoji: string;
+}
+
 export interface Member {
   user_id: string;
   is_owner: boolean;
   joined_at: string;
+  profile?: MemberProfile | null;
 }
 
 /** Paginado: el back usa limit 20 por defecto y corta en 100. */
