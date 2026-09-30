@@ -43,12 +43,17 @@ export const MIN_CHANNEL_NAME = 1;
 /**
  * Cuantos miembros pide el front por pagina. Es el tope que acepta
  * `GET /v1/servers/:id/members` (el default del back es 20).
- *
- * Estaba escrito a mano en cuatro lugares: tres call sites de `app-mobile` y
- * dentro de la URL de `web-client`. Si alguien cambiaba uno, las dos apps
- * mostraban listas de distinto largo y nada lo marcaba.
  */
 export const MEMBER_PAGE_LIMIT = 100;
+
+/** Motivo de un baneo, en runas. Es opcional. */
+export const BAN_REASON_MAX_LENGTH = 512;
+
+/**
+ * Cuantos baneos pide el front por request: el tope que acepta
+ * `GET /v1/servers/:id/bans` (el default del back es 20).
+ */
+export const BAN_PAGE_LIMIT = 100;
 
 /**
  * Los dos backends aceptan formatos DISTINTOS, no es un descuido de este

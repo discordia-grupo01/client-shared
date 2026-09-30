@@ -74,6 +74,11 @@ export const INVITE_JOIN_FAILED = failedTo("procesar la invitación");
 /** No es una request: reintentar no cambia nada, el portapapeles esta bloqueado. */
 export const INVITE_COPY_FAILED = "No pudimos copiar el enlace.";
 
+// --- Baneos ---
+export const BANS_LOAD_FAILED = failedTo("cargar los baneos");
+export const BAN_FAILED = failedTo("banear al miembro");
+export const UNBAN_FAILED = failedTo("revocar el baneo");
+
 // --- Transferencia de propiedad ---
 export const TRANSFER_START_FAILED = failedTo("iniciar la transferencia");
 export const TRANSFER_LOAD_FAILED = failedTo("cargar la transferencia");

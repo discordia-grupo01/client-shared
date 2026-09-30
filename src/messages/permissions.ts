@@ -31,6 +31,9 @@ export const OWNER_ONLY_REORDER_CATEGORY = noPermissionFor(
   "reordenar categorías",
 );
 
+export const OWNER_ONLY_BAN = noPermissionFor("banear miembros");
+export const OWNER_ONLY_UNBAN = noPermissionFor("revocar baneos");
+
 export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 
 /** La transferencia tiene dos partes y cada una puede hacer cosas distintas. */
