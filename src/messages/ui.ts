@@ -65,7 +65,20 @@ export const BANS_TITLE = "Gestionar baneos";
 export const BANS_SUBTITLE = "Consultá y revocá los baneos del servidor";
 export const BANS_REVOKE_HINT =
   "Revocar un baneo permite volver con una invitación válida, sin restaurar la membresía ni los roles anteriores.";
+export const BANS_TAB_MEMBERS = "Banear miembro";
+export const BANS_MEMBERS_HINT =
+  "Abrí el perfil del miembro para banearlo desde allí.";
+export const BANS_MEMBERS_EMPTY = "No hay miembros que puedas banear.";
+export const BANS_MEMBERS_EMPTY_SEARCH =
+  "No hay miembros que coincidan con la búsqueda.";
+export const BANS_MEMBERS_SEARCH_LABEL =
+  "Buscar miembros por nombre de usuario";
+export const VIEW_PROFILE_LABEL = "Ver perfil";
 export const BANS_SEARCH_LABEL = "Buscar baneados por nombre de usuario";
+
+export function bansTabLabel(count: number): string {
+  return `Baneados (${count})`;
+}
 export const BANS_SEARCH_PLACEHOLDER = "Buscar por nombre de usuario...";
 export const BANS_EMPTY = "No hay usuarios baneados.";
 export const BANS_EMPTY_SEARCH =
@@ -93,11 +106,7 @@ export function unbanSuccessNotice(name: string): string {
 // --- Paginacion ---
 export const PAGINATION_PREVIOUS = "Anterior";
 export const PAGINATION_NEXT = "Siguiente";
-export const PAGE_SIZE_LABEL = "Elementos por página";
 
-export function pageSizeOptionLabel(size: number): string {
-  return `${size} por página`;
-}
 export function paginationSummary(
   from: number,
   to: number,
@@ -106,8 +115,12 @@ export function paginationSummary(
 ): string {
   return `Mostrando ${from}–${to} de ${total} ${noun}`;
 }
-export function searchResultsSummary(matches: number, total: number): string {
-  return `${matches} ${matches === 1 ? "resultado" : "resultados"} de ${total} baneados`;
+export function searchResultsSummary(
+  matches: number,
+  total: number,
+  noun: string,
+): string {
+  return `${matches} ${matches === 1 ? "resultado" : "resultados"} de ${total} ${noun}`;
 }
 
 // --- Roles ---
