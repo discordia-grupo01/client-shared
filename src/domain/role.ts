@@ -15,6 +15,10 @@
  * `channel_service` filtran canales por el), asi que mostrarlo como toggle
  * hacia creer que ya restringe el acceso cuando en realidad no hace nada. Si
  * algun dia se cablea del lado del servidor, se vuelve a agregar aca.
+ *
+ * MANAGE_MESSAGES (borrar mensajes ajenos) y MENTION_EVERYONE (usar
+ * `@everyone`) todavia no tienen servicio de mensajes en el back: por ahora
+ * solo gatean la UI (`canDeleteMessage`, `validateMentionEveryone`).
  */
 export const ROLE_PERMISSIONS = [
   "SEND_MESSAGES",
@@ -24,6 +28,8 @@ export const ROLE_PERMISSIONS = [
   "BAN_MEMBERS",
   "MANAGE_SERVER",
   "CREATE_INVITE",
+  "MANAGE_MESSAGES",
+  "MENTION_EVERYONE",
 ] as const;
 
 export type RolePermission = (typeof ROLE_PERMISSIONS)[number];

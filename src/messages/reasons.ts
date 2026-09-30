@@ -10,6 +10,7 @@
  */
 import {
   ALLOWED_SERVER_ICON_TYPES,
+  BAN_REASON_MAX_LENGTH,
   MAX_ICON_FILE_MB,
 } from "../constants/limits";
 import { formatImageTypes } from "../format/image";
@@ -84,6 +85,19 @@ export const TRANSFER_REASONS: ReasonCatalog = {
   transfer_already_pending:
     "Ya hay una transferencia pendiente para este servidor.",
   transfer_not_pending: "Esta transferencia ya no está pendiente.",
+};
+
+export const BAN_REASONS: ReasonCatalog = {
+  required: "Elegí a quién querés banear.",
+  cannot_ban_self: "No podés banearte a vos mismo.",
+  cannot_ban_owner: "No se puede banear al propietario del servidor.",
+  target_outranks_actor:
+    "No podés banear a alguien con un rol igual o superior al tuyo.",
+  already_banned: "Este usuario ya está baneado.",
+  ban_not_found: "Este usuario no está baneado.",
+  reason_too_long: `El motivo no puede superar los ${BAN_REASON_MAX_LENGTH} caracteres.`,
+  reason_invalid_chars: "El motivo contiene caracteres no permitidos.",
+  missing_permission: "No tenés permiso para banear miembros.",
 };
 
 export const MEMBER_REASONS: ReasonCatalog = {

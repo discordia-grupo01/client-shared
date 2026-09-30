@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canDeleteMessage,
+  canEditMessage,
+  deleteMessage,
+  editMessageContent,
   type Message,
   type MessageReaction,
   startsMessageGroup,
@@ -13,6 +17,8 @@ function mensaje(cambios: Partial<Message> & { id: string }): Message {
     author_id: "u1",
     content: "hola",
     created_at: "2026-09-29T15:00:00Z",
+    edited_at: null,
+    deleted_at: null,
     reactions: [],
     ...cambios,
   };
@@ -75,5 +81,56 @@ describe("toggleReaction", () => {
     const original = [ajena];
     toggleReaction(original, "🔥");
     expect(original).toEqual([ajena]);
+  });
+});
+
+describe("canEditMessage", () => {
+  it("el autor puede editar el suyo", () => {
+    expect(canEditMessage(mensaje({ id: "1", author_id: "u1" }), "u1")).toBe(
+      true,
+    );
+  });
+
+  it("nadie mas puede editar un mensaje ajeno", () => {
+    expect(canEditMessage(mensaje({ id: "1", author_id: "u1" }), "u2")).toBe(
+      false,
+    );
+  });
+});
+
+describe("canDeleteMessage", () => {
+  it("el autor puede borrar el suyo sin necesitar el permiso", () => {
+    const msg = mensaje({ id: "1", author_id: "u1" });
+    expect(canDeleteMessage(msg, "u1", false)).toBe(true);
+  });
+
+  it("sin autoria ni permiso no puede borrar uno ajeno", () => {
+    const msg = mensaje({ id: "1", author_id: "u1" });
+    expect(canDeleteMessage(msg, "u2", false)).toBe(false);
+  });
+
+  it("canManageMessages habilita borrar uno ajeno", () => {
+    const msg = mensaje({ id: "1", author_id: "u1" });
+    expect(canDeleteMessage(msg, "u2", true)).toBe(true);
+  });
+});
+
+describe("editMessageContent", () => {
+  it("actualiza el contenido y marca edited_at", () => {
+    const msg = mensaje({ id: "1", content: "hola" });
+    const editado = editMessageContent(msg, "chau", "2026-09-29T16:00:00Z");
+    expect(editado.content).toBe("chau");
+    expect(editado.edited_at).toBe("2026-09-29T16:00:00Z");
+    expect(msg.edited_at).toBeNull();
+  });
+});
+
+describe("deleteMessage", () => {
+  it("vacia el contenido y marca deleted_at", () => {
+    const msg = mensaje({ id: "1", content: "hola" });
+    const borrado = deleteMessage(msg, "2026-09-29T16:00:00Z");
+    expect(borrado.content).toBe("");
+    expect(borrado.deleted_at).toBe("2026-09-29T16:00:00Z");
+    expect(msg.deleted_at).toBeNull();
   });
 });

@@ -26,7 +26,9 @@ export * from "./domain/channel";
 export * from "./domain/server";
 export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
+export * from "./domain/ban";
 export * from "./domain/message";
+export * from "./domain/conversation";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -43,6 +45,7 @@ export * from "./validation/server";
 export * from "./validation/channel";
 export * from "./validation/role";
 export * from "./validation/invite";
+export * from "./validation/ban";
 export * from "./validation/image";
 export * from "./validation/user";
 export * from "./validation/message";
@@ -64,6 +67,8 @@ export * from "./format/color";
 export * from "./format/image";
 export * from "./format/invite-link";
 export * from "./format/list";
+export * from "./format/pagination";
+export * from "./format/search";
 export * from "./format/message-content";
 export * from "./format/message-time";
 
