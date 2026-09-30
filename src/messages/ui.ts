@@ -95,3 +95,26 @@ export const ATTACH_FILE_LABEL = "Adjuntar archivo";
 export const EMOJI_PICKER_LABEL = "Emojis";
 /** Adjuntos y selector de emojis todavia no existen. */
 export const CHAT_FEATURE_NOT_AVAILABLE = "Todavía no está disponible";
+
+// --- Editar / eliminar mensaje ---
+export const EDIT_MESSAGE_LABEL = "Editar mensaje";
+export const DELETE_MESSAGE_LABEL = "Eliminar mensaje";
+export const MESSAGE_EDITED_LABEL = "(editado)";
+export const MESSAGE_DELETED_NOTICE = "Mensaje eliminado.";
+export const EDIT_MESSAGE_HINT = "Esc para cancelar · Enter para guardar";
+
+// --- Mensajes directos ---
+export const DIRECT_MESSAGES_TITLE = "Mensajes directos";
+export const NEW_DIRECT_MESSAGE_LABEL = "Nuevo mensaje directo";
+export const SELECT_CONVERSATION_NOTICE =
+  "Seleccioná una conversación para empezar";
+export const NO_CONVERSATIONS_YET = "Todavía no tenés conversaciones directas.";
+export const dmConversationStart = (name: string) =>
+  `Este es el comienzo de tu conversación directa con ${name}.`;
+export const dmInputPlaceholder = (name: string) => `Mensaje directo a ${name}`;
+/** El usuario actual bloqueó al destinatario: no puede escribirle. */
+export const DM_BLOCKED_CANNOT_SEND =
+  "No podés enviar mensajes directos a este usuario.";
+/** El destinatario bloqueó al usuario actual: el envío no se entrega. */
+export const DM_MESSAGE_BLOCKED_NOTICE =
+  "No se pudo entregar el mensaje. Este usuario te bloqueó.";

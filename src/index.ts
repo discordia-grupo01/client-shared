@@ -27,6 +27,7 @@ export * from "./domain/server";
 export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
 export * from "./domain/message";
+export * from "./domain/conversation";
 
 // --- Constantes ---
 export * from "./constants/app";
