@@ -1,7 +1,5 @@
-/**
- * El backend solo conoce el `user_id`: el nombre y el avatar se resuelven
- * aparte contra `GET /v1/users/:id`, igual que con los miembros.
- */
+import type { MemberProfile } from "./member";
+
 export interface Ban {
   server_id: string;
   user_id: string;
@@ -9,6 +7,7 @@ export interface Ban {
   /** `null` en los baneos anteriores a que se registrara quien baneo. */
   banned_by: string | null;
   banned_at: string;
+  profile?: MemberProfile | null;
 }
 
 /** Paginado: el back usa limit 20 por defecto y corta en 100. */
