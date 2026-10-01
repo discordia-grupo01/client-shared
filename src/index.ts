@@ -27,6 +27,7 @@ export * from "./domain/server";
 export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
 export * from "./domain/ban";
+export * from "./domain/collect-pages";
 export * from "./domain/message";
 export * from "./domain/conversation";
 
@@ -58,6 +59,7 @@ export * from "./messages/actions";
 export * from "./messages/auth";
 export * from "./messages/two-factor";
 export * from "./messages/permissions";
+export * from "./messages/ban-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 
@@ -69,6 +71,9 @@ export * from "./format/invite-link";
 export * from "./format/list";
 export * from "./format/pagination";
 export * from "./format/search";
+export * from "./format/profile";
+export * from "./format/user-list";
+export * from "./format/ban-list";
 export * from "./format/message-content";
 export * from "./format/message-time";
 
