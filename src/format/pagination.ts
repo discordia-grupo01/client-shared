@@ -1,7 +1,7 @@
 /**
  * Paginacion en memoria, para listas que el backend no filtra ni pagina como
- * la UI necesita (la de baneados: el back solo devuelve `user_id`, el nombre
- * se resuelve aparte, asi que buscar por nombre y paginar lo hace el front).
+ * la UI necesita (la de baneados: el back no filtra por nombre de usuario, asi
+ * que buscar por nombre y paginar lo hace el front).
  *
  * Las paginas son 1-based, porque es lo que ve el usuario.
  */
