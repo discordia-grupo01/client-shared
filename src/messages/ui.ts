@@ -162,6 +162,9 @@ export const ATTACH_FILE_LABEL = "Adjuntar archivo";
 export const EMOJI_PICKER_LABEL = "Emojis";
 /** Adjuntos y selector de emojis todavia no existen. */
 export const CHAT_FEATURE_NOT_AVAILABLE = "Todavía no está disponible";
+export const LOAD_OLDER_MESSAGES_LABEL = "Cargar mensajes anteriores";
+export const LOADING_MESSAGES_LABEL = "Cargando mensajes…";
+export const RETRY_LABEL = "Reintentar";
 
 // --- Editar / eliminar mensaje ---
 export const EDIT_MESSAGE_LABEL = "Editar mensaje";
