@@ -39,6 +39,12 @@ export interface Role {
   server_id: string;
   name: string;
   color: string;
+  /**
+   * Rango en la jerarquia del servidor: 1 es el mas alto. La usa el back para
+   * decidir quien puede gestionar/reordenar a quien y, ante
+   * permisos contradictorios entre los roles de un mismo miembro, cual gana.
+   */
+  position: number;
   permissions: RolePermission[];
   created_at: string;
   updated_at: string;
@@ -76,6 +82,38 @@ export function hasPermission(
   );
 }
 
+/**
+ * Contexto minimo para evaluar rango jerarquico del lado del cliente. Espeja
+ * `role.Standing` (`servers/internal/model/role/standing.go`): el owner esta
+ * fuera de la jerarquia de roles (no tiene `position`) y siempre gana; el
+ * resto vale por el mas alto (numero mas bajo) de sus roles asignados.
+ */
+export interface HierarchyContext {
+  isOwner: boolean;
+  roles: Pick<Role, "position">[];
+}
+
+export function topPosition(ctx: HierarchyContext): number | undefined {
+  if (ctx.isOwner || ctx.roles.length === 0) return undefined;
+  return Math.min(...ctx.roles.map((role) => role.position));
+}
+
+/**
+ * ¿`actor` supera en jerarquia a un rol ubicado en `targetPosition`? Espeja
+ * `Standing.Outranks`: el owner gana siempre; si no, gana quien tenga el
+ * `topPosition` mas bajo. Un empate NO cuenta como superar -- CA2 de
+ * "Reordenar jerarquía de roles" rechaza tocar un rol igual o por encima del
+ * propio, no solo uno estrictamente mas arriba.
+ */
+export function outranksRole(
+  actor: HierarchyContext,
+  targetPosition: number,
+): boolean {
+  if (actor.isOwner) return true;
+  const actorTop = topPosition(actor);
+  return actorTop !== undefined && actorTop < targetPosition;
+}
+
 export interface RoleFieldErrors {
   name?: string;
   color?: string;
@@ -104,6 +142,15 @@ export type DeleteRoleResult =
  */
 export type SetDefaultRoleResult =
   { ok: true } | { ok: false; message: string };
+
+/**
+ * El back devuelve el array completo de roles ya reordenado (con la
+ * `position` nueva de cada uno), no un 204 como categorias/canales -- ver
+ * `PATCH /v1/servers/:serverId/roles/reorder` en
+ * `servers/internal/handler/role_handler.go`.
+ */
+export type ReorderRolesResult =
+  { ok: true; roles: Role[] } | { ok: false; message: string };
 
 export type ListMemberRolesResult =
   { ok: true; roles: Role[] } | { ok: false; message: string };

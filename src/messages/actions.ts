@@ -53,6 +53,7 @@ export const ROLE_CREATE_FAILED = failedTo("crear el rol");
 export const ROLE_UPDATE_FAILED = failedTo("editar el rol");
 export const ROLE_DELETE_FAILED = failedTo("eliminar el rol");
 export const DEFAULT_ROLE_SET_FAILED = failedTo("definir el rol por defecto");
+export const ROLE_REORDER_FAILED = failedTo("reordenar los roles");
 export const MEMBER_ROLES_LOAD_FAILED = failedTo(
   "cargar los roles del miembro",
 );

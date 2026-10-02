@@ -56,6 +56,7 @@ export * from "./messages/errors";
 export * from "./messages/message-for";
 export * from "./messages/reasons";
 export * from "./messages/actions";
+export * from "./messages/chat";
 export * from "./messages/auth";
 export * from "./messages/two-factor";
 export * from "./messages/permissions";
