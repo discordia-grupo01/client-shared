@@ -60,6 +60,10 @@ export const ROLE_REASONS: ReasonCatalog = {
   name_required: "Ingresá un nombre para el rol.",
   name_too_long: "El nombre es demasiado largo.",
   color_invalid_format: "Elegí un color válido para el rol.",
+  reorder_invalid:
+    "La lista de roles cambió mientras reordenabas. Recargá e intentá de nuevo.",
+  role_above_own: "No podés reordenar un rol igual o por encima del tuyo.",
+  missing_permission: "No tenés permiso para gestionar roles.",
 };
 
 export const INVITE_REASONS: ReasonCatalog = {
