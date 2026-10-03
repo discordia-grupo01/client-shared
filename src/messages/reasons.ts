@@ -64,6 +64,8 @@ export const ROLE_REASONS: ReasonCatalog = {
     "La lista de roles cambió mientras reordenabas. Recargá e intentá de nuevo.",
   role_above_own: "No podés reordenar un rol igual o por encima del tuyo.",
   missing_permission: "No tenés permiso para gestionar roles.",
+  everyone_role_is_automatic:
+    "@everyone es automático: no se puede eliminar, renombrar, recolorear ni asignar o quitar a mano.",
 };
 
 export const INVITE_REASONS: ReasonCatalog = {
