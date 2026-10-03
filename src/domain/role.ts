@@ -75,9 +75,9 @@ export interface Role {
  * antes de que confirme el back) y necesita el mismo criterio para no
  * mostrar `@everyone` fuera de su lugar.
  */
-export function sortByPosition<T extends Pick<Role, "id" | "position" | "is_everyone">>(
-  roles: readonly T[],
-): T[] {
+export function sortByPosition<
+  T extends Pick<Role, "id" | "position" | "is_everyone">,
+>(roles: readonly T[]): T[] {
   return [...roles].sort((a, b) => {
     if (a.is_everyone !== b.is_everyone) return a.is_everyone ? 1 : -1;
     if (a.position !== b.position) return a.position - b.position;

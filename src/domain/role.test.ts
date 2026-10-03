@@ -57,17 +57,26 @@ describe("outranksRole", () => {
   });
 
   it("supera cuando el top del actor esta por encima del target", () => {
-    const actor = { isOwner: false, roles: [{ position: 2, is_everyone: false }] };
+    const actor = {
+      isOwner: false,
+      roles: [{ position: 2, is_everyone: false }],
+    };
     expect(outranksRole(actor, 5)).toBe(true);
   });
 
   it("no supera en un empate -- CA2 rechaza igual o por encima", () => {
-    const actor = { isOwner: false, roles: [{ position: 3, is_everyone: false }] };
+    const actor = {
+      isOwner: false,
+      roles: [{ position: 3, is_everyone: false }],
+    };
     expect(outranksRole(actor, 3)).toBe(false);
   });
 
   it("no supera cuando el target esta mas arriba que el actor", () => {
-    const actor = { isOwner: false, roles: [{ position: 5, is_everyone: false }] };
+    const actor = {
+      isOwner: false,
+      roles: [{ position: 5, is_everyone: false }],
+    };
     expect(outranksRole(actor, 2)).toBe(false);
   });
 
@@ -76,7 +85,10 @@ describe("outranksRole", () => {
   });
 
   it("un miembro que solo tiene @everyone no supera a ningun rol comun", () => {
-    const actor = { isOwner: false, roles: [{ position: 0, is_everyone: true }] };
+    const actor = {
+      isOwner: false,
+      roles: [{ position: 0, is_everyone: true }],
+    };
     expect(outranksRole(actor, 1)).toBe(false);
   });
 });
