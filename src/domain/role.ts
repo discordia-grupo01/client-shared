@@ -46,6 +46,11 @@ export interface Role {
    */
   position: number;
   permissions: RolePermission[];
+  /**
+   * `true` solo para el rol `@everyone` que el back crea automaticamente
+   * para todo servidor
+   */
+  is_everyone: boolean;
   created_at: string;
   updated_at: string;
 }
