@@ -48,11 +48,41 @@ export interface Role {
   permissions: RolePermission[];
   /**
    * `true` solo para el rol `@everyone` que el back crea automaticamente
-   * para todo servidor
+   * para todo servidor (ver `servers/internal/model/role/role.go`). A
+   * diferencia de `is_default` (que el front puede fijar pero no leer, ver
+   * `SetDefaultRoleResult` mas abajo), esta flag si se expone a proposito:
+   * la UI la necesita para listarlo fijo al final, con nombre y color no
+   * editables y sin boton de eliminar, y para excluirlo de los badges de
+   * perfil (lo tiene todo el mundo, no es informacion util ahi). Los
+   * permisos siguen siendo editables igual que en cualquier rol -- el back
+   * ya restringe eso al owner solo via la posicion reservada (0), no hace
+   * falta repetir esa regla en el cliente.
    */
   is_everyone: boolean;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Mismo orden que `ORDER BY is_everyone, position, id` en `role_repo.go`
+ * (`listByServer`, back): `@everyone` siempre al final sin importar su
+ * `position` reservada (0), y el resto por `position` ascendente (1 es el
+ * mas alto); `id` desempata de forma estable si dos posiciones coincidieran.
+ *
+ * El back ya devuelve los roles en este orden, asi que normalmente no hace
+ * falta reordenar en el cliente -- esta funcion es para cuando la UI arma o
+ * edita una lista de roles localmente (por ejemplo durante un drag-and-drop,
+ * antes de que confirme el back) y necesita el mismo criterio para no
+ * mostrar `@everyone` fuera de su lugar.
+ */
+export function sortRolesByPosition<
+  T extends Pick<Role, "id" | "position" | "is_everyone">,
+>(roles: readonly T[]): T[] {
+  return [...roles].sort((a, b) => {
+    if (a.is_everyone !== b.is_everyone) return a.is_everyone ? 1 : -1;
+    if (a.position !== b.position) return a.position - b.position;
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  });
 }
 
 /**
@@ -92,15 +122,25 @@ export function hasPermission(
  * `role.Standing` (`servers/internal/model/role/standing.go`): el owner esta
  * fuera de la jerarquia de roles (no tiene `position`) y siempre gana; el
  * resto vale por el mas alto (numero mas bajo) de sus roles asignados.
+ *
+ * `is_everyone` entra en el pick a proposito: `@everyone` vive en
+ * `position = 0` (reservada, mas baja que cualquier rol comun) pero NO
+ * otorga rango -- lo tiene todo el mundo. Sin filtrarla, un miembro que solo
+ * tiene `@everyone` calcularia `topPosition = 0` y "superaria" a cualquier
+ * rol comun (que arranca en 1), rompiendo la jerarquia del lado del cliente
+ * aunque el back la calcule bien. Espeja el `FILTER (WHERE NOT is_everyone)`
+ * de `MemberStanding` en `repository/standing.go`.
  */
 export interface HierarchyContext {
   isOwner: boolean;
-  roles: Pick<Role, "position">[];
+  roles: Pick<Role, "position" | "is_everyone">[];
 }
 
 export function topPosition(ctx: HierarchyContext): number | undefined {
-  if (ctx.isOwner || ctx.roles.length === 0) return undefined;
-  return Math.min(...ctx.roles.map((role) => role.position));
+  if (ctx.isOwner) return undefined;
+  const ranked = ctx.roles.filter((role) => !role.is_everyone);
+  if (ranked.length === 0) return undefined;
+  return Math.min(...ranked.map((role) => role.position));
 }
 
 /**
