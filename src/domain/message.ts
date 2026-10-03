@@ -36,16 +36,18 @@ export interface Message {
   reactions?: MessageReaction[];
 }
 
-/** Respuesta de `GET /v1/channels/:id/messages` (mas nuevos primero). */
+/** Respuesta de `GET /v1/channels/:id/messages` (de mas viejo a mas nuevo). */
 export interface MessageHistory {
   messages: Message[];
-  /** Id de mensaje para pedir la pagina anterior (`before`); `null` si no hay mas. */
+  /** Id de mensaje para pedir la pagina anterior (`before`, o `after` si se pidio con `after`); `null` si no hay mas. */
   next_cursor: string | null;
 }
 
 /** Payload del evento `"missed_messages"` del WebSocket (de mas viejo a mas nuevo). */
 export interface MissedMessagesPayload {
   messages: Message[];
+  /** Hay mas por traer: id para pedirlos por REST con `after`. `null` si no falta nada. */
+  next_cursor: string | null;
 }
 
 /** `error.code` que devuelve `messaging` (REST y WebSocket). */
