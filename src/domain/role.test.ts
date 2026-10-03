@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { outranksRole, sortByPosition, topPosition } from "./role";
+import { outranksRole, sortRolesByPosition, topPosition } from "./role";
 
 describe("topPosition", () => {
   it("es undefined para el owner, aunque tenga roles", () => {
@@ -57,26 +57,17 @@ describe("outranksRole", () => {
   });
 
   it("supera cuando el top del actor esta por encima del target", () => {
-    const actor = {
-      isOwner: false,
-      roles: [{ position: 2, is_everyone: false }],
-    };
+    const actor = { isOwner: false, roles: [{ position: 2, is_everyone: false }] };
     expect(outranksRole(actor, 5)).toBe(true);
   });
 
   it("no supera en un empate -- CA2 rechaza igual o por encima", () => {
-    const actor = {
-      isOwner: false,
-      roles: [{ position: 3, is_everyone: false }],
-    };
+    const actor = { isOwner: false, roles: [{ position: 3, is_everyone: false }] };
     expect(outranksRole(actor, 3)).toBe(false);
   });
 
   it("no supera cuando el target esta mas arriba que el actor", () => {
-    const actor = {
-      isOwner: false,
-      roles: [{ position: 5, is_everyone: false }],
-    };
+    const actor = { isOwner: false, roles: [{ position: 5, is_everyone: false }] };
     expect(outranksRole(actor, 2)).toBe(false);
   });
 
@@ -85,26 +76,27 @@ describe("outranksRole", () => {
   });
 
   it("un miembro que solo tiene @everyone no supera a ningun rol comun", () => {
-    const actor = {
-      isOwner: false,
-      roles: [{ position: 0, is_everyone: true }],
-    };
+    const actor = { isOwner: false, roles: [{ position: 0, is_everyone: true }] };
     expect(outranksRole(actor, 1)).toBe(false);
   });
 });
 
-describe("sortByPosition", () => {
+describe("sortRolesByPosition", () => {
   function role(id: string, position: number, is_everyone = false) {
     return { id, position, is_everyone };
   }
 
   it("ordena por position ascendente (1 es el mas alto)", () => {
-    const sorted = sortByPosition([role("c", 3), role("a", 1), role("b", 2)]);
+    const sorted = sortRolesByPosition([
+      role("c", 3),
+      role("a", 1),
+      role("b", 2),
+    ]);
     expect(sorted.map((r) => r.id)).toEqual(["a", "b", "c"]);
   });
 
   it("deja @everyone siempre al final, sin importar su position reservada (0)", () => {
-    const sorted = sortByPosition([
+    const sorted = sortRolesByPosition([
       role("everyone", 0, true),
       role("b", 2),
       role("a", 1),
@@ -114,7 +106,7 @@ describe("sortByPosition", () => {
 
   it("no muta el array original", () => {
     const original = [role("b", 2), role("a", 1)];
-    const sorted = sortByPosition(original);
+    const sorted = sortRolesByPosition(original);
     expect(sorted).not.toBe(original);
     expect(original.map((r) => r.id)).toEqual(["b", "a"]);
   });
