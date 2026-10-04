@@ -9,6 +9,9 @@
  * permiso del catalogo de roles, sigue siendo exclusiva del owner.
  */
 
+import { PERMISSION_COPY } from "../constants/roles";
+import type { RolePermission } from "../domain/role";
+
 function noPermissionFor(action: string): string {
   return `No tenés permiso para ${action}.`;
 }
@@ -55,4 +58,21 @@ export function invalidPermissionMessage(value: unknown): string {
   return typeof value === "string" && value !== ""
     ? `"${value}" no es un permiso válido.`
     : "Uno de los permisos enviados no es válido.";
+}
+
+export function permissionNotHeldMessage(value: unknown): string {
+  const names = Array.isArray(value)
+    ? value.filter((v): v is string => typeof v === "string")
+    : [];
+  const labels = names.map(
+    (name) => PERMISSION_COPY[name as RolePermission]?.label ?? name,
+  );
+
+  if (labels.length === 0) {
+    return "No podés otorgar un permiso que no tenés vos.";
+  }
+  if (labels.length === 1) {
+    return `No podés otorgar el permiso "${labels[0]}" porque no lo tenés vos.`;
+  }
+  return `No podés otorgar estos permisos porque no los tenés vos: ${labels.join(", ")}.`;
 }
