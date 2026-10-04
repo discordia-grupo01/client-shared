@@ -62,8 +62,12 @@ export const ROLE_REASONS: ReasonCatalog = {
   color_invalid_format: "Elegí un color válido para el rol.",
   reorder_invalid:
     "La lista de roles cambió mientras reordenabas. Recargá e intentá de nuevo.",
-  role_above_own: "No podés reordenar un rol igual o por encima del tuyo.",
+  reorder_above_own: "No podés reordenar un rol igual o por encima del tuyo.",
+  role_above_own:
+    "No podés gestionar un rol igual o por encima del tuyo en la jerarquía.",
   missing_permission: "No tenés permiso para gestionar roles.",
+  cannot_remove_own_admin:
+    "No podés sacarte el permiso de administrador: te quedarías sin poder administrar este servidor.",
   everyone_role_is_automatic:
     "@everyone es automático: no se puede eliminar, renombrar, recolorear ni asignar o quitar a mano.",
 };
