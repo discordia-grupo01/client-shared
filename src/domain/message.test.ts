@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyMessageUpdates,
   canDeleteMessage,
   canEditMessage,
   editMessageContent,
@@ -86,6 +87,12 @@ describe("toggleReaction", () => {
 });
 
 describe("canEditMessage", () => {
+  it("el autor sin SEND_MESSAGES no puede editar", () => {
+    expect(
+      canEditMessage(mensaje({ id: "1", user_id: "u1" }), "u1", false),
+    ).toBe(false);
+  });
+
   it("el autor puede editar el suyo", () => {
     expect(canEditMessage(mensaje({ id: "1", user_id: "u1" }), "u1")).toBe(
       true,
@@ -214,5 +221,31 @@ describe("mergeMessages", () => {
     mergeMessages(actual, [mensaje({ id: "a" })]);
 
     expect(actual).toEqual(copia);
+  });
+});
+
+describe("applyMessageUpdates", () => {
+  it("reemplaza el mensaje editado y conserva las reacciones locales", () => {
+    const reactions = [{ emoji: "🔥", count: 1, reacted_by_me: true }];
+    const actual = [mensaje({ id: "1", reactions }), mensaje({ id: "2" })];
+    const editado = mensaje({
+      id: "1",
+      content: "chau",
+      edited: true,
+      edited_at: "2026-09-29T16:00:00Z",
+      reactions: undefined,
+    });
+
+    const resultado = applyMessageUpdates(actual, [editado]);
+
+    expect(resultado[0]).toMatchObject({ content: "chau", edited: true });
+    expect(resultado[0].reactions).toEqual(reactions);
+    expect(resultado[1]).toBe(actual[1]);
+  });
+
+  it("ignora mensajes que no estan cargados y devuelve la misma lista", () => {
+    const actual = [mensaje({ id: "1" })];
+    expect(applyMessageUpdates(actual, [mensaje({ id: "9" })])).toBe(actual);
+    expect(applyMessageUpdates(actual, [])).toBe(actual);
   });
 });

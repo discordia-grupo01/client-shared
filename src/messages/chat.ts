@@ -18,6 +18,7 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
     "No pudimos cargar los mensajes anteriores. Recargá e intentá de nuevo.",
   MESSAGE_NOT_FOUND: "Este mensaje ya no existe.",
   MESSAGE_DELETE_DENIED: "No tenés permiso para eliminar este mensaje.",
+  NOT_MESSAGE_AUTHOR: "Solo el autor de un mensaje puede editarlo.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
@@ -27,6 +28,10 @@ export const MESSAGE_SEND_FAILED =
 /** No se pudo eliminar y no hay un codigo que explique por que (timeout, canal caido). */
 export const MESSAGE_DELETE_FAILED =
   "No pudimos eliminar el mensaje. Intentá de nuevo.";
+
+/** No se pudo editar y no hay un codigo que explique por que (timeout, canal caido). */
+export const MESSAGE_EDIT_FAILED =
+  "No pudimos editar el mensaje. Intentá de nuevo.";
 
 /** No se pudo cargar el historial del canal. */
 export const MESSAGES_LOAD_FAILED =

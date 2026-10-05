@@ -23,12 +23,15 @@ export interface Message {
    */
   inserted_at: string;
 
-  /*
-   * Estos campos NO los devuelve todavia `messaging`: editar y reaccionar estan
-   * maqueteados y funcionan de forma local (se pierde al recargar).
-   */
-  /** `null` o ausente si nunca se edito. */
+  /** `true` si el autor lo edito despues de enviarlo. */
+  edited?: boolean;
+  /** Momento de la ultima edicion; `null` o ausente si nunca se edito. */
   edited_at?: string | null;
+
+  /*
+   * Las reacciones NO las devuelve todavia `messaging`: estan maqueteadas y
+   * funcionan de forma local (se pierde al recargar).
+   */
   reactions?: MessageReaction[];
 }
 
@@ -38,6 +41,9 @@ export interface MessageHistory {
   /** Id de mensaje para pedir la pagina anterior (`before`, o `after` si se pidio con `after`); `null` si no hay mas. */
   next_cursor: string | null;
 }
+
+/** Payload del evento `"message_updated"`: el mensaje completo, ya editado. */
+export type MessageUpdatedPayload = Message;
 
 /** Payload del evento `"message_deleted"` del WebSocket. */
 export interface MessageDeletedPayload {
@@ -72,7 +78,8 @@ export type MessageErrorCode =
   | "CHANNEL_NOT_TEXT"
   | "INVALID_CURSOR"
   | "MESSAGE_NOT_FOUND"
-  | "MESSAGE_DELETE_DENIED";
+  | "MESSAGE_DELETE_DENIED"
+  | "NOT_MESSAGE_AUTHOR";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }
@@ -142,12 +149,12 @@ export function toggleReaction(
     : reactions.filter((reaction) => reaction !== existing);
 }
 
-/** Solo el autor puede editar su propio mensaje. */
 export function canEditMessage(
   message: Pick<Message, "user_id">,
   currentUserId: string,
+  canSendMessages: boolean = true,
 ): boolean {
-  return message.user_id === currentUserId;
+  return message.user_id === currentUserId && canSendMessages;
 }
 
 /**
@@ -161,7 +168,7 @@ export function canDeleteMessage(
   currentUserId: string,
   canManageMessages: boolean,
 ): boolean {
-  return canEditMessage(message, currentUserId) || canManageMessages;
+  return message.user_id === currentUserId || canManageMessages;
 }
 
 /** Actualiza el contenido y marca el mensaje como editado. */
@@ -169,6 +176,29 @@ export function editMessageContent<
   T extends { content: string; edited_at?: string | null },
 >(message: T, content: string, now: string = new Date().toISOString()): T {
   return { ...message, content, edited_at: now };
+}
+
+/**
+ * Reemplaza por `id` los mensajes ya presentes con su version editada (evento
+ * `"message_updated"` o `changed_messages`). Los que no estan en `current` se
+ * ignoran: no se cargaron, y si se cargan despues ya vienen editados. Conserva
+ * las reacciones locales. Si no cambia nada, devuelve `current` tal cual. No
+ * muta `current`.
+ */
+export function applyMessageUpdates(
+  current: Message[],
+  updates: readonly Message[],
+): Message[] {
+  if (updates.length === 0) return current;
+  const byId = new Map(updates.map((message) => [message.id, message]));
+  let changed = false;
+  const next = current.map((message) => {
+    const update = byId.get(message.id);
+    if (!update) return message;
+    changed = true;
+    return { ...update, reactions: message.reactions };
+  });
+  return changed ? next : current;
 }
 
 /**
