@@ -170,7 +170,11 @@ export const RETRY_LABEL = "Reintentar";
 export const EDIT_MESSAGE_LABEL = "Editar mensaje";
 export const DELETE_MESSAGE_LABEL = "Eliminar mensaje";
 export const MESSAGE_EDITED_LABEL = "(editado)";
-export const MESSAGE_DELETED_NOTICE = "Mensaje eliminado.";
+export const DELETE_MESSAGE_CONFIRM_TITLE = "¿Eliminar mensaje?";
+export const DELETE_MESSAGE_CONFIRM_BODY =
+  "Se va a eliminar para todos los miembros y no se puede deshacer.";
+export const DELETE_MESSAGE_CONFIRM_ACTION = "Eliminar";
+export const DELETE_MESSAGE_CANCEL_ACTION = "Cancelar";
 export const EDIT_MESSAGE_HINT = "Esc para cancelar · Enter para guardar";
 
 // --- Mensajes directos ---

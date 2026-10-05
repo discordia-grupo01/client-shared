@@ -24,15 +24,11 @@ export interface Message {
   inserted_at: string;
 
   /*
-   * Los tres campos que siguen NO existen todavia en `messaging`: la UI de
-   * editar, borrar y reaccionar esta maquetada y funciona de forma local (se
-   * pierde al recargar). Un mensaje real llega sin ellos; cuando el back los
-   * soporte pasan a ser parte de la respuesta y dejan de ser opcionales.
+   * Estos campos NO los devuelve todavia `messaging`: editar y reaccionar estan
+   * maqueteados y funcionan de forma local (se pierde al recargar).
    */
   /** `null` o ausente si nunca se edito. */
   edited_at?: string | null;
-  /** `null` o ausente si sigue visible. El contenido de un mensaje borrado no importa: la UI muestra un placeholder. */
-  deleted_at?: string | null;
   reactions?: MessageReaction[];
 }
 
@@ -41,6 +37,23 @@ export interface MessageHistory {
   messages: Message[];
   /** Id de mensaje para pedir la pagina anterior (`before`, o `after` si se pidio con `after`); `null` si no hay mas. */
   next_cursor: string | null;
+}
+
+/** Payload del evento `"message_deleted"` del WebSocket. */
+export interface MessageDeletedPayload {
+  id: string;
+  channel_id: string;
+  server_id: string;
+  deleted_at: string;
+}
+
+/**
+ * Payload del evento `"changed_messages"`: lo que cambio mientras el cliente
+ * estaba desconectado (se pide con `changes_since` al unirse al canal).
+ */
+export interface ChangedMessagesPayload {
+  messages: Message[];
+  deleted_ids: string[];
 }
 
 /** Payload del evento `"missed_messages"` del WebSocket (de mas viejo a mas nuevo). */
@@ -57,7 +70,9 @@ export type MessageErrorCode =
   | "FORBIDDEN"
   | "CHANNEL_NOT_FOUND"
   | "CHANNEL_NOT_TEXT"
-  | "INVALID_CURSOR";
+  | "INVALID_CURSOR"
+  | "MESSAGE_NOT_FOUND"
+  | "MESSAGE_DELETE_DENIED";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }
@@ -157,13 +172,18 @@ export function editMessageContent<
 }
 
 /**
- * Soft delete: vacia el contenido y marca `deleted_at`. La UI muestra un
- * placeholder ("Mensaje eliminado.") en vez de sacar la fila de la lista.
+ * Saca de la lista los mensajes eliminados (el mensaje eliminado no se
+ * muestra: ni en el canal ni, al recargar, en el historial). Si ninguno estaba, devuelve
+ * `current` tal cual para que React no vuelva a renderizar. No muta `current`.
  */
-export function deleteMessage<
-  T extends { content: string; deleted_at?: string | null },
->(message: T, now: string = new Date().toISOString()): T {
-  return { ...message, content: "", deleted_at: now };
+export function removeMessages<T extends { id: string }>(
+  current: T[],
+  deletedIds: readonly string[],
+): T[] {
+  if (deletedIds.length === 0) return current;
+  const deleted = new Set(deletedIds);
+  const remaining = current.filter((message) => !deleted.has(message.id));
+  return remaining.length === current.length ? current : remaining;
 }
 
 /**
