@@ -158,7 +158,8 @@ export function deleteServerTitle(serverName: string): string {
 export function deleteServerConfirmBody(serverName: string): string {
   return `¿Seguro que quieres eliminar ${serverName}? Esta acción es irreversible.`;
 }
-export const DELETE_SERVER_NAME_LABEL = "Introduce el nombre exacto del servidor";
+export const DELETE_SERVER_NAME_LABEL =
+  "Introduce el nombre exacto del servidor";
 export const DELETE_SERVER_CONFIRM_ACTION = "Eliminar servidor";
 
 // --- Chat de un canal de texto ---
