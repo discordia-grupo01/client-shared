@@ -24,6 +24,7 @@ export const SERVER_REASONS: ReasonCatalog = {
   name_too_long: "El nombre debe tener entre 2 y 100 caracteres.",
   name_invalid_chars: "El nombre contiene caracteres no permitidos.",
   name_taken: "Ya tenés un servidor con ese nombre.",
+  confirmation_mismatch: "El nombre no coincide con el del servidor.",
   // TODO: revisar el limite real. `infrastructure` usa 5 MB en produccion y
   // 2 MB en local; hasta que se unifiquen, este texto dice el de produccion.
   icon_too_large: `El archivo no puede pesar más de ${MAX_ICON_FILE_MB} MB.`,

@@ -49,3 +49,23 @@ export type LeaveServerResult =
       message: string;
       reason?: "owner_must_transfer_or_delete";
     };
+
+/**
+ * `confirm_name` no matcheo el nombre real del servidor: 400 con
+ * `details.field = "confirm_name"` (`ErrDeleteConfirmationMismatch` en
+ * `servers`). No hay un `reason` de "no sos el owner" que mapear aca: ese caso
+ * es un 403 liso sin detalle, y el menu que abre este flujo ya esta gateado
+ * por `isOwner`, asi que llegar ahi sin serlo es defensivo, no un camino
+ * esperado.
+ */
+export interface DeleteServerFieldErrors {
+  confirm_name?: string;
+}
+
+export type DeleteServerResult =
+  | { ok: true }
+  | {
+      ok: false;
+      message: string;
+      fieldErrors?: DeleteServerFieldErrors;
+    };
