@@ -149,6 +149,18 @@ export const CHANGE_BANNER_LABEL = "Cambiar banner";
 export const REMOVE_BANNER_LABEL = "Quitar banner";
 export const CHANGE_SERVER_ICON_LABEL = "Cambiar ícono";
 
+/**
+ * --- Eliminar servidor ---
+ */
+export function deleteServerTitle(serverName: string): string {
+  return `Eliminar ${serverName}`;
+}
+export function deleteServerConfirmBody(serverName: string): string {
+  return `¿Seguro que quieres eliminar ${serverName}? Esta acción es irreversible.`;
+}
+export const DELETE_SERVER_NAME_LABEL = "Introduce el nombre exacto del servidor";
+export const DELETE_SERVER_CONFIRM_ACTION = "Eliminar servidor";
+
 // --- Chat de un canal de texto ---
 export const channelWelcomeTitle = (channelName: string) =>
   `Bienvenido a #${channelName}`;

@@ -8,3 +8,10 @@ export function validateServerName(name: string): string | undefined {
   }
   return undefined;
 }
+
+export function matchesServerNameForDeletion(
+  serverName: string,
+  typed: string,
+): boolean {
+  return typed.trim() === serverName;
+}
