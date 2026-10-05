@@ -25,9 +25,13 @@ export const SERVERS_LOAD_FAILED = failedTo("cargar tus servidores");
 export const SERVER_LOAD_FAILED = failedTo("cargar el servidor");
 export const SERVER_LEAVE_FAILED = failedTo("abandonar el servidor");
 export const SERVER_UPDATE_FAILED = failedTo("actualizar el servidor");
+export const SERVER_DELETE_FAILED = failedTo("eliminar el servidor");
 
 export const SERVER_UPDATE_FORBIDDEN =
   "No tenés permisos para editar la configuración de este servidor.";
+
+export const SERVER_DELETE_FORBIDDEN =
+  "Solo el propietario puede eliminar este servidor.";
 
 /**
  * Elegir un fondo fijo falla antes de salir del dispositivo: hay que
