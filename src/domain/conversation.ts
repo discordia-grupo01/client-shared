@@ -11,7 +11,6 @@ export interface DmMessage {
   content: string;
   inserted_at: string;
   edited_at: string | null;
-  deleted_at: string | null;
 }
 
 /** El otro participante de la conversacion, visto desde `currentUserId`. */
