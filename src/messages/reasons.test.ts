@@ -49,4 +49,8 @@ describe("catalogos de reason", () => {
   it("el mensaje de transferencia no nombra ninguna interfaz", () => {
     expect(TRANSFER_REASONS.required).not.toMatch(/ID|selector|lista/);
   });
+
+  it("el mismatch de confirmacion de borrado nombra el nombre del servidor", () => {
+    expect(SERVER_REASONS.confirmation_mismatch).toMatch(/nombre/i);
+  });
 });
