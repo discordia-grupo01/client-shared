@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   canDeleteMessage,
   canEditMessage,
-  deleteMessage,
   editMessageContent,
   type Message,
   type MessageReaction,
   mergeMessages,
+  removeMessages,
   startsMessageGroup,
   toggleReaction,
 } from "./message";
@@ -20,7 +20,6 @@ function mensaje(cambios: Partial<Message> & { id: string }): Message {
     content: "hola",
     inserted_at: "2026-09-29T15:00:00Z",
     edited_at: null,
-    deleted_at: null,
     reactions: [],
     ...cambios,
   };
@@ -127,13 +126,22 @@ describe("editMessageContent", () => {
   });
 });
 
-describe("deleteMessage", () => {
-  it("vacia el contenido y marca deleted_at", () => {
-    const msg = mensaje({ id: "1", content: "hola" });
-    const borrado = deleteMessage(msg, "2026-09-29T16:00:00Z");
-    expect(borrado.content).toBe("");
-    expect(borrado.deleted_at).toBe("2026-09-29T16:00:00Z");
-    expect(msg.deleted_at).toBeNull();
+describe("removeMessages", () => {
+  it("saca los mensajes eliminados sin mutar la lista", () => {
+    const lista = [
+      mensaje({ id: "1" }),
+      mensaje({ id: "2" }),
+      mensaje({ id: "3" }),
+    ];
+    const resultado = removeMessages(lista, ["1", "3"]);
+    expect(resultado.map((m) => m.id)).toEqual(["2"]);
+    expect(lista).toHaveLength(3);
+  });
+
+  it("devuelve la misma lista si ninguno estaba", () => {
+    const lista = [mensaje({ id: "1" })];
+    expect(removeMessages(lista, ["9"])).toBe(lista);
+    expect(removeMessages(lista, [])).toBe(lista);
   });
 });
 

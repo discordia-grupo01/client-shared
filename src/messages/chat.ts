@@ -16,11 +16,17 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
   CHANNEL_NOT_TEXT: "Solo se puede chatear en canales de texto.",
   INVALID_CURSOR:
     "No pudimos cargar los mensajes anteriores. Recargá e intentá de nuevo.",
+  MESSAGE_NOT_FOUND: "Este mensaje ya no existe.",
+  MESSAGE_DELETE_DENIED: "No tenés permiso para eliminar este mensaje.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
 export const MESSAGE_SEND_FAILED =
   "No pudimos enviar el mensaje. Intentá de nuevo.";
+
+/** No se pudo eliminar y no hay un codigo que explique por que (timeout, canal caido). */
+export const MESSAGE_DELETE_FAILED =
+  "No pudimos eliminar el mensaje. Intentá de nuevo.";
 
 /** No se pudo cargar el historial del canal. */
 export const MESSAGES_LOAD_FAILED =
