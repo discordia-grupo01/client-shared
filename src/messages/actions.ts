@@ -41,6 +41,11 @@ export const SERVER_DELETE_FORBIDDEN =
 export const PRESET_BANNER_FAILED =
   "No pudimos preparar ese fondo. Probá de nuevo.";
 
+// --- Bloqueos ---
+export const BLOCKS_LOAD_FAILED = failedTo("cargar tus usuarios bloqueados");
+export const USER_BLOCK_FAILED = failedTo("bloquear al usuario");
+export const USER_UNBLOCK_FAILED = failedTo("desbloquear al usuario");
+
 // --- Canales y categorias ---
 export const CHANNEL_CREATE_FAILED = failedTo("crear el canal");
 export const CHANNEL_UPDATE_FAILED = failedTo("editar el canal");

@@ -110,3 +110,9 @@ export const RECOVERY_CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
  * referencia hasta que el back fije el suyo.
  */
 export const MAX_MESSAGE_LENGTH = 2000;
+
+/**
+ * Cantidad de usuarios bloqueados que se piden en una sola pagina de
+ * `GET /v1/blocks` (el default del back es 50, el maximo 100).
+ */
+export const BLOCKS_PAGE_LIMIT = 100;
