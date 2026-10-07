@@ -205,3 +205,17 @@ export const DM_BLOCKED_CANNOT_SEND =
 /** El destinatario bloqueó al usuario actual: el envío no se entrega. */
 export const DM_MESSAGE_BLOCKED_NOTICE =
   "No se pudo entregar el mensaje. Este usuario te bloqueó.";
+
+// --- Bloquear y desbloquear usuarios ---
+export const BLOCK_USER_LABEL = "Bloquear";
+export const UNBLOCK_USER_LABEL = "Desbloquear";
+export const BLOCKED_BADGE_LABEL = "bloqueado";
+export const blockUserTitle = (name: string) => `¿Bloquear a ${name}?`;
+export const BLOCK_USER_BODY =
+  "Ninguno de los dos va a poder enviarle mensajes directos al otro ni iniciar llamadas privadas. El historial de la conversación se conserva para los dos. Podés desbloquearlo cuando quieras.";
+export const BLOCK_USER_CONFIRM_ACTION = "Bloquear";
+export const unblockUserTitle = (name: string) => `¿Desbloquear a ${name}?`;
+export const UNBLOCK_USER_BODY =
+  "Van a poder volver a enviarse mensajes directos e iniciar llamadas privadas.";
+export const UNBLOCK_USER_CONFIRM_ACTION = "Desbloquear";
+export const BLOCK_USER_CANCEL_ACTION = "Cancelar";
