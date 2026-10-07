@@ -30,6 +30,7 @@ export * from "./domain/ban";
 export * from "./domain/collect-pages";
 export * from "./domain/message";
 export * from "./domain/conversation";
+export * from "./domain/block";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -57,6 +58,7 @@ export * from "./messages/message-for";
 export * from "./messages/reasons";
 export * from "./messages/actions";
 export * from "./messages/chat";
+export * from "./messages/blocks";
 export * from "./messages/auth";
 export * from "./messages/two-factor";
 export * from "./messages/permissions";
