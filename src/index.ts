@@ -29,7 +29,7 @@ export * from "./domain/ownership-transfer";
 export * from "./domain/ban";
 export * from "./domain/collect-pages";
 export * from "./domain/message";
-export * from "./domain/conversation";
+export * from "./domain/direct-message";
 export * from "./domain/block";
 
 // --- Constantes ---
@@ -39,7 +39,6 @@ export * from "./constants/roles";
 export * from "./constants/activity-status";
 export * from "./constants/server-banner-presets";
 export * from "./constants/reactions";
-export * from "./constants/demo-authors";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -66,6 +65,7 @@ export * from "./messages/permissions";
 export * from "./messages/ban-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
+export * from "./messages/direct-messages";
 
 // --- Formatters ---
 export * from "./format/date";
@@ -85,6 +85,7 @@ export * from "./format/message-mentions";
 
 // --- Chat ---
 export * from "./chat/channel-chat";
+export * from "./chat/direct-messages";
 
 // --- Socket ---
 export * from "./socket/socket-manager";

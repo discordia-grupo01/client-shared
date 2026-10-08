@@ -122,6 +122,7 @@ export interface RealtimeChannel {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(event: string, callback: (payload: any) => void): unknown;
   onError(callback: () => void): unknown;
+  onClose(callback: () => void): unknown;
   join(): RealtimePush;
   leave(): unknown;
   push(event: string, payload: object): RealtimePush;
@@ -221,9 +222,11 @@ export function joinMessageChannel(
     .receive("timeout", () => handlers.connectionLost());
 }
 
-interface PushMessageEventOptions {
+export interface PushOptions {
   /** Mensaje cuando no se puede mandar, el back lo rechaza sin codigo conocido o no responde. */
   failedMessage: string;
+  /** Texto de un `error.code` del back; por defecto los de `messaging` (`messageErrorFor`). */
+  errorMessageFor?: (code: unknown, fallback: string) => string;
   /** El back confirmo; `response` es el payload de la respuesta. */
   onOk?: (response: unknown) => void;
   /** El mensaje ya no existe: el resultado es el que se queria, que no se vea. */
@@ -232,19 +235,20 @@ interface PushMessageEventOptions {
 
 /**
  * Manda un evento al canal y espera la respuesta del back. Con el canal sin
- * unir Phoenix encola el push y falla a los ~10 s, por eso solo se manda si el
- * chat esta `ready`.
+ * unir Phoenix encola el push y falla a los ~10 s, por eso solo se manda si
+ * `isJoined`.
  */
-export function pushMessageEvent(
+export function pushToChannel(
   room: RealtimeChannel | null,
-  status: ChatStatus,
+  isJoined: boolean,
   event: string,
   payload: object,
-  options: PushMessageEventOptions,
+  options: PushOptions,
 ): Promise<MessageActionResult> {
   const failed = { ok: false, message: options.failedMessage } as const;
+  const errorMessageFor = options.errorMessageFor ?? messageErrorFor;
   return new Promise((resolve) => {
-    if (!room || status !== "ready") return resolve(failed);
+    if (!room || !isJoined) return resolve(failed);
     room
       .push(event, payload)
       .receive("ok", (response) => {
@@ -256,9 +260,20 @@ export function pushMessageEvent(
         if (code === "MESSAGE_NOT_FOUND") options.onMessageNotFound?.();
         resolve({
           ok: false,
-          message: messageErrorFor(code, options.failedMessage),
+          message: errorMessageFor(code, options.failedMessage),
         });
       })
       .receive("timeout", () => resolve(failed));
   });
+}
+
+/** `pushToChannel` sobre el canal de un chat: solo se manda con el chat `ready`. */
+export function pushMessageEvent(
+  room: RealtimeChannel | null,
+  status: ChatStatus,
+  event: string,
+  payload: object,
+  options: PushOptions,
+): Promise<MessageActionResult> {
+  return pushToChannel(room, status === "ready", event, payload, options);
 }
