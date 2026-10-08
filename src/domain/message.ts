@@ -69,6 +69,15 @@ export interface MissedMessagesPayload {
   next_cursor: string | null;
 }
 
+/** Por que se le cerro el canal a alguien (`access_revoked`). */
+export type AccessRevokedReason =
+  "member_left" | "channel_deleted" | "server_deleted";
+
+export interface AccessRevokedPayload {
+  channel_id: string;
+  reason: AccessRevokedReason;
+}
+
 /** `error.code` que devuelve `messaging` (REST y WebSocket). */
 export type MessageErrorCode =
   | "EMPTY_CONTENT"

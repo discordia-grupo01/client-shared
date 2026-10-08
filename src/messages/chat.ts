@@ -4,7 +4,7 @@
  * codigo y no en `reasons.ts`. Todos en voseo.
  */
 import { MAX_MESSAGE_LENGTH } from "../constants/limits";
-import type { MessageErrorCode } from "../domain/message";
+import type { AccessRevokedReason, MessageErrorCode } from "../domain/message";
 
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
 
@@ -39,6 +39,15 @@ export const MESSAGES_LOAD_FAILED =
 
 /** El WebSocket se cayo y se esta reconectando. */
 export const CHAT_RECONNECTING_NOTICE = "Reconectando…";
+
+/** Texto cuando el back cierra el canal porque ya no hay acceso (`access_revoked`). */
+export const ACCESS_REVOKED_MESSAGES: Readonly<
+  Record<AccessRevokedReason, string>
+> = {
+  member_left: "Ya no sos miembro de este servidor.",
+  channel_deleted: "Este canal ya no existe.",
+  server_deleted: "Este servidor ya no existe.",
+};
 
 export function isMessageErrorCode(code: unknown): code is MessageErrorCode {
   return typeof code === "string" && code in MESSAGE_ERROR_MESSAGES;

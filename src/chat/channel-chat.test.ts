@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { Message } from "../domain/message";
 import {
   catchUpMessages,
+  chatStateForAccessRevoked,
   chatStatusAfterConnectionLoss,
   chatStatusForLoadError,
   joinMessageChannel,
@@ -74,6 +75,7 @@ function createHandlers() {
     connectionLost: vi.fn(),
     joined: vi.fn(),
     rejected: vi.fn(),
+    accessRevoked: vi.fn(),
   } satisfies MessageChannelHandlers;
   return { handlers, getMessages: () => messages };
 }
@@ -95,6 +97,30 @@ describe("estados del chat", () => {
     expect(chatStatusForLoadError("CHANNEL_NOT_TEXT")).toBe("notFound");
     expect(chatStatusForLoadError("INVALID_CURSOR")).toBe("error");
     expect(chatStatusForLoadError(undefined)).toBe("error");
+  });
+});
+
+describe("access_revoked", () => {
+  it("si dejaste de ser miembro queda sin acceso", () => {
+    expect(chatStateForAccessRevoked("member_left")).toEqual({
+      status: "forbidden",
+      message: "Ya no sos miembro de este servidor.",
+    });
+  });
+
+  it("si se borro el canal o el servidor queda como inexistente", () => {
+    expect(chatStateForAccessRevoked("channel_deleted").status).toBe(
+      "notFound",
+    );
+    expect(chatStateForAccessRevoked("server_deleted")).toEqual({
+      status: "notFound",
+      message: "Este servidor ya no existe.",
+    });
+  });
+
+  it("un motivo desconocido se trata como perdida de acceso", () => {
+    const state = chatStateForAccessRevoked("otra_cosa" as never);
+    expect(state.status).toBe("forbidden");
   });
 });
 
@@ -164,6 +190,17 @@ describe("joinMessageChannel", () => {
 
     expect(getMessages()).toEqual([M1]);
     expect(handlers.catchUp).toHaveBeenCalledWith("m1");
+  });
+
+  it("access_revoked avisa al hook con el estado que corresponde", () => {
+    const { room, handlers } = join();
+
+    room.events.access_revoked({ channel_id: "c1", reason: "channel_deleted" });
+
+    expect(handlers.accessRevoked).toHaveBeenCalledWith(
+      "notFound",
+      "Este canal ya no existe.",
+    );
   });
 
   it("resync_required y los errores del canal se delegan", () => {
