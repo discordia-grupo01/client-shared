@@ -80,5 +80,8 @@ export * from "./format/ban-list";
 export * from "./format/message-content";
 export * from "./format/message-time";
 
+// --- Socket ---
+export * from "./socket/socket-manager";
+
 // --- Theme ---
 export * from "./theme/tokens";
