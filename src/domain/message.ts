@@ -217,6 +217,33 @@ export function removeMessages<T extends { id: string }>(
 }
 
 /**
+ * Aplica el evento `"changed_messages"`: las ediciones y las eliminaciones que
+ * hubo mientras el cliente estaba desconectado. No muta `current`.
+ */
+export function applyChangedMessages(
+  current: Message[],
+  changes: ChangedMessagesPayload,
+): Message[] {
+  return removeMessages(
+    applyMessageUpdates(current, changes.messages),
+    changes.deleted_ids,
+  );
+}
+
+/** `toggleReaction` sobre un mensaje de la lista; los demas quedan igual. No muta `messages`. */
+export function toggleMessageReaction(
+  messages: Message[],
+  messageId: string,
+  emoji: string,
+): Message[] {
+  return messages.map((message) =>
+    message.id === messageId
+      ? { ...message, reactions: toggleReaction(message.reactions, emoji) }
+      : message,
+  );
+}
+
+/**
  * Une mensajes nuevos a la lista actual: sin duplicados (por `id`) y de mas
  * viejo a mas nuevo. El mismo mensaje puede llegar por el historial REST, por
  * `"new_message"` y por `"missed_messages"`, asi que toda entrada al estado

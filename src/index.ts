@@ -39,6 +39,7 @@ export * from "./constants/roles";
 export * from "./constants/activity-status";
 export * from "./constants/server-banner-presets";
 export * from "./constants/reactions";
+export * from "./constants/demo-authors";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -79,6 +80,11 @@ export * from "./format/user-list";
 export * from "./format/ban-list";
 export * from "./format/message-content";
 export * from "./format/message-time";
+export * from "./format/message-author";
+export * from "./format/message-mentions";
+
+// --- Chat ---
+export * from "./chat/channel-chat";
 
 // --- Socket ---
 export * from "./socket/socket-manager";
