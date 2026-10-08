@@ -29,7 +29,7 @@ export * from "./domain/ownership-transfer";
 export * from "./domain/ban";
 export * from "./domain/collect-pages";
 export * from "./domain/message";
-export * from "./domain/conversation";
+export * from "./domain/direct-message";
 export * from "./domain/block";
 
 // --- Constantes ---
@@ -65,6 +65,7 @@ export * from "./messages/permissions";
 export * from "./messages/ban-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
+export * from "./messages/direct-messages";
 
 // --- Formatters ---
 export * from "./format/date";
@@ -79,6 +80,15 @@ export * from "./format/user-list";
 export * from "./format/ban-list";
 export * from "./format/message-content";
 export * from "./format/message-time";
+export * from "./format/message-author";
+export * from "./format/message-mentions";
+
+// --- Chat ---
+export * from "./chat/channel-chat";
+export * from "./chat/direct-messages";
+
+// --- Socket ---
+export * from "./socket/socket-manager";
 
 // --- Theme ---
 export * from "./theme/tokens";

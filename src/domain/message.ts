@@ -104,9 +104,8 @@ export const MESSAGE_GROUP_WINDOW_MINUTES = 7;
 
 /**
  * Lo minimo que hace falta para agrupar mensajes en una linea de tiempo.
- * `Message` y `DmMessage` (mensajes directos, `domain/conversation.ts`) cumplen
- * esta forma por igual, asi que `startsMessageGroup` sirve para las dos sin
- * duplicarla.
+ * `Message` y los mensajes de un DM (que tambien son `Message`) cumplen esta
+ * forma por igual.
  */
 export type TimelineMessage = Pick<Message, "user_id" | "inserted_at">;
 
@@ -161,7 +160,7 @@ export function canEditMessage(
  * El autor siempre puede borrar el suyo; `canManageMessages` (calculado una
  * sola vez arriba con `hasPermission(ctx, "MANAGE_MESSAGES")`) habilita
  * borrar mensajes ajenos por moderacion. No aplica a mensajes directos: ahi
- * solo existe autoria, no moderacion (ver `domain/conversation.ts`).
+ * solo existe autoria, no moderacion (ver `domain/direct-message.ts`).
  */
 export function canDeleteMessage(
   message: Pick<Message, "user_id">,
@@ -214,6 +213,33 @@ export function removeMessages<T extends { id: string }>(
   const deleted = new Set(deletedIds);
   const remaining = current.filter((message) => !deleted.has(message.id));
   return remaining.length === current.length ? current : remaining;
+}
+
+/**
+ * Aplica el evento `"changed_messages"`: las ediciones y las eliminaciones que
+ * hubo mientras el cliente estaba desconectado. No muta `current`.
+ */
+export function applyChangedMessages(
+  current: Message[],
+  changes: ChangedMessagesPayload,
+): Message[] {
+  return removeMessages(
+    applyMessageUpdates(current, changes.messages),
+    changes.deleted_ids,
+  );
+}
+
+/** `toggleReaction` sobre un mensaje de la lista; los demas quedan igual. No muta `messages`. */
+export function toggleMessageReaction(
+  messages: Message[],
+  messageId: string,
+  emoji: string,
+): Message[] {
+  return messages.map((message) =>
+    message.id === messageId
+      ? { ...message, reactions: toggleReaction(message.reactions, emoji) }
+      : message,
+  );
 }
 
 /**

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyChangedMessages,
   applyMessageUpdates,
   canDeleteMessage,
   canEditMessage,
@@ -10,6 +11,7 @@ import {
   mergeMessages,
   removeMessages,
   startsMessageGroup,
+  toggleMessageReaction,
   toggleReaction,
 } from "./message";
 
@@ -247,5 +249,32 @@ describe("applyMessageUpdates", () => {
     const actual = [mensaje({ id: "1" })];
     expect(applyMessageUpdates(actual, [mensaje({ id: "9" })])).toBe(actual);
     expect(applyMessageUpdates(actual, [])).toBe(actual);
+  });
+});
+
+describe("applyChangedMessages y toggleMessageReaction", () => {
+  const base = (id: string, content = id) => ({
+    id,
+    channel_id: "c1",
+    server_id: "s1",
+    user_id: "u1",
+    content,
+    inserted_at: "2026-10-01T12:00:00.000Z",
+  });
+
+  it("applyChangedMessages aplica ediciones y saca eliminados", () => {
+    const result = applyChangedMessages([base("a"), base("b")], {
+      messages: [base("a", "editado")],
+      deleted_ids: ["b"],
+    });
+    expect(result).toEqual([base("a", "editado")]);
+  });
+
+  it("toggleMessageReaction solo cambia el mensaje indicado", () => {
+    const [a, b] = toggleMessageReaction([base("a"), base("b")], "a", "👍");
+    expect(a.reactions).toEqual([
+      { emoji: "👍", count: 1, reacted_by_me: true },
+    ]);
+    expect(b.reactions).toBeUndefined();
   });
 });

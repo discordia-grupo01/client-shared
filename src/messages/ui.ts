@@ -195,6 +195,7 @@ export const DIRECT_MESSAGES_TITLE = "Mensajes directos";
 export const NEW_DIRECT_MESSAGE_LABEL = "Nuevo mensaje directo";
 export const SELECT_CONVERSATION_NOTICE =
   "Seleccioná una conversación para empezar";
+export const LOADING_DM_CANDIDATES_LABEL = "Cargando…";
 export const NO_CONVERSATIONS_YET = "Todavía no tenés conversaciones directas.";
 export const dmConversationStart = (name: string) =>
   `Este es el comienzo de tu conversación directa con ${name}.`;
@@ -202,9 +203,6 @@ export const dmInputPlaceholder = (name: string) => `Mensaje directo a ${name}`;
 /** El usuario actual bloqueó al destinatario: no puede escribirle. */
 export const DM_BLOCKED_CANNOT_SEND =
   "No podés enviar mensajes directos a este usuario.";
-/** El destinatario bloqueó al usuario actual: el envío no se entrega. */
-export const DM_MESSAGE_BLOCKED_NOTICE =
-  "No se pudo entregar el mensaje. Este usuario te bloqueó.";
 
 // --- Bloquear y desbloquear usuarios ---
 export const BLOCK_USER_LABEL = "Bloquear";
