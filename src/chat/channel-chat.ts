@@ -1,4 +1,5 @@
 import type {
+  AccessRevokedPayload,
   ChangedMessagesPayload,
   ListMessagesResult,
   Message,
@@ -13,7 +14,11 @@ import {
   mergeMessages,
   removeMessages,
 } from "../domain/message";
-import { isMessageErrorCode, messageErrorFor } from "../messages/chat";
+import {
+  ACCESS_REVOKED_MESSAGES,
+  isMessageErrorCode,
+  messageErrorFor,
+} from "../messages/chat";
 
 export type ChatStatus =
   | "loading"
@@ -76,6 +81,24 @@ export function chatStatusAfterConnectionLoss(
   previous: ChatStatus,
 ): ChatStatus {
   return TERMINAL_CHAT_STATUSES.has(previous) ? previous : "reconnecting";
+}
+
+/**
+ * Estado del chat cuando el back cierra la sala (`access_revoked`): si dejaste
+ * de ser miembro es "sin acceso"; si el canal o su servidor se borraron, "no existe".
+ */
+export function chatStateForAccessRevoked(
+  reason: AccessRevokedPayload["reason"],
+): { status: "forbidden" | "notFound"; message: string } {
+  const message =
+    ACCESS_REVOKED_MESSAGES[reason] ?? ACCESS_REVOKED_MESSAGES.member_left;
+  return {
+    status:
+      reason === "channel_deleted" || reason === "server_deleted"
+        ? "notFound"
+        : "forbidden",
+    message,
+  };
 }
 
 /** Un canal recien creado puede no estar todavia en la cache de messaging (llega por un evento). */
@@ -152,6 +175,12 @@ export interface MessageChannelHandlers {
   joined: (isFirstJoin: boolean) => void;
   /** El back rechazo el `join` a proposito (sin permiso, canal inexistente): no hay que reintentar. */
   rejected: (status: "forbidden" | "notFound", message: string) => void;
+  /**
+   * El back cerro la sala porque perdiste el acceso (te fuiste o te sacaron del
+   * servidor, o se borro el canal): no se reconecta sola, hay que dejar de
+   * mostrar el chat como si siguiera vivo.
+   */
+  accessRevoked: (status: "forbidden" | "notFound", message: string) => void;
 }
 
 /** Engancha los eventos del canal de mensajes y lo une. */
@@ -184,6 +213,10 @@ export function joinMessageChannel(
     );
   });
   room.on("resync_required", () => handlers.resync());
+  room.on("access_revoked", (payload: AccessRevokedPayload) => {
+    const { status, message } = chatStateForAccessRevoked(payload.reason);
+    handlers.accessRevoked(status, message);
+  });
   room.onError(() => handlers.connectionLost());
 
   let isFirstJoin = true;
