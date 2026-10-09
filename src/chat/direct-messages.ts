@@ -169,6 +169,13 @@ export function dmCandidatesFrom(
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+export interface UserRoomCallbacks {
+  /** Alguien te menciono en un canal. */
+  onMention?: (payload: MentionEventPayload) => void;
+  /** La sala se volvio a unir tras un corte: conviene recargar lo que se pudo perder. */
+  onRejoined?: () => void;
+}
+
 /** Lo que el hook de cada app hace con lo que pasa en la sala personal `user:<id>`. */
 export interface UserChannelHandlers {
   newDm: (payload: NewDmPayload) => void;
