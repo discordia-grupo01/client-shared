@@ -253,6 +253,36 @@ describe("joinUserChannel", () => {
     expect(handlers.connectionLost).toHaveBeenCalledTimes(2);
     expect(handlers.joined.mock.calls).toEqual([[true], [false]]);
   });
+
+  it("delega el evento mention cuando el hook lo pide", () => {
+    const room = createRoom();
+    const mention = vi.fn();
+    joinUserChannel(room as unknown as RealtimeChannel, {
+      newDm: vi.fn(),
+      mention,
+      connectionLost: vi.fn(),
+      joined: vi.fn(),
+    });
+
+    const payload = {
+      server_id: "s",
+      channel_id: "c",
+      message: message("m1", "otro"),
+    };
+    room.events.mention(payload);
+
+    expect(mention).toHaveBeenCalledWith(payload);
+  });
+
+  it("ignora mention si el hook no lo pidio", () => {
+    const room = createRoom();
+    joinUserChannel(room as unknown as RealtimeChannel, {
+      newDm: vi.fn(),
+      connectionLost: vi.fn(),
+      joined: vi.fn(),
+    });
+    expect(() => room.events.mention({})).not.toThrow();
+  });
 });
 
 describe("sendDirectMessage", () => {

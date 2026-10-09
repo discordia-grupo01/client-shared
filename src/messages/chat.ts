@@ -19,6 +19,8 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
   MESSAGE_NOT_FOUND: "Este mensaje ya no existe.",
   MESSAGE_DELETE_DENIED: "No tenés permiso para eliminar este mensaje.",
   NOT_MESSAGE_AUTHOR: "Solo el autor de un mensaje puede editarlo.",
+  MENTIONS_UNAVAILABLE:
+    "No pudimos verificar las menciones del mensaje. Intentá de nuevo en un momento.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
@@ -36,6 +38,14 @@ export const MESSAGE_EDIT_FAILED =
 /** No se pudo cargar el historial del canal. */
 export const MESSAGES_LOAD_FAILED =
   "No pudimos cargar los mensajes. Intentá de nuevo.";
+
+/** No se pudieron cargar las menciones sin leer. */
+export const MENTIONS_LOAD_FAILED =
+  "No pudimos cargar tus menciones. Intentá de nuevo.";
+
+/** No se pudieron marcar como leidas las menciones de un canal. */
+export const MENTIONS_MARK_READ_FAILED =
+  "No pudimos marcar tus menciones como leídas.";
 
 /** El WebSocket se cayo y se esta reconectando. */
 export const CHAT_RECONNECTING_NOTICE = "Reconectando…";

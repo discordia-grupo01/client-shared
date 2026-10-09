@@ -116,3 +116,9 @@ export const MAX_MESSAGE_LENGTH = 2000;
  * `GET /v1/blocks` (el default del back es 50, el maximo 100).
  */
 export const BLOCKS_PAGE_LIMIT = 100;
+
+/**
+ * Menciones sin leer que se piden con `GET /v1/mentions` (el default del back
+ * es 50, el maximo 100). Si hay mas, el contador muestra hasta esa cantidad.
+ */
+export const UNREAD_MENTIONS_LIMIT = 100;

@@ -29,6 +29,7 @@ export * from "./domain/ownership-transfer";
 export * from "./domain/ban";
 export * from "./domain/collect-pages";
 export * from "./domain/message";
+export * from "./domain/mention";
 export * from "./domain/direct-message";
 export * from "./domain/block";
 
@@ -82,10 +83,13 @@ export * from "./format/message-content";
 export * from "./format/message-time";
 export * from "./format/message-author";
 export * from "./format/message-mentions";
+export * from "./format/mention-tokens";
 
 // --- Chat ---
 export * from "./chat/channel-chat";
 export * from "./chat/direct-messages";
+export * from "./chat/mentions";
+export * from "./chat/mention-suggestions";
 
 // --- Socket ---
 export * from "./socket/socket-manager";

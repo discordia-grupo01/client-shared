@@ -16,9 +16,10 @@
  * hacia creer que ya restringe el acceso cuando en realidad no hace nada. Si
  * algun dia se cablea del lado del servidor, se vuelve a agregar aca.
  *
- * MANAGE_MESSAGES (borrar mensajes ajenos) y MENTION_EVERYONE (usar
- * `@everyone`) todavia no tienen servicio de mensajes en el back: por ahora
- * solo gatean la UI (`canDeleteMessage`, `validateMentionEveryone`).
+ * MANAGE_MESSAGES (borrar mensajes ajenos) gatea la UI (`canDeleteMessage`) y
+ * lo valida `messaging`. MENTION_EVERYONE habilita `@everyone` y mencionar
+ * roles: sin el permiso el back deja esas menciones como texto comun, y el
+ * selector de menciones directamente no las ofrece.
  */
 export const ROLE_PERMISSIONS = [
   "SEND_MESSAGES",

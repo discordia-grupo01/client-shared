@@ -64,6 +64,22 @@ export const TRANSFER_NONE_PENDING =
 /** Nombre de un usuario cuyo perfil todavia no se replico en el back (`profile: null`). */
 export const UNKNOWN_USER_NAME = "Usuario desconocido";
 
+// --- Menciones ---
+export const MENTION_SECTION_MEMBERS = "Miembros";
+export const MENTION_SECTION_ROLES = "Roles";
+export const MENTION_SECTION_EVERYONE = "Notificar a todos";
+export const MENTION_EVERYONE_HINT =
+  "Notifica a todos los miembros que puedan ver este canal.";
+export const MENTION_ROLE_HINT =
+  "Notifica a todos los usuarios con este rol que puedan ver este canal.";
+/** Nombre de un rol mencionado que ya no existe. */
+export const MENTION_DELETED_ROLE_NAME = "rol eliminado";
+
+/** Titulo de la seccion de miembros mientras se filtra: "Miembros que coinciden con @ale". */
+export function mentionMembersMatchTitle(query: string): string {
+  return `${MENTION_SECTION_MEMBERS} que coinciden con @${query}`;
+}
+
 // --- Baneos ---
 export const BANS_TITLE = "Gestionar baneos";
 export const BANS_SUBTITLE = "Consultá y revocá los baneos del servidor";
