@@ -12,6 +12,12 @@ describe("messageErrorFor", () => {
     }
   });
 
+  it("MENTIONS_UNAVAILABLE explica que se puede reintentar", () => {
+    expect(messageErrorFor("MENTIONS_UNAVAILABLE")).toContain(
+      "Intentá de nuevo",
+    );
+  });
+
   it("el limite de largo aparece en el texto", () => {
     expect(messageErrorFor("MESSAGE_TOO_LONG")).toContain("2000");
   });

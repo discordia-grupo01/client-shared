@@ -1,35 +1,64 @@
-import type { MessageAuthor } from "../domain/message";
+import type { MessageAuthor, Message } from "../domain/message";
 import type { Role } from "../domain/role";
+import type { MessageToken } from "./message-content";
+import type { MentionKind } from "./mention-tokens";
 
-/** Color a usar para un `@usuario` o `@rol` mencionado, o `null` si no se reconoce. */
-export type MentionResolver = (name: string) => { color: string } | null;
+export interface ResolvedMention {
+  name: string;
+  color: string | null;
+}
 
-/**
- * Arma el resolver de `@usuario`/`@rol` -> color para `MessageContent`: el
- * nombre de un miembro se colorea con el de su rol mostrado, el nombre de un
- * rol del servidor con el color propio del rol. No valida que la mencion
- * exista de verdad (el back todavia no resuelve menciones); si no matchea
- * ningun nombre conocido, `MessageContent` cae al resaltado generico.
- */
+export type MentionResolver = (
+  kind: MentionKind,
+  id: string,
+) => ResolvedMention | null;
+
 export function buildMentionResolver(
-  authors: Record<string, MessageAuthor>,
-  roles: readonly Role[],
+  authors: Readonly<Record<string, MessageAuthor>>,
+  roles: readonly Pick<Role, "id" | "name" | "color">[],
 ): MentionResolver {
-  const colorByUserName = new Map<string, string>();
-  for (const author of Object.values(authors)) {
-    if (author.roleColor) {
-      colorByUserName.set(author.name.toLowerCase(), author.roleColor);
+  const roleById = new Map(roles.map((role) => [role.id.toLowerCase(), role]));
+
+  return (kind, id) => {
+    if (kind === "user") {
+      const author = authors[id];
+      return author ? { name: author.name, color: author.roleColor } : null;
     }
-  }
-
-  const colorByRoleName = new Map<string, string>();
-  for (const role of roles) {
-    colorByRoleName.set(role.name.toLowerCase(), role.color);
-  }
-
-  return (name) => {
-    const key = name.toLowerCase();
-    const color = colorByUserName.get(key) ?? colorByRoleName.get(key);
-    return color ? { color } : null;
+    const role = roleById.get(id.toLowerCase());
+    return role ? { name: role.name, color: role.color } : null;
   };
+}
+
+export type MessageMentions = Pick<
+  Message,
+  "mentions" | "mention_roles" | "mention_everyone"
+>;
+
+export function isActiveMention(
+  token: MessageToken,
+  message: MessageMentions,
+): boolean {
+  switch (token.kind) {
+    case "user":
+      return message.mentions?.includes(token.id) ?? false;
+    case "role":
+      return message.mention_roles?.includes(token.id.toLowerCase()) ?? false;
+    case "everyone":
+      return message.mention_everyone === true;
+    default:
+      return false;
+  }
+}
+
+export function mentionsPerson(
+  message: MessageMentions,
+  userId: string,
+  roleIds: readonly string[],
+): boolean {
+  if (message.mention_everyone) return true;
+  if (message.mentions?.includes(userId)) return true;
+  const mentionedRoles = message.mention_roles ?? [];
+  return roleIds.some((roleId) =>
+    mentionedRoles.includes(roleId.toLowerCase()),
+  );
 }

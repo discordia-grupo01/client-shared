@@ -5,6 +5,7 @@ import type {
   SentDmPayload,
 } from "../domain/direct-message";
 import type { Member } from "../domain/member";
+import type { MentionEventPayload } from "../domain/mention";
 import type { MessageAuthor } from "../domain/message";
 import { messageAuthorOf } from "../format/message-author";
 import { displayNameOf } from "../format/profile";
@@ -168,9 +169,18 @@ export function dmCandidatesFrom(
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+export interface UserRoomCallbacks {
+  /** Alguien te menciono en un canal. */
+  onMention?: (payload: MentionEventPayload) => void;
+  /** La sala se volvio a unir tras un corte: conviene recargar lo que se pudo perder. */
+  onRejoined?: () => void;
+}
+
 /** Lo que el hook de cada app hace con lo que pasa en la sala personal `user:<id>`. */
 export interface UserChannelHandlers {
   newDm: (payload: NewDmPayload) => void;
+  /** Alguien te menciono en un canal (`mention`); es opcional porque no todos los hooks lo usan. */
+  mention?: (payload: MentionEventPayload) => void;
   /** Corte de conexion o sala caida: Phoenix re-une solo. */
   connectionLost: () => void;
   /** La sala quedo unida. `isFirstJoin` es `false` al re-unirse tras un corte. */
@@ -183,6 +193,9 @@ export function joinUserChannel(
   handlers: UserChannelHandlers,
 ): void {
   room.on("new_dm", (payload: NewDmPayload) => handlers.newDm(payload));
+  room.on("mention", (payload: MentionEventPayload) =>
+    handlers.mention?.(payload),
+  );
   room.onError(() => handlers.connectionLost());
   room.onClose(() => handlers.connectionLost());
 
