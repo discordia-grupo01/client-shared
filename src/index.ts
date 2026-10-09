@@ -90,6 +90,7 @@ export * from "./chat/channel-chat";
 export * from "./chat/direct-messages";
 export * from "./chat/mentions";
 export * from "./chat/mention-suggestions";
+export * from "./chat/mention-draft";
 
 // --- Socket ---
 export * from "./socket/socket-manager";
