@@ -84,7 +84,7 @@ export function mentionDraftReducer(
           ? [...state.picked, action.applied.picked]
           : state.picked,
         selectedIndex: 0,
-        isDismissed: false,
+        isDismissed: true,
       };
     case "dismiss":
       return { ...state, isDismissed: true };

@@ -131,6 +131,25 @@ describe("mentionDraftView", () => {
     expect(mentionDraftView(state, sources).encoded).toBe("Hola <@u_beto> ");
   });
 
+  it("al elegir una mencion el selector se cierra y se reabre con una nueva @", () => {
+    let state = run({ type: "change", text: "Hola @be", cursor: 8 });
+    const view = mentionDraftView(state, sources);
+    const applied = applyMentionCandidate(
+      state.text,
+      view.active!,
+      view.candidates[0] as MentionCandidate,
+    );
+    state = mentionDraftReducer(state, { type: "pick", applied });
+    expect(mentionDraftView(state, sources).isOpen).toBe(false);
+
+    state = mentionDraftReducer(state, {
+      type: "change",
+      text: `${state.text}@a`,
+      cursor: state.text.length + 2,
+    });
+    expect(mentionDraftView(state, sources).isOpen).toBe(true);
+  });
+
   it("un @Nombre escrito a mano no se convierte", () => {
     const state = run({ type: "change", text: "hola @Beto", cursor: 10 });
     expect(mentionDraftView(state, sources).encoded).toBe("hola @Beto");
