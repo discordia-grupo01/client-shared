@@ -84,6 +84,7 @@ export * from "./format/message-time";
 export * from "./format/message-author";
 export * from "./format/message-mentions";
 export * from "./format/mention-tokens";
+export * from "./format/mention-draft-segments";
 
 // --- Chat ---
 export * from "./chat/channel-chat";

@@ -24,17 +24,28 @@ export function mentionToken(kind: MentionKind, id: string): string {
   return kind === "role" ? `<@&${id.toLowerCase()}>` : `<@${id}>`;
 }
 
-export function encodeMentions(
+/** Un tramo del borrador que corresponde a una mencion elegida del selector. */
+export interface PickedRange {
+  start: number;
+  /** Posicion donde termina (exclusiva): incluye la `@` y el nombre. */
+  end: number;
+  mention: PickedMention;
+}
+
+/**
+ * Donde esta cada mencion elegida dentro del borrador. Recorre el texto de
+ * izquierda a derecha y, si dos elegidos tienen el mismo nombre, se asignan en
+ * orden. Una mencion cuyo nombre se edito ya no coincide y no figura.
+ */
+export function matchPickedMentions(
   draft: string,
   picked: readonly PickedMention[],
-): string {
-  if (picked.length === 0) return draft;
-
+): PickedRange[] {
   const labels = [...new Set(picked.map((mention) => mention.label))]
     .filter((label) => label !== "")
     .sort((a, b) => b.length - a.length)
     .map(escapeRegExp);
-  if (labels.length === 0) return draft;
+  if (labels.length === 0) return [];
 
   const pending = [...picked];
   const pattern = new RegExp(
@@ -42,12 +53,35 @@ export function encodeMentions(
     "g",
   );
 
-  return draft.replace(pattern, (match, before: string, label: string) => {
+  const ranges: PickedRange[] = [];
+  for (const match of draft.matchAll(pattern)) {
+    const [whole, before, label] = match;
     const index = pending.findIndex((mention) => mention.label === label);
-    if (index === -1) return match;
+    if (index === -1) continue;
     const [mention] = pending.splice(index, 1);
-    return `${before}${mentionToken(mention.kind, mention.id)}`;
-  });
+    const start = (match.index ?? 0) + before.length;
+    ranges.push({ start, end: start + whole.length - before.length, mention });
+  }
+  return ranges;
+}
+
+/**
+ * Pasa el borrador visible (`Hola @Beto`) al texto que se manda
+ * (`Hola <@idBeto>`). Solo convierte lo que la persona eligio del selector: un
+ * `@Beto` escrito a mano, o uno cuyo nombre se edito, queda como texto.
+ */
+export function encodeMentions(
+  draft: string,
+  picked: readonly PickedMention[],
+): string {
+  let result = "";
+  let cursor = 0;
+  for (const { start, end, mention } of matchPickedMentions(draft, picked)) {
+    result +=
+      draft.slice(cursor, start) + mentionToken(mention.kind, mention.id);
+    cursor = end;
+  }
+  return result + draft.slice(cursor);
 }
 
 const TOKEN_PATTERN = new RegExp(
