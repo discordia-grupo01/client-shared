@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { MAX_MESSAGE_LENGTH } from "../constants/limits";
 
-import { validateMentionEveryone, validateMessageContent } from "./message";
+import { validateMessageContent } from "./message";
 
 describe("validateMessageContent", () => {
   it("acepta un mensaje normal", () => {
@@ -21,29 +21,5 @@ describe("validateMessageContent", () => {
     expect(
       validateMessageContent("a".repeat(MAX_MESSAGE_LENGTH + 1)),
     ).toBeDefined();
-  });
-});
-
-describe("validateMentionEveryone", () => {
-  it("deja pasar un mensaje sin @everyone sin importar el permiso", () => {
-    expect(validateMentionEveryone("hola a todos", false)).toBeUndefined();
-  });
-
-  it("deja pasar @everyone si el usuario tiene el permiso", () => {
-    expect(validateMentionEveryone("@everyone hola", true)).toBeUndefined();
-  });
-
-  it("rechaza @everyone sin el permiso", () => {
-    expect(validateMentionEveryone("@everyone hola", false)).toBeDefined();
-  });
-
-  it("rechaza @here sin el permiso", () => {
-    expect(validateMentionEveryone("hola @here", false)).toBeDefined();
-  });
-
-  it("no confunde un mail con una mencion", () => {
-    expect(
-      validateMentionEveryone("escribime a everyone@test.com", false),
-    ).toBeUndefined();
   });
 });

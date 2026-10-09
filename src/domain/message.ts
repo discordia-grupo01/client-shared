@@ -28,6 +28,16 @@ export interface Message {
   /** Momento de la ultima edicion; `null` o ausente si nunca se edito. */
   edited_at?: string | null;
 
+  /**
+   * Ids de los usuarios mencionados con `<@id>` que cuentan (miembros del
+   * servidor). Ausente o vacio en mensajes sin menciones y en DMs.
+   */
+  mentions?: string[];
+  /** Ids de los roles mencionados con `<@&id>`; solo cuentan si el autor tiene `MENTION_EVERYONE`. */
+  mention_roles?: string[];
+  /** `true` si el mensaje dice `@everyone` y el autor tiene `MENTION_EVERYONE`; si no, es texto comun. */
+  mention_everyone?: boolean;
+
   /*
    * Las reacciones NO las devuelve todavia `messaging`: estan maqueteadas y
    * funcionan de forma local (se pierde al recargar).
@@ -88,7 +98,8 @@ export type MessageErrorCode =
   | "INVALID_CURSOR"
   | "MESSAGE_NOT_FOUND"
   | "MESSAGE_DELETE_DENIED"
-  | "NOT_MESSAGE_AUTHOR";
+  | "NOT_MESSAGE_AUTHOR"
+  | "MENTIONS_UNAVAILABLE";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }
