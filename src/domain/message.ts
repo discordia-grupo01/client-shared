@@ -38,9 +38,10 @@ export interface Message {
   /** `true` si el mensaje dice `@everyone` y el autor tiene `MENTION_EVERYONE`; si no, es texto comun. */
   mention_everyone?: boolean;
 
-  /*
-   * Las reacciones NO las devuelve todavia `messaging`: estan maqueteadas y
-   * funcionan de forma local (se pierde al recargar).
+  /**
+   * Reacciones, en el orden en que se uso cada emoji por primera vez. Vienen en
+   * el historial y en `missed_messages`/`changed_messages`; `new_message` y
+   * `message_updated` no las traen (se conservan las que ya habia).
    */
   reactions?: MessageReaction[];
 }
@@ -79,6 +80,21 @@ export interface MissedMessagesPayload {
   next_cursor: string | null;
 }
 
+/** Payload del evento `"reaction_updated"`: alguien agrego o saco una reaccion. */
+export interface ReactionUpdatedPayload {
+  channel_id: string;
+  message_id: string;
+  emoji: string;
+  /** Quien reacciono: si es el usuario actual, cambia su `reacted_by_me`. */
+  user_id: string;
+  action: "added" | "removed";
+  /** Total despues del cambio, segun el back. */
+  count: number;
+}
+
+/** Evento del socket para reaccionar o sacar la reaccion propia. */
+export type ReactionEvent = "add_reaction" | "remove_reaction";
+
 /** Por que se le cerro el canal a alguien (`access_revoked`). */
 export type AccessRevokedReason =
   "member_left" | "channel_deleted" | "server_deleted";
@@ -99,7 +115,9 @@ export type MessageErrorCode =
   | "MESSAGE_NOT_FOUND"
   | "MESSAGE_DELETE_DENIED"
   | "NOT_MESSAGE_AUTHOR"
-  | "MENTIONS_UNAVAILABLE";
+  | "MENTIONS_UNAVAILABLE"
+  | "INVALID_EMOJI"
+  | "TOO_MANY_REACTIONS";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }
@@ -200,9 +218,9 @@ export function editMessageContent<
 /**
  * Reemplaza por `id` los mensajes ya presentes con su version editada (evento
  * `"message_updated"` o `changed_messages`). Los que no estan en `current` se
- * ignoran: no se cargaron, y si se cargan despues ya vienen editados. Conserva
- * las reacciones locales. Si no cambia nada, devuelve `current` tal cual. No
- * muta `current`.
+ * ignoran: no se cargaron, y si se cargan despues ya vienen editados. Si la
+ * version nueva no trae `reactions` (`message_updated`), conserva las que
+ * habia. Si no cambia nada, devuelve `current` tal cual. No muta `current`.
  */
 export function applyMessageUpdates(
   current: Message[],
@@ -215,7 +233,7 @@ export function applyMessageUpdates(
     const update = byId.get(message.id);
     if (!update) return message;
     changed = true;
-    return { ...update, reactions: message.reactions };
+    return { ...update, reactions: update.reactions ?? message.reactions };
   });
   return changed ? next : current;
 }
@@ -260,6 +278,77 @@ export function toggleMessageReaction(
       ? { ...message, reactions: toggleReaction(message.reactions, emoji) }
       : message,
   );
+}
+
+/**
+ * Que evento mandar al tocar `emoji` en un mensaje: si el usuario ya habia
+ * reaccionado con ese emoji, la saca (CA2); si no, la agrega.
+ */
+export function reactionEventFor(
+  message: Pick<Message, "reactions">,
+  emoji: string,
+): ReactionEvent {
+  const mine = message.reactions?.some(
+    (reaction) => reaction.emoji === emoji && reaction.reacted_by_me,
+  );
+  return mine ? "remove_reaction" : "add_reaction";
+}
+
+/**
+ * Deja la reaccion `emoji` de un mensaje como dice el back: con `count` en 0
+ * desaparece, y un emoji nuevo va al final. Si no cambia nada, devuelve
+ * `messages` tal cual. No muta `messages`.
+ */
+export function setMessageReaction(
+  messages: Message[],
+  messageId: string,
+  next: MessageReaction,
+): Message[] {
+  let changed = false;
+  const updated = messages.map((message) => {
+    if (message.id !== messageId) return message;
+    const reactions = message.reactions ?? [];
+    const existing = reactions.find((r) => r.emoji === next.emoji);
+    if (
+      existing?.count === next.count &&
+      existing.reacted_by_me === next.reacted_by_me
+    ) {
+      return message;
+    }
+    changed = true;
+    const others = reactions.filter((r) => r.emoji !== next.emoji);
+    const kept = existing
+      ? reactions.map((r) => (r === existing ? next : r))
+      : [...others, next];
+    return {
+      ...message,
+      reactions: next.count > 0 ? kept : others,
+    };
+  });
+  return changed ? updated : messages;
+}
+
+/**
+ * Aplica el evento `"reaction_updated"`. El contador es el que manda el back;
+ * `reacted_by_me` solo cambia si quien reacciono es `currentUserId`.
+ */
+export function applyReactionUpdate(
+  messages: Message[],
+  payload: ReactionUpdatedPayload,
+  currentUserId: string | null,
+): Message[] {
+  const message = messages.find((m) => m.id === payload.message_id);
+  if (!message) return messages;
+  const previous = message.reactions?.find((r) => r.emoji === payload.emoji);
+  const reactedByMe =
+    payload.user_id === currentUserId
+      ? payload.action === "added"
+      : (previous?.reacted_by_me ?? false);
+  return setMessageReaction(messages, payload.message_id, {
+    emoji: payload.emoji,
+    count: payload.count,
+    reacted_by_me: reactedByMe,
+  });
 }
 
 /**

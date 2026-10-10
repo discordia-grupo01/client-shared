@@ -10,6 +10,7 @@ import {
   type MessageChannelHandlers,
   NOT_FOUND_ATTEMPTS,
   pushMessageEvent,
+  pushReaction,
   type RealtimeChannel,
 } from "./channel-chat";
 
@@ -183,6 +184,33 @@ describe("joinMessageChannel", () => {
     expect(getMessages()).toEqual([]);
   });
 
+  it("reaction_updated aplica el contador y mi reacted_by_me", () => {
+    const room = createRoom();
+    const { handlers, getMessages } = createHandlers();
+    joinMessageChannel(
+      room as unknown as RealtimeChannel,
+      {},
+      {
+        ...handlers,
+        currentUserId: "yo",
+      },
+    );
+    room.events.new_message(M1);
+
+    room.events.reaction_updated({
+      channel_id: "c1",
+      message_id: "m1",
+      emoji: "👍",
+      user_id: "yo",
+      action: "added",
+      count: 2,
+    });
+
+    expect(getMessages()[0].reactions).toEqual([
+      { emoji: "👍", count: 2, reacted_by_me: true },
+    ]);
+  });
+
   it("missed_messages mezcla y sigue por REST si hay mas", () => {
     const { room, handlers, getMessages } = join();
 
@@ -321,5 +349,45 @@ describe("pushMessageEvent", () => {
     const timeout = push();
     timeout.room.pushes[0].push.fire("timeout");
     expect(await timeout.result).toEqual({ ok: false, message: "fallo" });
+  });
+});
+
+describe("pushReaction", () => {
+  function react(event: "add_reaction" | "remove_reaction" = "add_reaction") {
+    const room = createRoom();
+    const onReaction = vi.fn();
+    const result = pushReaction(
+      room as unknown as RealtimeChannel,
+      "ready",
+      event,
+      "m1",
+      "👍",
+      onReaction,
+    );
+    return { room, onReaction, result };
+  }
+
+  it("manda el evento y entrega la reaccion confirmada", async () => {
+    const { room, onReaction, result } = react("remove_reaction");
+
+    expect(room.pushes[0].event).toBe("remove_reaction");
+    expect(room.pushes[0].payload).toEqual({ message_id: "m1", emoji: "👍" });
+    const confirmada = { emoji: "👍", count: 1, reacted_by_me: false };
+    room.pushes[0].push.fire("ok", confirmada);
+
+    expect(await result).toEqual({ ok: true });
+    expect(onReaction).toHaveBeenCalledWith(confirmada);
+  });
+
+  it("sin permiso (CA3) explica que no puede reaccionar", async () => {
+    const { room, onReaction, result } = react();
+
+    room.pushes[0].push.fire("error", { error: { code: "FORBIDDEN" } });
+
+    expect(await result).toEqual({
+      ok: false,
+      message: "No tenés permiso para reaccionar en este canal.",
+    });
+    expect(onReaction).not.toHaveBeenCalled();
   });
 });
