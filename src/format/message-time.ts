@@ -43,3 +43,15 @@ export function formatMessageTimestamp(
   const day = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
   return `${day} ${time}`;
 }
+
+export function startsNewDay(
+  previousIsoDate: string | undefined,
+  isoDate: string,
+): boolean {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return false;
+  if (previousIsoDate === undefined) return true;
+  const previous = new Date(previousIsoDate);
+  if (Number.isNaN(previous.getTime())) return true;
+  return !isSameDay(previous, date);
+}
