@@ -21,6 +21,9 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
   NOT_MESSAGE_AUTHOR: "Solo el autor de un mensaje puede editarlo.",
   MENTIONS_UNAVAILABLE:
     "No pudimos verificar las menciones del mensaje. Intentá de nuevo en un momento.",
+  INVALID_EMOJI: "Solo se puede reaccionar con un emoji.",
+  TOO_MANY_REACTIONS:
+    "Este mensaje ya tiene el máximo de reacciones distintas.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
@@ -34,6 +37,14 @@ export const MESSAGE_DELETE_FAILED =
 /** No se pudo editar y no hay un codigo que explique por que (timeout, canal caido). */
 export const MESSAGE_EDIT_FAILED =
   "No pudimos editar el mensaje. Intentá de nuevo.";
+
+/** No se pudo reaccionar y no hay un codigo que explique por que (timeout, canal caido). */
+export const REACTION_FAILED =
+  "No pudimos guardar tu reacción. Intentá de nuevo.";
+
+/** El back rechazo la reaccion por permisos (`FORBIDDEN` en `add_reaction`). */
+export const REACTION_FORBIDDEN =
+  "No tenés permiso para reaccionar en este canal.";
 
 /** No se pudo cargar el historial del canal. */
 export const MESSAGES_LOAD_FAILED =

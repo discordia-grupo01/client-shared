@@ -19,7 +19,9 @@
  * MANAGE_MESSAGES (borrar mensajes ajenos) gatea la UI (`canDeleteMessage`) y
  * lo valida `messaging`. MENTION_EVERYONE habilita `@everyone` y mencionar
  * roles: sin el permiso el back deja esas menciones como texto comun, y el
- * selector de menciones directamente no las ofrece.
+ * selector de menciones directamente no las ofrece. ADD_REACTIONS habilita
+ * reaccionar a mensajes: sin el, la UI no ofrece reaccionar y `messaging` lo
+ * rechaza igual.
  */
 export const ROLE_PERMISSIONS = [
   "SEND_MESSAGES",
@@ -31,6 +33,7 @@ export const ROLE_PERMISSIONS = [
   "CREATE_INVITE",
   "MANAGE_MESSAGES",
   "MENTION_EVERYONE",
+  "ADD_REACTIONS",
 ] as const;
 
 export type RolePermission = (typeof ROLE_PERMISSIONS)[number];

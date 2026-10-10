@@ -60,4 +60,8 @@ export const PERMISSION_COPY: Record<
     label: "Mencionar a todo el servidor",
     desc: "Puede usar @everyone para notificar a todos los miembros del canal.",
   },
+  ADD_REACTIONS: {
+    label: "Agregar reacciones",
+    desc: "Puede reaccionar a los mensajes con emojis.",
+  },
 };
