@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  LOGO_ANIMATION,
   LOGO_COLORS,
   LOGO_ISOTYPE,
   LOGO_TAGLINE_PATH,
@@ -23,5 +24,9 @@ describe("logo", () => {
     expect(Object.keys(LOGO_COLORS.light)).toEqual(
       Object.keys(LOGO_COLORS.dark),
     );
+  });
+
+  it("tiene un pulso por cada tramo del cable", () => {
+    expect(LOGO_ANIMATION.pulse).toHaveLength(LOGO_ISOTYPE.cablePaths.length);
   });
 });
