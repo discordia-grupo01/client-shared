@@ -5,12 +5,16 @@ import type {
   Message,
   MessageDeletedPayload,
   MessageErrorCode,
+  MessageReaction,
   MessageUpdatedPayload,
   MissedMessagesPayload,
+  ReactionEvent,
+  ReactionUpdatedPayload,
 } from "../domain/message";
 import {
   applyChangedMessages,
   applyMessageUpdates,
+  applyReactionUpdate,
   mergeMessages,
   removeMessages,
 } from "../domain/message";
@@ -18,6 +22,8 @@ import {
   ACCESS_REVOKED_MESSAGES,
   isMessageErrorCode,
   messageErrorFor,
+  REACTION_FAILED,
+  REACTION_FORBIDDEN,
 } from "../messages/chat";
 
 export type ChatStatus =
@@ -33,6 +39,7 @@ export type MessageActionResult = { ok: true } | { ok: false; message: string };
 export type SendMessageResult = MessageActionResult;
 export type DeleteMessageResult = MessageActionResult;
 export type EditMessageResult = MessageActionResult;
+export type ReactionResult = MessageActionResult;
 
 /** Lo que `useChannelMessages` le entrega a la pantalla del chat (web y mobile). */
 export interface ChannelMessages {
@@ -64,9 +71,12 @@ export interface ChannelMessages {
     messageId: string,
     content: string,
   ) => Promise<EditMessageResult>;
-  // Reaccionar todavia no existe en el back: la UI esta maquetada y esta
-  // funcion cambia solo el estado local (se pierde al recargar).
-  toggleReaction: (messageId: string, emoji: string) => void;
+  /**
+   * Agrega la reaccion, o la saca si el usuario ya habia reaccionado con ese
+   * emoji (CA2). Se aplica con lo que confirma el back; a los demas les llega
+   * por `reaction_updated`.
+   */
+  toggleReaction: (messageId: string, emoji: string) => Promise<ReactionResult>;
 }
 
 /** Estados de los que no se sale solo: no se pisan con un corte de conexion. */
@@ -181,6 +191,8 @@ export interface MessageChannelHandlers {
    * mostrar el chat como si siguiera vivo.
    */
   accessRevoked: (status: "forbidden" | "notFound", message: string) => void;
+  /** Usuario actual, para saber si un `reaction_updated` cambia su `reacted_by_me`. */
+  currentUserId?: string | null;
 }
 
 /** Engancha los eventos del canal de mensajes y lo une. */
@@ -210,6 +222,11 @@ export function joinMessageChannel(
   room.on("changed_messages", (payload: ChangedMessagesPayload) => {
     handlers.updateMessages((current) =>
       applyChangedMessages(current, payload),
+    );
+  });
+  room.on("reaction_updated", (payload: ReactionUpdatedPayload) => {
+    handlers.updateMessages((current) =>
+      applyReactionUpdate(current, payload, handlers.currentUserId ?? null),
     );
   });
   room.on("resync_required", () => handlers.resync());
@@ -309,4 +326,34 @@ export function pushMessageEvent(
   options: PushOptions,
 ): Promise<MessageActionResult> {
   return pushToChannel(room, status === "ready", event, payload, options);
+}
+
+/**
+ * Manda `add_reaction`/`remove_reaction` y, si el back confirma, entrega la
+ * reaccion como quedo (`onReaction`) para aplicarla con `setMessageReaction`.
+ */
+export function pushReaction(
+  room: RealtimeChannel | null,
+  status: ChatStatus,
+  event: ReactionEvent,
+  messageId: string,
+  emoji: string,
+  onReaction: (reaction: MessageReaction) => void,
+): Promise<ReactionResult> {
+  return pushMessageEvent(
+    room,
+    status,
+    event,
+    { message_id: messageId, emoji },
+    {
+      failedMessage: REACTION_FAILED,
+      errorMessageFor: (code, fallback) =>
+        code === "FORBIDDEN"
+          ? REACTION_FORBIDDEN
+          : messageErrorFor(code, fallback),
+      onOk: (response) => {
+        if (response) onReaction(response as MessageReaction);
+      },
+    },
+  );
 }

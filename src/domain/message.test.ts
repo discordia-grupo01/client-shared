@@ -3,13 +3,16 @@ import { describe, expect, it } from "vitest";
 import {
   applyChangedMessages,
   applyMessageUpdates,
+  applyReactionUpdate,
   canDeleteMessage,
   canEditMessage,
   editMessageContent,
   type Message,
   type MessageReaction,
   mergeMessages,
+  reactionEventFor,
   removeMessages,
+  setMessageReaction,
   startsMessageGroup,
   toggleMessageReaction,
   toggleReaction,
@@ -245,6 +248,18 @@ describe("applyMessageUpdates", () => {
     expect(resultado[1]).toBe(actual[1]);
   });
 
+  it("si la version nueva trae reacciones (changed_messages), usa esas", () => {
+    const viejas = [{ emoji: "🔥", count: 1, reacted_by_me: true }];
+    const nuevas = [{ emoji: "👍", count: 2, reacted_by_me: false }];
+    const actual = [mensaje({ id: "1", reactions: viejas })];
+
+    const [resultado] = applyMessageUpdates(actual, [
+      mensaje({ id: "1", reactions: nuevas }),
+    ]);
+
+    expect(resultado.reactions).toEqual(nuevas);
+  });
+
   it("ignora mensajes que no estan cargados y devuelve la misma lista", () => {
     const actual = [mensaje({ id: "1" })];
     expect(applyMessageUpdates(actual, [mensaje({ id: "9" })])).toBe(actual);
@@ -276,5 +291,102 @@ describe("applyChangedMessages y toggleMessageReaction", () => {
       { emoji: "👍", count: 1, reacted_by_me: true },
     ]);
     expect(b.reactions).toBeUndefined();
+  });
+});
+
+describe("reacciones con el back", () => {
+  const pulgar = { emoji: "👍", count: 2, reacted_by_me: true };
+  const fuego = { emoji: "🔥", count: 1, reacted_by_me: false };
+
+  it("reactionEventFor saca la reaccion propia y agrega cualquier otra (CA2)", () => {
+    const m = mensaje({ id: "1", reactions: [pulgar, fuego] });
+    expect(reactionEventFor(m, "👍")).toBe("remove_reaction");
+    expect(reactionEventFor(m, "🔥")).toBe("add_reaction");
+    expect(reactionEventFor(m, "🎉")).toBe("add_reaction");
+    expect(
+      reactionEventFor(mensaje({ id: "2", reactions: undefined }), "👍"),
+    ).toBe("add_reaction");
+  });
+
+  it("setMessageReaction actualiza, agrega al final y saca en 0", () => {
+    const actual = [
+      mensaje({ id: "1", reactions: [pulgar, fuego] }),
+      mensaje({ id: "2" }),
+    ];
+
+    const [actualizado] = setMessageReaction(actual, "1", {
+      ...pulgar,
+      count: 3,
+    });
+    expect(actualizado.reactions).toEqual([{ ...pulgar, count: 3 }, fuego]);
+
+    const [conNueva] = setMessageReaction(actual, "1", {
+      emoji: "🎉",
+      count: 1,
+      reacted_by_me: true,
+    });
+    expect(conNueva.reactions?.map((r) => r.emoji)).toEqual(["👍", "🔥", "🎉"]);
+
+    const [sinFuego] = setMessageReaction(actual, "1", { ...fuego, count: 0 });
+    expect(sinFuego.reactions).toEqual([pulgar]);
+  });
+
+  it("setMessageReaction devuelve la misma lista si no cambia nada", () => {
+    const actual = [mensaje({ id: "1", reactions: [pulgar] })];
+    expect(setMessageReaction(actual, "1", { ...pulgar })).toBe(actual);
+    expect(setMessageReaction(actual, "9", fuego)).toBe(actual);
+  });
+
+  it("applyReactionUpdate usa el contador del back y solo toca mi reacted_by_me si fui yo", () => {
+    const actual = [mensaje({ id: "1", reactions: [{ ...fuego }] })];
+    const evento = {
+      channel_id: "ch1",
+      message_id: "1",
+      emoji: "🔥",
+      count: 2,
+    };
+
+    const deOtro = applyReactionUpdate(
+      actual,
+      { ...evento, user_id: "otro", action: "added" },
+      "yo",
+    );
+    expect(deOtro[0].reactions).toEqual([
+      { emoji: "🔥", count: 2, reacted_by_me: false },
+    ]);
+
+    const mio = applyReactionUpdate(
+      actual,
+      { ...evento, user_id: "yo", action: "added" },
+      "yo",
+    );
+    expect(mio[0].reactions).toEqual([
+      { emoji: "🔥", count: 2, reacted_by_me: true },
+    ]);
+
+    const saqueLaMia = applyReactionUpdate(
+      mio,
+      { ...evento, count: 0, user_id: "yo", action: "removed" },
+      "yo",
+    );
+    expect(saqueLaMia[0].reactions).toEqual([]);
+  });
+
+  it("applyReactionUpdate ignora mensajes que no estan cargados", () => {
+    const actual = [mensaje({ id: "1" })];
+    expect(
+      applyReactionUpdate(
+        actual,
+        {
+          channel_id: "ch1",
+          message_id: "9",
+          emoji: "👍",
+          user_id: "otro",
+          action: "added",
+          count: 1,
+        },
+        "yo",
+      ),
+    ).toBe(actual);
   });
 });
