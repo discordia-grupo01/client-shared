@@ -73,6 +73,23 @@ export const ROLE_REASONS: ReasonCatalog = {
     "@everyone es automático: no se puede eliminar, renombrar, recolorear ni asignar o quitar a mano.",
 };
 
+/**
+ * Sobrescribir permisos de un rol en un canal. `permission_not_held`
+ * no esta: trae la lista de permisos y lo arma `permissionNotHeldMessage`.
+ * `permission_not_overridable` y `permission_conflict` no deberian llegar
+ * nunca desde las pantallas (solo ofrecen los permisos que se pueden
+ * sobrescribir, y un permiso tiene un unico valor), pero se traducen igual.
+ */
+export const CHANNEL_OVERRIDE_REASONS: ReasonCatalog = {
+  role_above_own:
+    "No podés cambiar los permisos de un rol igual o por encima del tuyo en la jerarquía.",
+  permission_not_overridable: "Ese permiso no se puede cambiar en un canal.",
+  permission_conflict:
+    "Un permiso no puede estar permitido y denegado a la vez.",
+  channel_override_not_found:
+    "Ese rol ya no tenía permisos propios en este canal.",
+};
+
 export const INVITE_REASONS: ReasonCatalog = {
   // Mismo texto que `validateMaxUses`, para que el chequeo del front y el del
   // back no le digan cosas distintas al usuario por el mismo motivo.
