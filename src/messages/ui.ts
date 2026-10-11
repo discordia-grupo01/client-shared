@@ -46,6 +46,61 @@ export const CLEAR_CUSTOM_STATUS_LABEL = "Quitar estado personalizado";
 export const CUSTOM_STATUS_PLACEHOLDER = "¿Qué estás haciendo?";
 
 // --- Canales ---
+export const EDIT_CHANNEL_LABEL = "Editar canal";
+export const OVERRIDE_CHANNEL_PERMISSIONS_LABEL = "Sobrescribir permisos";
+export const DELETE_CHANNEL_LABEL = "Eliminar canal";
+
+/**
+ * Sin SEND_MESSAGES en el canal (con sus excepciones aplicadas), el
+ * compositor queda deshabilitado con este texto en vez del placeholder.
+ */
+export const SEND_MESSAGES_DENIED_PLACEHOLDER =
+  "No tenés permiso para enviar mensajes en este canal";
+
+/**
+ * --- Configuracion de un canal ---
+ *
+ * Pantalla con dos secciones: "Vista general" (nombre y tema) y "Permisos"
+ * (sobrescribir los permisos de cada rol en ese canal).
+ */
+export const CHANNEL_SETTINGS_OVERVIEW_SECTION = "Vista general";
+export const CHANNEL_SETTINGS_PERMISSIONS_SECTION = "Permisos";
+export const CHANNEL_NAME_LABEL = "Nombre del canal";
+export const CHANNEL_TOPIC_LABEL = "Tema del canal";
+export const CHANNEL_TOPIC_PLACEHOLDER = "Contá de qué trata este canal...";
+export const CHANNEL_TOPIC_HINT =
+  "El tema se muestra en el encabezado del canal para todos los miembros.";
+
+export const CHANNEL_PERMISSIONS_TITLE = "Permisos del canal";
+export function channelPermissionsSubtitle(channelName: string): string {
+  return `Personalizá qué puede hacer cada rol en este canal. Estos cambios aplican solo a #${channelName} y no modifican los permisos de los roles en el resto del servidor.`;
+}
+export const CHANNEL_PERMISSIONS_ADMINS_NOTE =
+  "Los administradores y el dueño del servidor tienen todos los permisos en todos los canales.";
+export const CHANNEL_PERMISSIONS_ROLES_LABEL = "Roles";
+export const ADD_ROLE_OVERRIDE_LABEL = "Agregar rol";
+export const ALL_ROLES_HAVE_OVERRIDES = "Todos los roles ya están en la lista.";
+export const CLEAR_ROLE_OVERRIDE_LABEL = "Limpiar";
+export const OVERRIDE_DENY_LABEL = "Denegar";
+export const OVERRIDE_INHERIT_LABEL = "Heredar";
+export const OVERRIDE_ALLOW_LABEL = "Permitir";
+export const ROLE_ABOVE_OWN_HINT =
+  "No podés cambiar los permisos de un rol igual o por encima del tuyo";
+export const PERMISSION_NOT_HELD_HINT =
+  "No podés permitir un permiso que no tenés";
+
+/** Aviso antes de guardar una excepcion que deja sin acceso a quien la hace. */
+export const LOSE_CHANNEL_ACCESS_TITLE = "Vas a dejar de ver este canal";
+export const LOSE_CHANNEL_ACCESS_BODY =
+  "Con estos permisos, ninguno de tus roles puede ver el canal. Si guardás, va a desaparecer de tu lista de canales.";
+export const LOSE_CHANNEL_ACCESS_CONFIRM = "Guardar igual";
+
+// --- Cambios sin guardar ---
+export const UNSAVED_CHANGES_WARNING = "¡Cuidado! Tenés cambios sin guardar";
+export const RESET_CHANGES_LABEL = "Restablecer";
+export const SAVE_CHANGES_LABEL = "Guardar cambios";
+export const CHANNEL_PERMISSIONS_SAVED = "Permisos del canal actualizados";
+
 export const CHANNEL_START_NOTICE =
   "Este es el comienzo del canal. El chat todavía no está conectado en esta versión.";
 export const VOICE_NOT_IMPLEMENTED =
@@ -145,6 +200,17 @@ export function searchResultsSummary(
 
 // --- Roles ---
 export const NO_ROLES_YET = "Todavía no hay roles.";
+
+/**
+ * Confirmacion antes de sacarle "Ver canales" a @everyone (ver
+ * `removesViewChannelsFromEveryone`). En la practica solo la ve el dueño: es
+ * el unico que puede editar los permisos de @everyone.
+ */
+export const EVERYONE_VIEW_CHANNELS_OFF_TITLE =
+  '¿Quitarle "Ver canales" a @everyone?';
+export const EVERYONE_VIEW_CHANNELS_OFF_BODY =
+  'Los miembros que no tengan otro rol con "Ver canales" van a dejar de ver todos los canales del servidor, salvo los que tengan una excepción que se lo permita. Los administradores y el dueño no se ven afectados.';
+export const EVERYONE_VIEW_CHANNELS_OFF_CONFIRM = "Quitar permiso";
 
 /**
  * --- Configuracion del servidor ---

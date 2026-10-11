@@ -8,6 +8,7 @@ import * as permissions from "./permissions";
 import * as ui from "./ui";
 import {
   BAN_REASONS,
+  CHANNEL_OVERRIDE_REASONS,
   CHANNEL_REASONS,
   SERVER_REASONS,
   TRANSFER_REASONS,
@@ -61,6 +62,7 @@ function todosLosMensajes(): [string, string][] {
   const catalogos = {
     SERVER_REASONS,
     CHANNEL_REASONS,
+    CHANNEL_OVERRIDE_REASONS,
     TRANSFER_REASONS,
     BAN_REASONS,
   };
