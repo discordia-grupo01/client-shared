@@ -10,11 +10,12 @@
  * quita como cualquier otro permiso desde "Editar rol", no hay un flujo
  * aparte para el.
  *
- * VIEW_CHANNELS existe en el back (`role.PermViewChannels`) pero se sacó de
- * aca a proposito: ningun endpoint lo consulta todavia (ni `GetServer` ni
- * `channel_service` filtran canales por el), asi que mostrarlo como toggle
- * hacia creer que ya restringe el acceso cuando en realidad no hace nada. Si
- * algun dia se cablea del lado del servidor, se vuelve a agregar aca.
+ * VIEW_CHANNELS decide que canales ve el miembro: `GET /v1/servers` no
+ * lista los que no puede ver, y `messaging` y la voz rechazan entrar a ellos.
+ * Se combina con las excepciones de cada canal (ver
+ * `channel-permissions.ts`). Sacarselo a @everyone oculta todos los canales a
+ * quien no tenga otro rol que lo de, por eso las apps piden confirmacion
+ * (`removesViewChannelsFromEveryone`).
  *
  * MANAGE_MESSAGES (borrar mensajes ajenos) gatea la UI (`canDeleteMessage`) y
  * lo valida `messaging`. MENTION_EVERYONE habilita `@everyone` y mencionar
@@ -24,6 +25,7 @@
  * rechaza igual.
  */
 export const ROLE_PERMISSIONS = [
+  "VIEW_CHANNELS",
   "SEND_MESSAGES",
   "MANAGE_CHANNELS",
   "MANAGE_ROLES",
@@ -161,6 +163,25 @@ export function outranksRole(
   if (actor.isOwner) return true;
   const actorTop = topPosition(actor);
   return actorTop !== undefined && actorTop < targetPosition;
+}
+
+/**
+ * ¿Guardar `nextPermissions` en `role` le saca VIEW_CHANNELS a @everyone? Las
+ * dos apps lo usan para pedir confirmacion antes de guardar: sin ese permiso
+ * en @everyone, quien no tenga otro rol que lo de deja de ver todos los
+ * canales del servidor (salvo los que tengan una excepcion que se lo
+ * permita). En cualquier otro rol no hace falta avisar: @everyone sigue
+ * dando el acceso.
+ */
+export function removesViewChannelsFromEveryone(
+  role: Pick<Role, "is_everyone" | "permissions">,
+  nextPermissions: readonly RolePermission[],
+): boolean {
+  return (
+    role.is_everyone &&
+    role.permissions.includes("VIEW_CHANNELS") &&
+    !nextPermissions.includes("VIEW_CHANNELS")
+  );
 }
 
 export interface RoleFieldErrors {

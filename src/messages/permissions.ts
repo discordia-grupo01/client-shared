@@ -25,6 +25,10 @@ export const OWNER_ONLY_SET_DEFAULT_ROLE = noPermissionFor(
   "definir el rol por defecto",
 );
 
+export const OWNER_ONLY_OVERRIDE_CHANNEL_PERMISSIONS = noPermissionFor(
+  "cambiar los permisos de este canal",
+);
+
 export const OWNER_ONLY_CREATE_CHANNEL = noPermissionFor("crear canales");
 export const OWNER_ONLY_UPDATE_CHANNEL = noPermissionFor("editar canales");
 export const OWNER_ONLY_DELETE_CHANNEL = noPermissionFor("eliminar canales");
