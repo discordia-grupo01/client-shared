@@ -23,6 +23,7 @@ export * from "./domain/role";
 export * from "./domain/member";
 export * from "./domain/category";
 export * from "./domain/channel";
+export * from "./domain/channel-permissions";
 export * from "./domain/server";
 export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
@@ -33,16 +34,20 @@ export * from "./domain/mention";
 export * from "./domain/direct-message";
 export * from "./domain/block";
 export * from "./domain/word-filter";
+export * from "./domain/voice";
+export * from "./domain/voice-bridge";
 
 // --- Constantes ---
 export * from "./constants/app";
 export * from "./constants/limits";
 export * from "./constants/roles";
+export * from "./constants/channel-permissions";
 export * from "./constants/activity-status";
 export * from "./constants/server-banner-presets";
 export * from "./constants/reactions";
 export * from "./constants/logo";
 export * from "./constants/loading-screen";
+export * from "./constants/voice";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -72,6 +77,7 @@ export * from "./messages/word-filter-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 export * from "./messages/direct-messages";
+export * from "./messages/voice";
 
 // --- Formatters ---
 export * from "./format/date";

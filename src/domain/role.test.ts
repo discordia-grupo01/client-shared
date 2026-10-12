@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { outranksRole, sortRolesByPosition, topPosition } from "./role";
+import { PERMISSION_COPY } from "../constants/roles";
+
+import {
+  outranksRole,
+  removesViewChannelsFromEveryone,
+  ROLE_PERMISSIONS,
+  sortRolesByPosition,
+  topPosition,
+} from "./role";
 
 describe("topPosition", () => {
   it("es undefined para el owner, aunque tenga roles", () => {
@@ -121,5 +129,64 @@ describe("sortRolesByPosition", () => {
     const sorted = sortRolesByPosition(original);
     expect(sorted).not.toBe(original);
     expect(original.map((r) => r.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("ROLE_PERMISSIONS", () => {
+  it("incluye VIEW_CHANNELS primero, como en el editor de roles de Discord", () => {
+    expect(ROLE_PERMISSIONS[0]).toBe("VIEW_CHANNELS");
+  });
+
+  it("incluye CONNECT para unirse a los canales de voz", () => {
+    expect(ROLE_PERMISSIONS).toContain("CONNECT");
+  });
+
+  it("todo permiso del catalogo tiene su texto", () => {
+    for (const permission of ROLE_PERMISSIONS) {
+      expect(PERMISSION_COPY[permission].label).not.toBe("");
+    }
+  });
+});
+
+describe("removesViewChannelsFromEveryone", () => {
+  const everyone = {
+    is_everyone: true,
+    permissions: ["VIEW_CHANNELS", "SEND_MESSAGES"] as const,
+  };
+
+  it("avisa cuando @everyone pierde VIEW_CHANNELS", () => {
+    expect(
+      removesViewChannelsFromEveryone(
+        { ...everyone, permissions: [...everyone.permissions] },
+        ["SEND_MESSAGES"],
+      ),
+    ).toBe(true);
+  });
+
+  it("no avisa si @everyone lo conserva", () => {
+    expect(
+      removesViewChannelsFromEveryone(
+        { ...everyone, permissions: [...everyone.permissions] },
+        ["VIEW_CHANNELS"],
+      ),
+    ).toBe(false);
+  });
+
+  it("no avisa si @everyone ya no lo tenia", () => {
+    expect(
+      removesViewChannelsFromEveryone(
+        { is_everyone: true, permissions: ["SEND_MESSAGES"] },
+        [],
+      ),
+    ).toBe(false);
+  });
+
+  it("no avisa en un rol comun: @everyone sigue dando el acceso", () => {
+    expect(
+      removesViewChannelsFromEveryone(
+        { is_everyone: false, permissions: ["VIEW_CHANNELS"] },
+        [],
+      ),
+    ).toBe(false);
   });
 });

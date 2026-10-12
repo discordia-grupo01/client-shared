@@ -56,6 +56,23 @@ export const CATEGORY_CREATE_FAILED = failedTo("crear la categoría");
 export const CATEGORY_UPDATE_FAILED = failedTo("editar la categoría");
 export const CATEGORY_REORDER_FAILED = failedTo("reordenar las categorías");
 
+// --- Permisos de un canal ---
+export const CHANNEL_PERMISSIONS_LOAD_FAILED = failedTo(
+  "cargar los permisos del canal",
+);
+export const CHANNEL_PERMISSIONS_SAVE_FAILED = failedTo(
+  "guardar los permisos del canal",
+);
+export const MEMBER_PERMISSIONS_LOAD_FAILED = failedTo("cargar tus permisos");
+
+/**
+ * Al guardar se manda un request por rol: si falla uno, se dice cual. Los
+ * demas pueden haberse guardado igual.
+ */
+export function roleOverrideSaveFailed(roleName: string): string {
+  return failedTo(`guardar los permisos de ${roleName} en este canal`);
+}
+
 // --- Roles ---
 export const ROLES_LOAD_FAILED = failedTo("cargar los roles");
 export const ROLE_CREATE_FAILED = failedTo("crear el rol");

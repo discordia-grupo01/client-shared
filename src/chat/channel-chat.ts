@@ -1,5 +1,6 @@
 import type {
   AccessRevokedPayload,
+  AccessRevokedReason,
   ChangedMessagesPayload,
   ListMessagesResult,
   Message,
@@ -96,7 +97,8 @@ export function chatStatusAfterConnectionLoss(
 
 /**
  * Estado del chat cuando el back cierra la sala (`access_revoked`): si dejaste
- * de ser miembro es "sin acceso"; si el canal o su servidor se borraron, "no existe".
+ * de ser miembro o te sacaron el permiso de ver el canal es "sin acceso"; si
+ * el canal o su servidor se borraron, "no existe".
  */
 export function chatStateForAccessRevoked(
   reason: AccessRevokedPayload["reason"],
@@ -197,10 +199,17 @@ export interface MessageChannelHandlers {
   rejected: (status: "forbidden" | "notFound", message: string) => void;
   /**
    * El back cerro la sala porque perdiste el acceso (te fuiste o te sacaron del
-   * servidor, o se borro el canal): no se reconecta sola, hay que dejar de
-   * mostrar el chat como si siguiera vivo.
+   * servidor, se borro el canal o te sacaron el permiso de verlo): no se
+   * reconecta sola, hay que dejar de mostrar el chat como si siguiera vivo.
+   * `reason` permite reaccionar distinto a cada caso: con
+   * `permissions_changed` el canal tiene que desaparecer de la lista, asi que
+   * conviene recargar el servidor.
    */
-  accessRevoked: (status: "forbidden" | "notFound", message: string) => void;
+  accessRevoked: (
+    status: "forbidden" | "notFound",
+    message: string,
+    reason: AccessRevokedReason,
+  ) => void;
   /** Usuario actual, para saber si un `reaction_updated` cambia su `reacted_by_me`. */
   currentUserId?: string | null;
 }
@@ -242,7 +251,7 @@ export function joinMessageChannel(
   room.on("resync_required", () => handlers.resync());
   room.on("access_revoked", (payload: AccessRevokedPayload) => {
     const { status, message } = chatStateForAccessRevoked(payload.reason);
-    handlers.accessRevoked(status, message);
+    handlers.accessRevoked(status, message, payload.reason);
   });
   room.onError(() => handlers.connectionLost());
 

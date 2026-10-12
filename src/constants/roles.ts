@@ -24,6 +24,10 @@ export const PERMISSION_COPY: Record<
   RolePermission,
   { label: string; desc: string }
 > = {
+  VIEW_CHANNELS: {
+    label: "Ver canales",
+    desc: "Permite ver los canales del servidor. Sin este permiso, el rol solo ve los canales donde una excepción se lo permite.",
+  },
   SEND_MESSAGES: {
     label: "Enviar mensajes",
     desc: "Permite enviar mensajes en canales de texto.",
@@ -63,5 +67,9 @@ export const PERMISSION_COPY: Record<
   ADD_REACTIONS: {
     label: "Agregar reacciones",
     desc: "Puede reaccionar a los mensajes con emojis.",
+  },
+  CONNECT: {
+    label: "Conectarse",
+    desc: "Puede unirse a los canales de voz del servidor.",
   },
 };

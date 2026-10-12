@@ -7,6 +7,12 @@
 /** Servidor, canal, categoria y rol: los cuatro cortan en 100. */
 export const MAX_NAME = 100;
 
+/**
+ * Tema de un canal. Es la excepcion a la regla de arriba: `servers` todavia no
+ * lo limita, y sin tope un tema largo desborda el encabezado del canal.
+ */
+export const MAX_CHANNEL_TOPIC = 120;
+
 /** Nombre de usuario. La columna es VARCHAR(100) y el perfil valida 100 runas. */
 export const MAX_USER_NAME = 100;
 

@@ -119,6 +119,13 @@ describe("access_revoked", () => {
     });
   });
 
+  it("si te sacaron el permiso de ver el canal queda sin acceso, sin decir que dejaste el servidor", () => {
+    expect(chatStateForAccessRevoked("permissions_changed")).toEqual({
+      status: "forbidden",
+      message: "Ya no tenés acceso a este canal.",
+    });
+  });
+
   it("un motivo desconocido se trata como perdida de acceso", () => {
     const state = chatStateForAccessRevoked("otra_cosa" as never);
     expect(state.status).toBe("forbidden");
@@ -228,6 +235,22 @@ describe("joinMessageChannel", () => {
     expect(handlers.accessRevoked).toHaveBeenCalledWith(
       "notFound",
       "Este canal ya no existe.",
+      "channel_deleted",
+    );
+  });
+
+  it("access_revoked por un cambio de permisos pasa el motivo al hook", () => {
+    const { room, handlers } = join();
+
+    room.events.access_revoked({
+      channel_id: "c1",
+      reason: "permissions_changed",
+    });
+
+    expect(handlers.accessRevoked).toHaveBeenCalledWith(
+      "forbidden",
+      "Ya no tenés acceso a este canal.",
+      "permissions_changed",
     );
   });
 

@@ -46,10 +46,102 @@ export const CLEAR_CUSTOM_STATUS_LABEL = "Quitar estado personalizado";
 export const CUSTOM_STATUS_PLACEHOLDER = "¿Qué estás haciendo?";
 
 // --- Canales ---
+export const EDIT_CHANNEL_LABEL = "Editar canal";
+export const OVERRIDE_CHANNEL_PERMISSIONS_LABEL = "Sobrescribir permisos";
+export const DELETE_CHANNEL_LABEL = "Eliminar canal";
+
+/**
+ * Sin SEND_MESSAGES en el canal (con sus excepciones aplicadas), el
+ * compositor queda deshabilitado con este texto en vez del placeholder.
+ */
+export const SEND_MESSAGES_DENIED_PLACEHOLDER =
+  "No tenés permiso para enviar mensajes en este canal";
+
+/**
+ * --- Configuracion de un canal ---
+ *
+ * Pantalla con dos secciones: "Vista general" (nombre y tema) y "Permisos"
+ * (sobrescribir los permisos de cada rol en ese canal).
+ */
+export const CHANNEL_SETTINGS_OVERVIEW_SECTION = "Vista general";
+export const CHANNEL_SETTINGS_PERMISSIONS_SECTION = "Permisos";
+export const CHANNEL_NAME_LABEL = "Nombre del canal";
+export const CHANNEL_TOPIC_LABEL = "Tema del canal";
+export const CHANNEL_TOPIC_PLACEHOLDER = "Contá de qué trata este canal...";
+export const CHANNEL_TOPIC_HINT =
+  "El tema se muestra en el encabezado del canal para todos los miembros.";
+
+export const CHANNEL_PERMISSIONS_TITLE = "Permisos del canal";
+export function channelPermissionsSubtitle(channelName: string): string {
+  return `Personalizá qué puede hacer cada rol en este canal. Estos cambios aplican solo a #${channelName} y no modifican los permisos de los roles en el resto del servidor.`;
+}
+export const CHANNEL_PERMISSIONS_ADMINS_NOTE =
+  "Los administradores y el dueño del servidor tienen todos los permisos en todos los canales.";
+export const CHANNEL_PERMISSIONS_ROLES_LABEL = "Roles";
+export const ADD_ROLE_OVERRIDE_LABEL = "Agregar rol";
+export const ALL_ROLES_HAVE_OVERRIDES = "Todos los roles ya están en la lista.";
+export const CLEAR_ROLE_OVERRIDE_LABEL = "Limpiar";
+export const OVERRIDE_DENY_LABEL = "Denegar";
+export const OVERRIDE_INHERIT_LABEL = "Heredar";
+export const OVERRIDE_ALLOW_LABEL = "Permitir";
+export const INHERITED_ALLOWED_LABEL = "Heredado: permitido";
+export const INHERITED_DENIED_LABEL = "Heredado: no permitido";
+export const INHERITED_HINT =
+  "Es lo que el rol tiene en todo el servidor. Se cambia desde Roles.";
+export const ROLE_ABOVE_OWN_HINT =
+  "No podés cambiar los permisos de un rol igual o por encima del tuyo";
+export const PERMISSION_NOT_HELD_HINT =
+  "No podés permitir un permiso que no tenés";
+
+/** Aviso antes de guardar una excepcion que deja sin acceso a quien la hace. */
+export const LOSE_CHANNEL_ACCESS_TITLE = "Vas a dejar de ver este canal";
+export const LOSE_CHANNEL_ACCESS_BODY =
+  "Con estos permisos, ninguno de tus roles puede ver el canal. Si guardás, va a desaparecer de tu lista de canales.";
+export const LOSE_CHANNEL_ACCESS_CONFIRM = "Guardar igual";
+
+// --- Cambios sin guardar ---
+export const UNSAVED_CHANGES_WARNING = "¡Cuidado! Tenés cambios sin guardar";
+export const RESET_CHANGES_LABEL = "Restablecer";
+export const SAVE_CHANGES_LABEL = "Guardar cambios";
+export const CHANNEL_PERMISSIONS_SAVED = "Permisos del canal actualizados";
+
 export const CHANNEL_START_NOTICE =
   "Este es el comienzo del canal. El chat todavía no está conectado en esta versión.";
 export const VOICE_NOT_IMPLEMENTED =
   "La conexión de voz todavía no está implementada en esta versión.";
+
+// --- Canal de voz ---
+export const VOICE_CONNECTED = "Voz conectada";
+export const VOICE_CONNECTING = "Conectando…";
+export const VOICE_RECONNECTING = "Reconectando…";
+export const VOICE_MUTE = "Silenciar";
+export const VOICE_UNMUTE = "Activar";
+export const VOICE_CAMERA = "Cámara";
+export const VOICE_CAMERA_OFF = "Activar";
+export const VOICE_SCREEN_SHARE = "Pantalla";
+export const VOICE_SCREEN_SHARING = "Compartiendo";
+export const VOICE_LEAVE = "Salir";
+export const VOICE_MUTE_FOR_ME = "Silenciar para mí";
+export const VOICE_UNMUTE_FOR_ME = "Dejar de silenciar para mí";
+export const VOICE_MUTE_LABEL = "Silenciar micrófono";
+export const VOICE_UNMUTE_LABEL = "Activar micrófono";
+export const VOICE_LEAVE_LABEL = "Salir del canal de voz";
+export const VOICE_MUTED_LABEL = "Micrófono silenciado";
+export const VOICE_SPEAKING_LABEL = "Hablando";
+export const VOICE_CAMERA_ON_LABEL = "Cámara encendida";
+
+/** Pill del encabezado del canal de voz. */
+export function voiceConnectedCount(count: number): string {
+  return count === 1 ? "1 conectado" : `${count} conectados`;
+}
+
+/** Segunda linea de "Voz conectada", arriba del panel de usuario. */
+export function voiceConnectedLocation(
+  channelName: string,
+  serverName: string,
+): string {
+  return `${channelName} • ${serverName}`;
+}
 
 // --- Transferencia de propiedad ---
 export const TRANSFER_CHOOSE_NEW_OWNER = "Elegí el nuevo propietario";
@@ -145,6 +237,17 @@ export function searchResultsSummary(
 
 // --- Roles ---
 export const NO_ROLES_YET = "Todavía no hay roles.";
+
+/**
+ * Confirmacion antes de sacarle "Ver canales" a @everyone (ver
+ * `removesViewChannelsFromEveryone`). En la practica solo la ve el dueño: es
+ * el unico que puede editar los permisos de @everyone.
+ */
+export const EVERYONE_VIEW_CHANNELS_OFF_TITLE =
+  '¿Quitarle "Ver canales" a @everyone?';
+export const EVERYONE_VIEW_CHANNELS_OFF_BODY =
+  'Los miembros que no tengan otro rol con "Ver canales" van a dejar de ver todos los canales del servidor, salvo los que tengan una excepción que se lo permita. Los administradores y el dueño no se ven afectados.';
+export const EVERYONE_VIEW_CHANNELS_OFF_CONFIRM = "Quitar permiso";
 
 /**
  * --- Configuracion del servidor ---

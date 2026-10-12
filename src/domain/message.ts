@@ -95,9 +95,14 @@ export interface ReactionUpdatedPayload {
 /** Evento del socket para reaccionar o sacar la reaccion propia. */
 export type ReactionEvent = "add_reaction" | "remove_reaction";
 
-/** Por que se le cerro el canal a alguien (`access_revoked`). */
+/**
+ * Por que se le cerro el canal a alguien (`access_revoked`).
+ * `permissions_changed`: dejo de tener VIEW_CHANNELS en ese canal por un
+ * cambio de permisos (una excepcion del canal, un rol editado, asignado o
+ * quitado), aunque sigue siendo miembro del servidor.
+ */
 export type AccessRevokedReason =
-  "member_left" | "channel_deleted" | "server_deleted";
+  "member_left" | "channel_deleted" | "server_deleted" | "permissions_changed";
 
 export interface AccessRevokedPayload {
   channel_id: string;
