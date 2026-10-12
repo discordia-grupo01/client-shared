@@ -29,6 +29,10 @@ export const OWNER_ONLY_OVERRIDE_CHANNEL_PERMISSIONS = noPermissionFor(
   "cambiar los permisos de este canal",
 );
 
+export const VOICE_CONNECT_FORBIDDEN = noPermissionFor(
+  "conectarte a este canal de voz",
+);
+
 export const OWNER_ONLY_CREATE_CHANNEL = noPermissionFor("crear canales");
 export const OWNER_ONLY_UPDATE_CHANNEL = noPermissionFor("editar canales");
 export const OWNER_ONLY_DELETE_CHANNEL = noPermissionFor("eliminar canales");
