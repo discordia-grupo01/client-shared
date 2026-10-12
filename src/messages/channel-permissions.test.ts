@@ -15,6 +15,12 @@ describe("errores al sobrescribir permisos", () => {
     );
   });
 
+  it("permission_not_held nombra Conectarse con su texto", () => {
+    expect(permissionNotHeldMessage(["CONNECT"])).toBe(
+      'No podés otorgar el permiso "Conectarse" porque no lo tenés vos.',
+    );
+  });
+
   it("si falla un rol al guardar, se dice cual", () => {
     expect(roleOverrideSaveFailed("@Moderador")).toBe(
       "No pudimos guardar los permisos de @Moderador en este canal. Intentá de nuevo.",

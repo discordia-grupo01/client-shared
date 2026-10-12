@@ -25,15 +25,23 @@ export const CHANNEL_OVERRIDE_PERMISSIONS = [
   "SEND_MESSAGES",
   "MANAGE_MESSAGES",
   "ADD_REACTIONS",
+  "CONNECT",
 ] as const satisfies readonly RolePermission[];
 
 export type ChannelOverridePermission =
   (typeof CHANNEL_OVERRIDE_PERMISSIONS)[number];
 
+/**
+ * El back acepta cualquiera de `CHANNEL_OVERRIDE_PERMISSIONS` en cualquier
+ * canal, pero solo tiene efecto lo que aplica al tipo: los de mensajes en un
+ * canal de texto y CONNECT en uno de voz. Las apps ofrecen solo esos.
+ */
 export function overridablePermissionsFor(
   kind: Channel["kind"],
 ): readonly ChannelOverridePermission[] {
-  return kind === "voice" ? ["VIEW_CHANNELS"] : CHANNEL_OVERRIDE_PERMISSIONS;
+  return kind === "voice"
+    ? ["VIEW_CHANNELS", "CONNECT"]
+    : ["VIEW_CHANNELS", "SEND_MESSAGES", "MANAGE_MESSAGES", "ADD_REACTIONS"];
 }
 
 export interface ChannelOverride {
