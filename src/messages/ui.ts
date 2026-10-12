@@ -107,6 +107,12 @@ export const CHANNEL_PERMISSIONS_SAVED = "Permisos del canal actualizados";
 
 export const CHANNEL_START_NOTICE =
   "Este es el comienzo del canal. El chat todavía no está conectado en esta versión.";
+/**
+ * Lo usa el placeholder de voz que sigue en `develop` de web y mobile. Se borra
+ * cuando entre `feature/voice-chat` en las dos apps.
+ */
+export const VOICE_NOT_IMPLEMENTED =
+  "La conexión de voz todavía no está implementada en esta versión.";
 
 // --- Canal de voz ---
 export const VOICE_CONNECTED = "Voz conectada";
