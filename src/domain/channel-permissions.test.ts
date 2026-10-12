@@ -5,6 +5,7 @@ import {
   canAllowOverride,
   canEditRoleOverride,
   canViewChannelWithDraft,
+  CHANNEL_OVERRIDE_PERMISSIONS,
   type ChannelOverride,
   clearRoleOverride,
   diffOverrideDrafts,
@@ -33,9 +34,30 @@ function override(
 }
 
 describe("catalogo de permisos por canal", () => {
-  it("en un canal de voz solo se ofrece Ver canal", () => {
-    expect(overridablePermissionsFor("voice")).toEqual(["VIEW_CHANNELS"]);
-    expect(overridablePermissionsFor("text")).toHaveLength(4);
+  it("en un canal de voz se ofrecen Ver canal y Conectarse", () => {
+    expect(overridablePermissionsFor("voice")).toEqual([
+      "VIEW_CHANNELS",
+      "CONNECT",
+    ]);
+  });
+
+  it("en un canal de texto no se ofrece Conectarse", () => {
+    expect(overridablePermissionsFor("text")).toEqual([
+      "VIEW_CHANNELS",
+      "SEND_MESSAGES",
+      "MANAGE_MESSAGES",
+      "ADD_REACTIONS",
+    ]);
+  });
+
+  it("entre los dos tipos se ofrece todo lo que acepta el back", () => {
+    const offered = new Set([
+      ...overridablePermissionsFor("text"),
+      ...overridablePermissionsFor("voice"),
+    ]);
+    expect([...offered].sort()).toEqual(
+      [...CHANNEL_OVERRIDE_PERMISSIONS].sort(),
+    );
   });
 });
 
