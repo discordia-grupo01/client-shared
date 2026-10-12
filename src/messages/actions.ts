@@ -106,6 +106,12 @@ export const BANS_LOAD_FAILED = failedTo("cargar los baneos");
 export const BAN_FAILED = failedTo("banear al miembro");
 export const UNBAN_FAILED = failedTo("revocar el baneo");
 
+// --- Expulsar, silenciar y miembros por rol ---
+export const KICK_FAILED = failedTo("expulsar al miembro");
+export const MUTE_FAILED = failedTo("silenciar al miembro");
+export const UNMUTE_FAILED = failedTo("quitar el silencio");
+export const ROLE_MEMBERS_LOAD_FAILED = failedTo("cargar los miembros del rol");
+
 // --- Palabras prohibidas ---
 export const BANNED_WORDS_LOAD_FAILED = failedTo(
   "cargar las palabras prohibidas",

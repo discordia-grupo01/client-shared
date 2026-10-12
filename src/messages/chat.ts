@@ -25,6 +25,7 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
   TOO_MANY_REACTIONS:
     "Este mensaje ya tiene el máximo de reacciones distintas.",
   BANNED_WORD: "Tu mensaje contiene una palabra prohibida en este servidor.",
+  MEMBER_MUTED: "No podés enviar mensajes mientras estás silenciado.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */

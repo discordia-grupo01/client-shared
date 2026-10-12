@@ -44,6 +44,11 @@ export const OWNER_ONLY_REORDER_CATEGORY = noPermissionFor(
 
 export const OWNER_ONLY_BAN = noPermissionFor("banear miembros");
 export const OWNER_ONLY_UNBAN = noPermissionFor("revocar baneos");
+export const NO_PERMISSION_KICK = noPermissionFor("expulsar miembros");
+export const NO_PERMISSION_MUTE = noPermissionFor("silenciar miembros");
+export const NO_PERMISSION_ROLE_MEMBERS = noPermissionFor(
+  "ver los miembros de los roles",
+);
 export const NO_PERMISSION_WORD_FILTER = noPermissionFor(
   "editar las palabras prohibidas",
 );

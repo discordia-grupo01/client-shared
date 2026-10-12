@@ -141,3 +141,25 @@ export const WORD_FILTER_REASONS: ReasonCatalog = {
   too_many_words: `La lista puede tener hasta ${BANNED_WORDS_MAX} palabras.`,
   missing_permission: "No tenés permiso para editar las palabras prohibidas.",
 };
+
+export const KICK_REASONS: ReasonCatalog = {
+  required: "Elegí a quién querés expulsar.",
+  cannot_kick_self: "No podés expulsarte a vos mismo.",
+  cannot_kick_owner: "No se puede expulsar al propietario del servidor.",
+  target_outranks_actor:
+    "No podés expulsar a alguien con un rol igual o superior al tuyo.",
+  missing_permission: "No tenés permiso para expulsar miembros.",
+};
+
+export const MUTE_REASONS: ReasonCatalog = {
+  required: "Elegí a quién querés silenciar.",
+  cannot_mute_self: "No podés silenciarte a vos mismo.",
+  cannot_mute_owner: "No se puede silenciar al propietario del servidor.",
+  target_outranks_actor:
+    "No podés silenciar a alguien con un rol igual o superior al tuyo.",
+  mute_until_invalid: "Elegí una duración válida.",
+  mute_not_found: "Este miembro ya no está silenciado.",
+  reason_too_long: `El motivo no puede superar los ${BAN_REASON_MAX_LENGTH} caracteres.`,
+  reason_invalid_chars: "El motivo contiene caracteres no permitidos.",
+  missing_permission: "No tenés permiso para silenciar miembros.",
+};
