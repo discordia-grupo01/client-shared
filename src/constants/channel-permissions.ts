@@ -26,6 +26,10 @@ export const CHANNEL_PERMISSION_COPY: Record<
     label: "Agregar reacciones",
     desc: "Permite reaccionar a los mensajes de este canal.",
   },
+  CONNECT: {
+    label: "Conectarse",
+    desc: "Permite unirse a este canal de voz.",
+  },
 };
 
 export interface ChannelPermissionGroup {
@@ -43,13 +47,20 @@ const TEXT_GROUP: ChannelPermissionGroup = {
   permissions: ["SEND_MESSAGES", "MANAGE_MESSAGES", "ADD_REACTIONS"],
 };
 
+const VOICE_GROUP: ChannelPermissionGroup = {
+  title: "Permisos de canal de voz",
+  permissions: ["CONNECT"],
+};
+
 /**
- * Grupos en que se muestran los permisos. Los de mensajes no aplican a un
- * canal de voz (ver `overridablePermissionsFor`). Los titulos van en
+ * Grupos en que se muestran los permisos: cada tipo de canal ve solo los que
+ * le aplican (ver `overridablePermissionsFor`). Los titulos van en
  * capitalizacion normal: que se vean en mayusculas lo decide cada app.
  */
 export function channelPermissionGroupsFor(
   kind: Channel["kind"],
 ): readonly ChannelPermissionGroup[] {
-  return kind === "voice" ? [GENERAL_GROUP] : [GENERAL_GROUP, TEXT_GROUP];
+  return kind === "voice"
+    ? [GENERAL_GROUP, VOICE_GROUP]
+    : [GENERAL_GROUP, TEXT_GROUP];
 }

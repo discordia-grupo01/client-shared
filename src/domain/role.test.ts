@@ -137,6 +137,10 @@ describe("ROLE_PERMISSIONS", () => {
     expect(ROLE_PERMISSIONS[0]).toBe("VIEW_CHANNELS");
   });
 
+  it("incluye CONNECT para unirse a los canales de voz", () => {
+    expect(ROLE_PERMISSIONS).toContain("CONNECT");
+  });
+
   it("todo permiso del catalogo tiene su texto", () => {
     for (const permission of ROLE_PERMISSIONS) {
       expect(PERMISSION_COPY[permission].label).not.toBe("");

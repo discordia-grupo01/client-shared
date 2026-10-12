@@ -23,6 +23,10 @@
  * selector de menciones directamente no las ofrece. ADD_REACTIONS habilita
  * reaccionar a mensajes: sin el, la UI no ofrece reaccionar y `messaging` lo
  * rechaza igual.
+ *
+ * CONNECT permite unirse a los canales de voz. Ademas hay que ver el canal:
+ * `servers` exige los dos antes de entregar el token de voz, y sin CONNECT
+ * la voz responde `voice_forbidden`.
  */
 export const ROLE_PERMISSIONS = [
   "VIEW_CHANNELS",
@@ -36,6 +40,7 @@ export const ROLE_PERMISSIONS = [
   "MANAGE_MESSAGES",
   "MENTION_EVERYONE",
   "ADD_REACTIONS",
+  "CONNECT",
 ] as const;
 
 export type RolePermission = (typeof ROLE_PERMISSIONS)[number];
