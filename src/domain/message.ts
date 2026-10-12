@@ -117,7 +117,8 @@ export type MessageErrorCode =
   | "NOT_MESSAGE_AUTHOR"
   | "MENTIONS_UNAVAILABLE"
   | "INVALID_EMOJI"
-  | "TOO_MANY_REACTIONS";
+  | "TOO_MANY_REACTIONS"
+  | "BANNED_WORD";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }

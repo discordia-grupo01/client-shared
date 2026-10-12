@@ -49,6 +49,12 @@ export const MEMBER_PAGE_LIMIT = 100;
 /** Motivo de un baneo, en runas. Es opcional. */
 export const BAN_REASON_MAX_LENGTH = 512;
 
+/** Una palabra o frase prohibida, en runas (igual que `servers`). */
+export const BANNED_WORD_MAX_LENGTH = 50;
+
+/** Cuantas palabras prohibidas puede tener un servidor. */
+export const BANNED_WORDS_MAX = 100;
+
 /**
  * Cuantos baneos pide el front por request: el tope que acepta
  * `GET /v1/servers/:id/bans` (el default del back es 20).

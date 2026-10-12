@@ -89,6 +89,14 @@ export const BANS_LOAD_FAILED = failedTo("cargar los baneos");
 export const BAN_FAILED = failedTo("banear al miembro");
 export const UNBAN_FAILED = failedTo("revocar el baneo");
 
+// --- Palabras prohibidas ---
+export const BANNED_WORDS_LOAD_FAILED = failedTo(
+  "cargar las palabras prohibidas",
+);
+export const BANNED_WORDS_SAVE_FAILED = failedTo(
+  "guardar las palabras prohibidas",
+);
+
 // --- Transferencia de propiedad ---
 export const TRANSFER_START_FAILED = failedTo("iniciar la transferencia");
 export const TRANSFER_LOAD_FAILED = failedTo("cargar la transferencia");
