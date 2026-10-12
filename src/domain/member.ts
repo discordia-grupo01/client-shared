@@ -11,6 +11,8 @@ export interface Member {
   is_owner: boolean;
   joined_at: string;
   profile?: MemberProfile | null;
+  /** Hasta cuando esta silenciado (ISO); `null` o ausente si no lo esta. */
+  muted_until?: string | null;
 }
 
 /** Paginado: el back usa limit 20 por defecto y corta en 100. */
