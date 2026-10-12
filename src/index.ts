@@ -37,6 +37,7 @@ export * from "./domain/word-filter";
 export * from "./domain/moderation";
 export * from "./domain/voice";
 export * from "./domain/voice-bridge";
+export * from "./domain/voice-session";
 
 // --- Constantes ---
 export * from "./constants/app";
