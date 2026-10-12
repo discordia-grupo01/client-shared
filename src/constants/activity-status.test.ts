@@ -1,44 +1,43 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  ACTIVITY_STATUS_DESCRIPTION,
+  ACTIVITY_STATUS_CHOICE_DESCRIPTION,
+  ACTIVITY_STATUS_CHOICE_LABEL,
+  ACTIVITY_STATUS_CHOICES,
   ACTIVITY_STATUS_LABEL,
-  ACTIVITY_STATUSES,
-  type ActivityStatus,
+  displayedStatus,
 } from "./activity-status";
 
 describe("estado de actividad", () => {
-  it("son tres, en el orden del selector", () => {
-    expect(ACTIVITY_STATUSES).toEqual(["online", "dnd", "offline"]);
+  it("son cuatro opciones, en el orden del selector", () => {
+    expect(ACTIVITY_STATUS_CHOICES).toEqual([
+      "online",
+      "idle",
+      "dnd",
+      "invisible",
+    ]);
   });
 
-  /**
-   * Antes habia dos vocabularios para las mismas tres opciones ("Automático"
-   * contra "En línea", "Invisible" contra "Desconectado") y un cuarto estado
-   * `idle` que no producia nadie.
-   */
-  it("cada estado tiene exactamente un nombre y una explicacion", () => {
-    for (const status of ACTIVITY_STATUSES) {
-      expect(ACTIVITY_STATUS_LABEL[status]).toBeTruthy();
-      expect(ACTIVITY_STATUS_DESCRIPTION[status]).toBeTruthy();
+  it("cada opcion tiene nombre y una descripcion (puede ser vacia)", () => {
+    for (const choice of ACTIVITY_STATUS_CHOICES) {
+      expect(ACTIVITY_STATUS_CHOICE_LABEL[choice]).toBeTruthy();
+      expect(ACTIVITY_STATUS_CHOICE_DESCRIPTION[choice]).toBeDefined();
     }
-    expect(Object.keys(ACTIVITY_STATUS_LABEL)).toHaveLength(
-      ACTIVITY_STATUSES.length,
-    );
-    expect(Object.keys(ACTIVITY_STATUS_DESCRIPTION)).toHaveLength(
-      ACTIVITY_STATUSES.length,
+    expect(Object.keys(ACTIVITY_STATUS_CHOICE_LABEL)).toHaveLength(
+      ACTIVITY_STATUS_CHOICES.length,
     );
   });
 
-  it("no hay dos estados con el mismo nombre", () => {
-    const nombres = Object.values(ACTIVITY_STATUS_LABEL);
+  it("no hay dos opciones con el mismo nombre", () => {
+    const nombres = Object.values(ACTIVITY_STATUS_CHOICE_LABEL);
     expect(new Set(nombres).size).toBe(nombres.length);
   });
 
-  it("las explicaciones hablan de lo que ven los demas", () => {
-    const status: ActivityStatus[] = [...ACTIVITY_STATUSES];
-    for (const s of status) {
-      expect(ACTIVITY_STATUS_DESCRIPTION[s]).toMatch(/\.$/);
-    }
+  it("invisible se muestra como desconectado y el resto no cambia", () => {
+    expect(displayedStatus("invisible")).toBe("offline");
+    expect(displayedStatus("online")).toBe("online");
+    expect(displayedStatus("idle")).toBe("idle");
+    expect(displayedStatus("dnd")).toBe("dnd");
+    expect(ACTIVITY_STATUS_LABEL.offline).toBe("Desconectado");
   });
 });

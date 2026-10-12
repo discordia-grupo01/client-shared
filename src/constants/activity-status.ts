@@ -1,40 +1,48 @@
 /**
- * Maquetado puramente visual: identify-service no tiene ningun sistema de
- * presencia todavia (sin campo, sin websocket). No se persiste ni se propaga
- * a otros usuarios.
- *
- * Habia dos vocabularios para lo mismo: el selector decia "Automático" e
- * "Invisible" y el puntito decia "En línea" y "Desconectado". Eran tres
- * opciones con seis nombres. Ahora es un solo set.
- *
- * Habia ademas un cuarto estado, `idle` ("Ausente"), que no producia nadie.
- *
- * TODO: cuando exista presencia de verdad van a hacer falta dos cosas que hoy
- * no se distinguen: lo que el usuario elige y lo que el servidor reporta de
- * otra persona (que puede ser "ausente por inactividad", sin que nadie lo
- * haya elegido). Recien ahi tiene sentido volver a separar los tipos.
- *
- * El mapeo a color lo resuelve cada app con su theme: web con clases de
- * Tailwind, mobile con su paleta. Eso es presentacion y no va aca.
+ * Hay dos tipos porque son dos cosas distintas:
+ * - `ActivityStatusChoice`: lo que el usuario elige en el selector.
+ * - `ActivityStatus`: lo que se muestra de una persona. "Invisible" se ve
+ *   como `offline`, y `idle` tambien puede venir de la inactividad sin que
+ *   nadie lo haya elegido.
  */
-export type ActivityStatus = "online" | "dnd" | "offline";
+export type ActivityStatus = "online" | "idle" | "dnd" | "offline";
 
-/** El orden es el que se muestra en el selector. */
-export const ACTIVITY_STATUSES: readonly ActivityStatus[] = [
+export type ActivityStatusChoice = "online" | "idle" | "dnd" | "invisible";
+
+export const ACTIVITY_STATUS_CHOICES: readonly ActivityStatusChoice[] = [
   "online",
+  "idle",
   "dnd",
-  "offline",
+  "invisible",
 ];
+
+export const ACTIVITY_STATUS_CHOICE_LABEL: Record<
+  ActivityStatusChoice,
+  string
+> = {
+  online: "En línea",
+  idle: "Ausente",
+  dnd: "No molestar",
+  invisible: "Invisible",
+};
+
+export const ACTIVITY_STATUS_CHOICE_DESCRIPTION: Record<
+  ActivityStatusChoice,
+  string
+> = {
+  online: "",
+  idle: "",
+  dnd: "No recibirás notificaciones de escritorio",
+  invisible: "Aparecerás como desconectado",
+};
 
 export const ACTIVITY_STATUS_LABEL: Record<ActivityStatus, string> = {
   online: "En línea",
+  idle: "Ausente",
   dnd: "No molestar",
   offline: "Desconectado",
 };
 
-/** La linea de ayuda debajo de cada opcion: que ven los demas. */
-export const ACTIVITY_STATUS_DESCRIPTION: Record<ActivityStatus, string> = {
-  online: "El resto te ve conectado.",
-  dnd: "Nadie puede enviarte mensajes directos.",
-  offline: "Aparecés como desconectado para el resto.",
-};
+export function displayedStatus(choice: ActivityStatusChoice): ActivityStatus {
+  return choice === "invisible" ? "offline" : choice;
+}

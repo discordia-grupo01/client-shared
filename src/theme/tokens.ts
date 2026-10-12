@@ -26,6 +26,7 @@ export interface ThemeColors {
   highlight: string;
   sky: string;
   success: string;
+  warning: string;
   info: string;
   danger: string;
   dangerBright: string;
@@ -66,6 +67,7 @@ const dark: ThemeColors = {
   highlight: "#fce3a4",
   sky: "#a8c6df",
   success: "#38a169",
+  warning: "#f0b232",
   info: "#6b95bd",
   danger: "#e05252",
   dangerBright: "#ff5c5c",
@@ -108,6 +110,7 @@ const light: ThemeColors = {
   highlight: "#e8a800",
   sky: "#6b95bd",
   success: "#38a169",
+  warning: "#d99a1c",
   info: "#6b95bd",
   danger: "#c0392b",
   dangerBright: "#e05252",
@@ -156,6 +159,7 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   highlight: "--highlight",
   sky: "--sky",
   success: "--success",
+  warning: "--warning",
   info: "--info",
   danger: "--danger",
   dangerBright: "--danger-bright",
