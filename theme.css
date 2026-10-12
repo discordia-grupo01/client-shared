@@ -19,6 +19,7 @@
   --color-info: var(--info);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-offline: var(--offline);
   --color-danger: var(--danger);
   --color-danger-strong: var(--danger-bright);
   --color-server-pill: var(--server-pill);
