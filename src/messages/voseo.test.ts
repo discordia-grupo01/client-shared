@@ -6,6 +6,7 @@ import * as errors from "./errors";
 import * as notFound from "./not-found";
 import * as permissions from "./permissions";
 import * as ui from "./ui";
+import * as voice from "./voice";
 import {
   BAN_REASONS,
   CHANNEL_OVERRIDE_REASONS,
@@ -58,7 +59,7 @@ function textosDePantalla(): [string, string][] {
 }
 
 function todosLosMensajes(): [string, string][] {
-  const modulos = { actions, auth, errors, notFound, permissions };
+  const modulos = { actions, auth, errors, notFound, permissions, voice };
   const catalogos = {
     SERVER_REASONS,
     CHANNEL_REASONS,

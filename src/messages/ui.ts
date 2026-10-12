@@ -84,6 +84,10 @@ export const CLEAR_ROLE_OVERRIDE_LABEL = "Limpiar";
 export const OVERRIDE_DENY_LABEL = "Denegar";
 export const OVERRIDE_INHERIT_LABEL = "Heredar";
 export const OVERRIDE_ALLOW_LABEL = "Permitir";
+export const INHERITED_ALLOWED_LABEL = "Heredado: permitido";
+export const INHERITED_DENIED_LABEL = "Heredado: no permitido";
+export const INHERITED_HINT =
+  "Es lo que el rol tiene en todo el servidor. Se cambia desde Roles.";
 export const ROLE_ABOVE_OWN_HINT =
   "No podés cambiar los permisos de un rol igual o por encima del tuyo";
 export const PERMISSION_NOT_HELD_HINT =
@@ -105,6 +109,39 @@ export const CHANNEL_START_NOTICE =
   "Este es el comienzo del canal. El chat todavía no está conectado en esta versión.";
 export const VOICE_NOT_IMPLEMENTED =
   "La conexión de voz todavía no está implementada en esta versión.";
+
+// --- Canal de voz ---
+export const VOICE_CONNECTED = "Voz conectada";
+export const VOICE_CONNECTING = "Conectando…";
+export const VOICE_RECONNECTING = "Reconectando…";
+export const VOICE_MUTE = "Silenciar";
+export const VOICE_UNMUTE = "Activar";
+export const VOICE_CAMERA = "Cámara";
+export const VOICE_CAMERA_OFF = "Activar";
+export const VOICE_SCREEN_SHARE = "Pantalla";
+export const VOICE_SCREEN_SHARING = "Compartiendo";
+export const VOICE_LEAVE = "Salir";
+export const VOICE_MUTE_FOR_ME = "Silenciar para mí";
+export const VOICE_UNMUTE_FOR_ME = "Dejar de silenciar para mí";
+export const VOICE_MUTE_LABEL = "Silenciar micrófono";
+export const VOICE_UNMUTE_LABEL = "Activar micrófono";
+export const VOICE_LEAVE_LABEL = "Salir del canal de voz";
+export const VOICE_MUTED_LABEL = "Micrófono silenciado";
+export const VOICE_SPEAKING_LABEL = "Hablando";
+export const VOICE_CAMERA_ON_LABEL = "Cámara encendida";
+
+/** Pill del encabezado del canal de voz. */
+export function voiceConnectedCount(count: number): string {
+  return count === 1 ? "1 conectado" : `${count} conectados`;
+}
+
+/** Segunda linea de "Voz conectada", arriba del panel de usuario. */
+export function voiceConnectedLocation(
+  channelName: string,
+  serverName: string,
+): string {
+  return `${channelName} • ${serverName}`;
+}
 
 // --- Transferencia de propiedad ---
 export const TRANSFER_CHOOSE_NEW_OWNER = "Elegí el nuevo propietario";
