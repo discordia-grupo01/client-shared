@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { validateCategoryName, validateChannelName } from "./channel";
+import {
+  validateCategoryName,
+  validateChannelName,
+  validateChannelTopic,
+} from "./channel";
 import { validateAvatar, validateServerIcon } from "./image";
 import { parseMaxUses, validateMaxUses } from "./invite";
 import { validateRole } from "./role";
@@ -44,6 +48,22 @@ describe("validateChannelName y validateCategoryName", () => {
   it("rechazan mas de 100", () => {
     expect(validateChannelName("a".repeat(101))).toMatch(/100 caracteres/);
     expect(validateCategoryName("a".repeat(101))).toMatch(/100 caracteres/);
+  });
+});
+
+describe("validateChannelTopic", () => {
+  it("acepta un tema vacio: borrarlo es valido", () => {
+    expect(validateChannelTopic("")).toBeUndefined();
+  });
+
+  it("acepta hasta 120 caracteres sin contar los espacios de los bordes", () => {
+    expect(validateChannelTopic(`  ${"a".repeat(120)}  `)).toBeUndefined();
+  });
+
+  it("rechaza mas de 120", () => {
+    expect(validateChannelTopic("a".repeat(121))).toBe(
+      "El tema no puede superar los 120 caracteres.",
+    );
   });
 });
 
