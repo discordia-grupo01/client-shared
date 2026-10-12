@@ -347,3 +347,60 @@ export const WORD_FILTER_EMPTY = "Todavía no hay palabras prohibidas.";
 export const WORD_FILTER_SAVE_ACTION = "Guardar cambios";
 export const WORD_FILTER_SAVED = "Lista guardada.";
 export const removeBannedWordLabel = (word: string) => `Quitar «${word}»`;
+
+// --- Expulsar (#59) ---
+export const KICK_ACTION_LABEL = "Expulsar";
+export const KICK_MEMBER_TITLE = "Expulsar miembro";
+export const KICK_MEMBER_SUBTITLE = "Sale del servidor, pero puede volver";
+export const KICK_MEMBER_CONSEQUENCES =
+  "Perderá su membresía, sus roles y el acceso a los canales. Puede volver a unirse con una nueva invitación.";
+export const KICK_CONFIRM_LABEL = "Confirmar expulsión";
+export function kickSuccessNotice(name: string): string {
+  return `${name} fue expulsado del servidor. Puede volver con una nueva invitación.`;
+}
+
+// --- Silenciar (#60) ---
+export const MUTE_ACTION_LABEL = "Silenciar";
+export const UNMUTE_ACTION_LABEL = "Quitar silencio";
+export const MUTE_MEMBER_TITLE = "Silenciar miembro";
+export const MUTE_MEMBER_SUBTITLE = "No podrá escribir ni hablar por un tiempo";
+export const MUTE_DURATION_LABEL = "Duración";
+export const MUTE_REASON_LABEL = "Motivo";
+export const MUTE_REASON_PLACEHOLDER =
+  "Contá por qué se silencia a este miembro...";
+export const MUTE_MEMBER_CONSEQUENCES =
+  "Sigue en el servidor y puede leer, pero no puede enviar mensajes ni hablar en canales de voz hasta que termine el silencio.";
+export const MUTE_CONFIRM_LABEL = "Confirmar silencio";
+export const MUTED_BADGE_LABEL = "Silenciado";
+export function muteSuccessNotice(name: string, until: string): string {
+  return `${name} quedó silenciado hasta ${formatMutedUntil(until)}.`;
+}
+export function unmuteSuccessNotice(name: string): string {
+  return `${name} ya puede volver a escribir y hablar.`;
+}
+/** "las 18:30" si termina hoy; si no, "el 14/10 a las 18:30". Hora local. */
+export function formatMutedUntil(iso: string, now: Date = new Date()): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const time = new Intl.DateTimeFormat("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+  if (date.toDateString() === now.toDateString()) return `las ${time}`;
+  const day = new Intl.DateTimeFormat("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date);
+  return `el ${day} a las ${time}`;
+}
+export function mutedUntilLabel(iso: string, now: Date = new Date()): string {
+  return `Silenciado hasta ${formatMutedUntil(iso, now)}`;
+}
+
+// --- Miembros por rol (#58) ---
+export const ROLE_MEMBERS_TAB = "Miembros";
+export const ROLE_MEMBERS_EMPTY = "Nadie tiene este rol todavía.";
+export function roleMembersCount(total: number): string {
+  return total === 1 ? "1 miembro" : `${total} miembros`;
+}

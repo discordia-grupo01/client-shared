@@ -123,7 +123,8 @@ export type MessageErrorCode =
   | "MENTIONS_UNAVAILABLE"
   | "INVALID_EMOJI"
   | "TOO_MANY_REACTIONS"
-  | "BANNED_WORD";
+  | "BANNED_WORD"
+  | "MEMBER_MUTED";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }
