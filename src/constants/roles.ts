@@ -68,4 +68,8 @@ export const PERMISSION_COPY: Record<
     label: "Agregar reacciones",
     desc: "Puede reaccionar a los mensajes con emojis.",
   },
+  CONNECT: {
+    label: "Conectarse",
+    desc: "Puede unirse a los canales de voz del servidor.",
+  },
 };
