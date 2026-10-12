@@ -24,6 +24,7 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
   INVALID_EMOJI: "Solo se puede reaccionar con un emoji.",
   TOO_MANY_REACTIONS:
     "Este mensaje ya tiene el máximo de reacciones distintas.",
+  BANNED_WORD: "Tu mensaje contiene una palabra prohibida en este servidor.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
@@ -84,4 +85,16 @@ export function messageErrorFor(
   fallback: string = UNEXPECTED_ERROR_MESSAGE,
 ): string {
   return isMessageErrorCode(code) ? MESSAGE_ERROR_MESSAGES[code] : fallback;
+}
+
+/**
+ * Texto de `BANNED_WORD` con las palabras que encontro el back
+ * (`details.words`), para que el autor sepa que cambiar (CA1).
+ */
+export function bannedWordMessage(words: readonly string[]): string {
+  if (words.length === 0) return MESSAGE_ERROR_MESSAGES.BANNED_WORD;
+  const list = words.map((word) => `«${word}»`).join(", ");
+  return words.length === 1
+    ? `Tu mensaje contiene una palabra prohibida en este servidor: ${list}.`
+    : `Tu mensaje contiene palabras prohibidas en este servidor: ${list}.`;
 }

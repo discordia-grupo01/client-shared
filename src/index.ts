@@ -33,6 +33,7 @@ export * from "./domain/message";
 export * from "./domain/mention";
 export * from "./domain/direct-message";
 export * from "./domain/block";
+export * from "./domain/word-filter";
 export * from "./domain/voice";
 export * from "./domain/voice-bridge";
 
@@ -59,6 +60,7 @@ export * from "./validation/ban";
 export * from "./validation/image";
 export * from "./validation/user";
 export * from "./validation/message";
+export * from "./validation/word-filter";
 
 // --- Mensajes ---
 export * from "./messages/errors";
@@ -71,6 +73,7 @@ export * from "./messages/auth";
 export * from "./messages/two-factor";
 export * from "./messages/permissions";
 export * from "./messages/ban-failures";
+export * from "./messages/word-filter-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 export * from "./messages/direct-messages";

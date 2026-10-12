@@ -44,6 +44,9 @@ export const OWNER_ONLY_REORDER_CATEGORY = noPermissionFor(
 
 export const OWNER_ONLY_BAN = noPermissionFor("banear miembros");
 export const OWNER_ONLY_UNBAN = noPermissionFor("revocar baneos");
+export const NO_PERMISSION_WORD_FILTER = noPermissionFor(
+  "editar las palabras prohibidas",
+);
 
 export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 

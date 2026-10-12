@@ -11,6 +11,8 @@
 import {
   ALLOWED_SERVER_ICON_TYPES,
   BAN_REASON_MAX_LENGTH,
+  BANNED_WORD_MAX_LENGTH,
+  BANNED_WORDS_MAX,
   MAX_ICON_FILE_MB,
 } from "../constants/limits";
 import { formatImageTypes } from "../format/image";
@@ -130,4 +132,12 @@ export const BAN_REASONS: ReasonCatalog = {
 
 export const MEMBER_REASONS: ReasonCatalog = {
   forbidden_not_member: NOT_A_MEMBER,
+};
+
+export const WORD_FILTER_REASONS: ReasonCatalog = {
+  word_empty: "Ninguna palabra puede quedar vacía.",
+  word_too_long: `Cada palabra o frase puede tener hasta ${BANNED_WORD_MAX_LENGTH} caracteres.`,
+  word_invalid_chars: "Alguna palabra tiene caracteres no permitidos.",
+  too_many_words: `La lista puede tener hasta ${BANNED_WORDS_MAX} palabras.`,
+  missing_permission: "No tenés permiso para editar las palabras prohibidas.",
 };

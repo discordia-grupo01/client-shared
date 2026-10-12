@@ -21,6 +21,7 @@ import {
 } from "../domain/message";
 import {
   ACCESS_REVOKED_MESSAGES,
+  bannedWordMessage,
   isMessageErrorCode,
   messageErrorFor,
   REACTION_FAILED,
@@ -165,6 +166,15 @@ export interface RealtimeChannel {
 
 function errorCodeOf(response: unknown): unknown {
   return (response as { error?: { code?: unknown } } | undefined)?.error?.code;
+}
+
+function bannedWordsOf(response: unknown): string[] {
+  const words = (
+    response as { error?: { details?: { words?: unknown } } } | undefined
+  )?.error?.details?.words;
+  return Array.isArray(words)
+    ? words.filter((word): word is string => typeof word === "string")
+    : [];
 }
 
 /** Parametros del `join`: Phoenix manda el mismo objeto en cada re-join, asi que se muta. */
@@ -319,7 +329,10 @@ export function pushToChannel(
         if (code === "MESSAGE_NOT_FOUND") options.onMessageNotFound?.();
         resolve({
           ok: false,
-          message: errorMessageFor(code, options.failedMessage),
+          message:
+            code === "BANNED_WORD"
+              ? bannedWordMessage(bannedWordsOf(response))
+              : errorMessageFor(code, options.failedMessage),
         });
       })
       .receive("timeout", () => resolve(failed));

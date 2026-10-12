@@ -364,6 +364,31 @@ describe("pushMessageEvent", () => {
     expect(onMessageNotFound).toHaveBeenCalledTimes(1);
   });
 
+  it("BANNED_WORD dice cuales palabras bloquearon el mensaje (CA1)", async () => {
+    const { room, result } = push();
+
+    room.pushes[0].push.fire("error", {
+      error: { code: "BANNED_WORD", details: { words: ["tonto", "no sirve"] } },
+    });
+
+    expect(await result).toEqual({
+      ok: false,
+      message:
+        "Tu mensaje contiene palabras prohibidas en este servidor: «tonto», «no sirve».",
+    });
+  });
+
+  it("BANNED_WORD sin palabras usa el texto generico", async () => {
+    const { room, result } = push();
+
+    room.pushes[0].push.fire("error", { error: { code: "BANNED_WORD" } });
+
+    expect(await result).toEqual({
+      ok: false,
+      message: "Tu mensaje contiene una palabra prohibida en este servidor.",
+    });
+  });
+
   it("un error desconocido o un timeout usa el mensaje de fallo", async () => {
     const unknown = push();
     unknown.room.pushes[0].push.fire("error", { error: { code: "???" } });

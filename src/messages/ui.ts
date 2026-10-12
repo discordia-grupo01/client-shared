@@ -336,3 +336,14 @@ export const UNBLOCK_USER_BODY =
   "Van a poder volver a enviarse mensajes directos e iniciar llamadas privadas.";
 export const UNBLOCK_USER_CONFIRM_ACTION = "Desbloquear";
 export const BLOCK_USER_CANCEL_ACTION = "Cancelar";
+
+// --- Palabras prohibidas (configuracion del servidor) ---
+export const WORD_FILTER_TITLE = "Palabras prohibidas";
+export const WORD_FILTER_DESCRIPTION =
+  "Los mensajes que contengan alguna de estas palabras o frases no se van a enviar. No distingue mayúsculas ni tildes, y solo cuenta palabras enteras. Los mensajes que ya se enviaron no cambian.";
+export const WORD_FILTER_INPUT_PLACEHOLDER = "Agregar palabra o frase";
+export const WORD_FILTER_ADD_ACTION = "Agregar";
+export const WORD_FILTER_EMPTY = "Todavía no hay palabras prohibidas.";
+export const WORD_FILTER_SAVE_ACTION = "Guardar cambios";
+export const WORD_FILTER_SAVED = "Lista guardada.";
+export const removeBannedWordLabel = (word: string) => `Quitar «${word}»`;
