@@ -33,6 +33,8 @@ export * from "./domain/message";
 export * from "./domain/mention";
 export * from "./domain/direct-message";
 export * from "./domain/block";
+export * from "./domain/voice";
+export * from "./domain/voice-bridge";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -44,6 +46,7 @@ export * from "./constants/server-banner-presets";
 export * from "./constants/reactions";
 export * from "./constants/logo";
 export * from "./constants/loading-screen";
+export * from "./constants/voice";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -71,6 +74,7 @@ export * from "./messages/ban-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 export * from "./messages/direct-messages";
+export * from "./messages/voice";
 
 // --- Formatters ---
 export * from "./format/date";
