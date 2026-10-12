@@ -4,7 +4,11 @@ import { VOICE_ERROR_CODES } from "../domain/voice";
 
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
 import { VOICE_CONNECT_FORBIDDEN } from "./permissions";
-import { voiceConnectedCount, voiceConnectedLocation } from "./ui";
+import {
+  voiceConnectedCount,
+  voiceConnectedLocation,
+  voicePresenceCount,
+} from "./ui";
 import {
   VOICE_REMOVED,
   VOICE_UNAVAILABLE,
@@ -62,6 +66,11 @@ describe("copy del canal de voz", () => {
     expect(voiceConnectedCount(1)).toBe("1 conectado");
     expect(voiceConnectedCount(4)).toBe("4 conectados");
     expect(voiceConnectedCount(0)).toBe("0 conectados");
+  });
+
+  it("cuenta quien esta en el canal antes de entrar", () => {
+    expect(voicePresenceCount(1)).toBe("Hay 1 persona en el canal.");
+    expect(voicePresenceCount(3)).toBe("Hay 3 personas en el canal.");
   });
 
   it("arma la ubicacion como en el prototipo", () => {
