@@ -5,9 +5,6 @@
  */
 export const VOICE_PARTICIPANTS_POLL_MS = 5_000;
 
-/**
- * Minimo entre dos eventos `participants` del puente de mobile. LiveKit avisa
- * de "quien habla" varias veces por segundo; mandar cada cambio por
- * `postMessage` satura el puente sin que se note en pantalla.
- */
 export const VOICE_BRIDGE_PARTICIPANTS_THROTTLE_MS = 200;
+
+export const VOICE_EMBED_PATH = "/voice-embed";
