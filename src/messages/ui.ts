@@ -129,10 +129,30 @@ export const VOICE_LEAVE_LABEL = "Salir del canal de voz";
 export const VOICE_MUTED_LABEL = "Micrófono silenciado";
 export const VOICE_SPEAKING_LABEL = "Hablando";
 export const VOICE_CAMERA_ON_LABEL = "Cámara encendida";
+export const VOICE_MUTED_FOR_ME_LABEL = "Silenciado para vos";
+export const VOICE_CAMERA_ON_ACTION = "Encender cámara";
+export const VOICE_CAMERA_OFF_ACTION = "Apagar cámara";
+export const VOICE_SCREEN_SHARE_START = "Compartir pantalla";
+export const VOICE_SCREEN_SHARE_STOP = "Dejar de compartir pantalla";
+export const VOICE_CONTROLS_LABEL = "Controles de la llamada";
+
+// Pantalla previa a entrar a un canal de voz.
+export const VOICE_JOIN = "Unirse al canal";
+export const VOICE_SWITCH = "Cambiar a este canal";
+export const VOICE_CHANNEL_EMPTY =
+  "Todavía no hay nadie. Entrá y esperá a los demás.";
+export const VOICE_IN_CHANNEL_LABEL = "En el canal";
 
 /** Pill del encabezado del canal de voz. */
 export function voiceConnectedCount(count: number): string {
   return count === 1 ? "1 conectado" : `${count} conectados`;
+}
+
+/** Quien esta en el canal, en la pantalla previa a entrar. */
+export function voicePresenceCount(count: number): string {
+  return count === 1
+    ? "Hay 1 persona en el canal."
+    : `Hay ${count} personas en el canal.`;
 }
 
 /** Segunda linea de "Voz conectada", arriba del panel de usuario. */
