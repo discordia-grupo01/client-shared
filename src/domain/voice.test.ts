@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   presenceByChannel,
   sortVoiceParticipants,
+  toVoicePresence,
   voiceErrorCodeOf,
   withLivePresence,
   type VoiceParticipant,
@@ -102,6 +103,23 @@ describe("sortVoiceParticipants", () => {
     ]);
 
     expect(sorted.map((p) => p.name)).toEqual(["Zoe", "Ana", "Carla"]);
+  });
+});
+
+describe("toVoicePresence", () => {
+  it("usa la identidad de LiveKit como id de presencia", () => {
+    const live: VoiceParticipant = {
+      identity: "u-ana",
+      name: "Ana",
+      isLocal: true,
+      muted: true,
+      speaking: false,
+      cameraOn: true,
+      screenSharing: false,
+      mutedForMe: false,
+    };
+
+    expect(toVoicePresence([live])).toEqual([ana]);
   });
 });
 

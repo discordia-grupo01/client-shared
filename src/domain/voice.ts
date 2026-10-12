@@ -117,6 +117,19 @@ export interface VoiceParticipant {
   mutedForMe: boolean;
 }
 
+/**
+ * Los participantes de la sala como presencia, para pasarlos a
+ * `withLivePresence`.
+ */
+export function toVoicePresence(
+  participants: readonly VoiceParticipant[],
+): VoicePresenceParticipant[] {
+  return participants.map(({ identity, name }) => ({
+    participant_id: identity,
+    name,
+  }));
+}
+
 /** Vos primero y el resto por nombre, como en el prototipo. */
 export function sortVoiceParticipants(
   participants: readonly VoiceParticipant[],
