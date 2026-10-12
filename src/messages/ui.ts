@@ -340,7 +340,7 @@ export const BLOCK_USER_CANCEL_ACTION = "Cancelar";
 // --- Palabras prohibidas (configuracion del servidor) ---
 export const WORD_FILTER_TITLE = "Palabras prohibidas";
 export const WORD_FILTER_DESCRIPTION =
-  "Los mensajes que contengan alguna de estas palabras o frases no se van a enviar. No distingue mayúsculas ni tildes, y solo cuenta palabras enteras. Los mensajes que ya se enviaron no cambian.";
+  "Los mensajes que contengan estas palabras no se van a poder enviar. Los mensajes que ya se enviaron no cambian.";
 export const WORD_FILTER_INPUT_PLACEHOLDER = "Agregar palabra o frase";
 export const WORD_FILTER_ADD_ACTION = "Agregar";
 export const WORD_FILTER_EMPTY = "Todavía no hay palabras prohibidas.";
