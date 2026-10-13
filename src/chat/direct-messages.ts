@@ -14,6 +14,7 @@ import { UNKNOWN_USER_NAME } from "../messages/ui";
 import { validateMessageContent } from "../validation/message";
 import {
   pushToChannel,
+  withAttachmentIds,
   type MessageActionResult,
   type RealtimeChannel,
 } from "./channel-chat";
@@ -212,14 +213,15 @@ export function sendDirectMessage(
   to: string,
   content: string,
   onSent: (sent: SentDmPayload) => void,
+  attachmentIds: readonly string[] = [],
 ): Promise<SendDmResult> {
-  const invalid = validateMessageContent(content);
+  const invalid = validateMessageContent(content, attachmentIds.length > 0);
   if (invalid) return Promise.resolve({ ok: false, message: invalid });
   return pushToChannel(
     room,
     isJoined,
     "send_dm",
-    { to, content },
+    withAttachmentIds({ to, content }, attachmentIds),
     {
       failedMessage: DM_SEND_FAILED,
       errorMessageFor: dmErrorFor,
