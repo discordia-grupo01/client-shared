@@ -23,3 +23,15 @@ describe("validateMessageContent", () => {
     ).toBeDefined();
   });
 });
+
+describe("validateMessageContent con adjuntos", () => {
+  it("acepta texto vacio si hay adjuntos", () => {
+    expect(validateMessageContent("", true)).toBeUndefined();
+  });
+
+  it("sigue limitando el largo", () => {
+    expect(
+      validateMessageContent("a".repeat(MAX_MESSAGE_LENGTH + 1), true),
+    ).toBeDefined();
+  });
+});

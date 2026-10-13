@@ -1,3 +1,5 @@
+import type { MessageAttachment } from "./attachment";
+
 /**
  * Mensajes de un canal de texto. `Message` espeja lo que devuelve el servicio
  * `messaging` (`Message.to_api` en el back), con los mismos nombres.
@@ -44,6 +46,9 @@ export interface Message {
    * `message_updated` no las traen (se conservan las que ya habia).
    */
   reactions?: MessageReaction[];
+
+  /** Archivos adjuntos; ausente o vacio en mensajes sin adjuntos. */
+  attachments?: MessageAttachment[];
 }
 
 /** Respuesta de `GET /v1/channels/:id/messages` (de mas viejo a mas nuevo). */
@@ -124,7 +129,14 @@ export type MessageErrorCode =
   | "INVALID_EMOJI"
   | "TOO_MANY_REACTIONS"
   | "BANNED_WORD"
-  | "MEMBER_MUTED";
+  | "MEMBER_MUTED"
+  | "FILE_TOO_LARGE"
+  | "UNSUPPORTED_FILE_TYPE"
+  | "EMPTY_FILE"
+  | "TOO_MANY_ATTACHMENTS"
+  | "INVALID_ATTACHMENT"
+  | "TOO_MANY_PENDING_ATTACHMENTS"
+  | "STORAGE_UNAVAILABLE";
 
 export type ListMessagesResult =
   | { ok: true; messages: Message[]; nextCursor: string | null }

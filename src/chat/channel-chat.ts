@@ -59,7 +59,10 @@ export interface ChannelMessages {
    * Manda el mensaje. NO lo agrega a la lista: el servidor lo devuelve por el
    * socket (`new_message`) igual que a los demas, y de ahi llega a `messages`.
    */
-  sendMessage: (content: string) => Promise<SendMessageResult>;
+  sendMessage: (
+    content: string,
+    attachmentIds?: readonly string[],
+  ) => Promise<SendMessageResult>;
   /**
    * Elimina el mensaje (autor o `MANAGE_MESSAGES`, lo valida el back). Al
    * confirmarse se saca de la lista; a los demas les llega por `message_deleted`.
@@ -337,6 +340,16 @@ export function pushToChannel(
       })
       .receive("timeout", () => resolve(failed));
   });
+}
+
+/** Payload de `new_message`/`send_dm`: `attachment_ids` solo viaja si hay adjuntos. */
+export function withAttachmentIds<T extends object>(
+  payload: T,
+  attachmentIds: readonly string[] = [],
+): T | (T & { attachment_ids: string[] }) {
+  return attachmentIds.length > 0
+    ? { ...payload, attachment_ids: [...attachmentIds] }
+    : payload;
 }
 
 /** `pushToChannel` sobre el canal de un chat: solo se manda con el chat `ready`. */
