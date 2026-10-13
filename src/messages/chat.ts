@@ -3,8 +3,15 @@
  * `error.code` (no `details.reason`), asi que van en su propio catalogo por
  * codigo y no en `reasons.ts`. Todos en voseo.
  */
+import { MAX_ATTACHMENTS_PER_MESSAGE } from "../constants/attachments";
 import { MAX_MESSAGE_LENGTH } from "../constants/limits";
 import type { AccessRevokedReason, MessageErrorCode } from "../domain/message";
+
+import {
+  ATTACHMENT_EMPTY,
+  ATTACHMENT_TOO_LARGE,
+  ATTACHMENT_UNSUPPORTED_TYPE,
+} from "../validation/attachment";
 
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
 
@@ -26,11 +33,25 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
     "Este mensaje ya tiene el máximo de reacciones distintas.",
   BANNED_WORD: "Tu mensaje contiene una palabra prohibida en este servidor.",
   MEMBER_MUTED: "No podés enviar mensajes mientras estás silenciado.",
+  FILE_TOO_LARGE: ATTACHMENT_TOO_LARGE,
+  UNSUPPORTED_FILE_TYPE: ATTACHMENT_UNSUPPORTED_TYPE,
+  EMPTY_FILE: ATTACHMENT_EMPTY,
+  TOO_MANY_ATTACHMENTS: `Un mensaje puede tener hasta ${MAX_ATTACHMENTS_PER_MESSAGE} adjuntos.`,
+  INVALID_ATTACHMENT:
+    "Algún adjunto ya no está disponible. Quitalo y volvé a adjuntarlo.",
+  TOO_MANY_PENDING_ATTACHMENTS:
+    "Tenés demasiados adjuntos subidos sin enviar. Enviá los mensajes o esperá un rato.",
+  STORAGE_UNAVAILABLE:
+    "No se pudo guardar el archivo, intentá de nuevo en un momento.",
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
 export const MESSAGE_SEND_FAILED =
   "No pudimos enviar el mensaje. Intentá de nuevo.";
+
+/** No se pudo subir un adjunto y no hay un codigo que explique por que (sin red, timeout). */
+export const ATTACHMENT_UPLOAD_FAILED =
+  "No pudimos subir el archivo. Intentá de nuevo.";
 
 /** No se pudo eliminar y no hay un codigo que explique por que (timeout, canal caido). */
 export const MESSAGE_DELETE_FAILED =

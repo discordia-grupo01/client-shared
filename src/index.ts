@@ -29,6 +29,7 @@ export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
 export * from "./domain/ban";
 export * from "./domain/collect-pages";
+export * from "./domain/attachment";
 export * from "./domain/message";
 export * from "./domain/mention";
 export * from "./domain/direct-message";
@@ -46,6 +47,7 @@ export * from "./constants/roles";
 export * from "./constants/channel-permissions";
 export * from "./constants/activity-status";
 export * from "./constants/server-banner-presets";
+export * from "./constants/attachments";
 export * from "./constants/reactions";
 export * from "./constants/logo";
 export * from "./constants/loading-screen";
@@ -61,6 +63,7 @@ export * from "./validation/invite";
 export * from "./validation/ban";
 export * from "./validation/image";
 export * from "./validation/user";
+export * from "./validation/attachment";
 export * from "./validation/message";
 export * from "./validation/word-filter";
 
@@ -85,6 +88,7 @@ export * from "./messages/voice";
 // --- Formatters ---
 export * from "./format/date";
 export * from "./format/color";
+export * from "./format/file-size";
 export * from "./format/image";
 export * from "./format/invite-link";
 export * from "./format/list";
@@ -101,6 +105,7 @@ export * from "./format/mention-tokens";
 export * from "./format/mention-draft-segments";
 
 // --- Chat ---
+export * from "./chat/attachment-upload";
 export * from "./chat/channel-chat";
 export * from "./chat/direct-messages";
 export * from "./chat/mentions";
