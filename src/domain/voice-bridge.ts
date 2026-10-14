@@ -2,7 +2,9 @@
  * Contrato entre `app-mobile` y la pagina `/voice-embed` de `web-client`.
  *
  * Expo Go no puede cargar el SDK nativo de LiveKit, asi que mobile corre
- * `livekit-client` dentro de un WebView invisible y le habla por mensajes:
+ * `livekit-client` dentro de un WebView y le habla por mensajes. El WebView
+ * se ve solo en la pantalla de la llamada, donde dibuja la grilla con los
+ * videos; en el resto de la app queda escondido y solo suena:
  *
  *   app ── VoiceBridgeCommand (injectJavaScript) ──► pagina ──► LiveKit
  *   app ◄── VoiceBridgeEvent (postMessage) ───────── pagina
@@ -15,6 +17,7 @@
  * queda en el historial del WebView ni en logs.
  */
 
+import type { ThemeName } from "../theme/tokens";
 import type {
   VoiceConnectionStatus,
   VoiceDisconnectReason,
@@ -24,23 +27,25 @@ import type {
 export type VoiceBridgeCommand =
   | { type: "connect"; url: string; token: string }
   | { type: "setMicrophoneEnabled"; enabled: boolean }
-  /** #52: silenciar o volver a escuchar a otro participante solo para uno. */
+  | { type: "setCameraEnabled"; enabled: boolean }
   | { type: "setMutedForMe"; identity: string; muted: boolean }
+  | {
+      type: "setAppearance";
+      theme: ThemeName;
+      localAvatarUrl: string | null;
+    }
   | { type: "disconnect" };
 
-/** Fallas del lado del WebView, antes o despues de conectar. */
-export type VoiceMediaError = "mic_denied" | "connect_failed" | "audio_blocked";
+export type VoiceMediaError =
+  "mic_denied" | "camera_denied" | "connect_failed" | "audio_blocked";
 
 export type VoiceBridgeEvent =
-  /** La pagina cargo y espera `connect`. */
   | { type: "ready" }
   | { type: "status"; status: VoiceConnectionStatus }
   | { type: "participants"; participants: VoiceParticipant[] }
-  /**
-   * Un moderador te silencio (`false`) o te devolvio la voz (`true`). Llega
-   * tambien al conectar si ya estabas silenciado en el servidor.
-   */
   | { type: "speakPermission"; allowed: boolean }
+  | { type: "cameraStopped" }
+  | { type: "muteForMeRequested"; identity: string }
   | { type: "disconnected"; reason: VoiceDisconnectReason }
   | { type: "error"; error: VoiceMediaError };
 
@@ -58,9 +63,11 @@ const DISCONNECT_REASONS: readonly VoiceDisconnectReason[] = [
 ];
 const MEDIA_ERRORS: readonly VoiceMediaError[] = [
   "mic_denied",
+  "camera_denied",
   "connect_failed",
   "audio_blocked",
 ];
+const THEME_NAMES: readonly ThemeName[] = ["dark", "light"];
 
 type Json = Record<string, unknown>;
 
@@ -119,12 +126,6 @@ function toParticipant(value: unknown): VoiceParticipant | null {
   };
 }
 
-/**
- * Lo que manda la pagina, validado. Recibe el `event.nativeEvent.data` de
- * `onMessage` tal cual (un string). Devuelve `null` si no es un evento
- * conocido o le falta algo: el WebView puede recibir mensajes de otros
- * scripts y no hay que confiar en la forma.
- */
 export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
   const message = toObject(raw);
   if (!message) return null;
@@ -147,6 +148,12 @@ export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
       return typeof message.allowed === "boolean"
         ? { type: "speakPermission", allowed: message.allowed }
         : null;
+    case "cameraStopped":
+      return { type: "cameraStopped" };
+    case "muteForMeRequested":
+      return isNonEmptyString(message.identity)
+        ? { type: "muteForMeRequested", identity: message.identity }
+        : null;
     case "disconnected":
       return oneOf(DISCONNECT_REASONS, message.reason)
         ? { type: "disconnected", reason: message.reason }
@@ -160,10 +167,6 @@ export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
   }
 }
 
-/**
- * Lo que manda la app, validado del lado de la pagina. Acepta el objeto o su
- * JSON, segun como lo inyecte la app.
- */
 export function parseVoiceBridgeCommand(
   raw: unknown,
 ): VoiceBridgeCommand | null {
@@ -179,6 +182,10 @@ export function parseVoiceBridgeCommand(
       return typeof message.enabled === "boolean"
         ? { type: "setMicrophoneEnabled", enabled: message.enabled }
         : null;
+    case "setCameraEnabled":
+      return typeof message.enabled === "boolean"
+        ? { type: "setCameraEnabled", enabled: message.enabled }
+        : null;
     case "setMutedForMe":
       return isNonEmptyString(message.identity) &&
         typeof message.muted === "boolean"
@@ -188,6 +195,14 @@ export function parseVoiceBridgeCommand(
             muted: message.muted,
           }
         : null;
+    case "setAppearance": {
+      const { localAvatarUrl } = message;
+      if (!oneOf(THEME_NAMES, message.theme)) return null;
+      if (localAvatarUrl !== null && !isNonEmptyString(localAvatarUrl)) {
+        return null;
+      }
+      return { type: "setAppearance", theme: message.theme, localAvatarUrl };
+    }
     case "disconnect":
       return { type: "disconnect" };
     default:
@@ -195,7 +210,6 @@ export function parseVoiceBridgeCommand(
   }
 }
 
-/** Serializa un mensaje del puente para `postMessage` o `injectJavaScript`. */
 export function serializeVoiceBridgeMessage(
   message: VoiceBridgeCommand | VoiceBridgeEvent,
 ): string {

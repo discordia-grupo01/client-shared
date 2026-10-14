@@ -27,8 +27,11 @@ describe("parseVoiceBridgeEvent", () => {
     { type: "participants", participants: [ana] },
     { type: "participants", participants: [] },
     { type: "speakPermission", allowed: false },
+    { type: "cameraStopped" },
+    { type: "muteForMeRequested", identity: "u-beto" },
     { type: "disconnected", reason: "removed" },
     { type: "error", error: "mic_denied" },
+    { type: "error", error: "camera_denied" },
   ];
 
   it.each(events)("vuelve igual despues de serializar: $type", (event) => {
@@ -86,7 +89,14 @@ describe("parseVoiceBridgeCommand", () => {
   const commands: VoiceBridgeCommand[] = [
     { type: "connect", url: "wss://livekit.example", token: "t" },
     { type: "setMicrophoneEnabled", enabled: false },
+    { type: "setCameraEnabled", enabled: true },
     { type: "setMutedForMe", identity: "u-beto", muted: true },
+    { type: "setAppearance", theme: "light", localAvatarUrl: null },
+    {
+      type: "setAppearance",
+      theme: "dark",
+      localAvatarUrl: "https://cdn.example/a.png",
+    },
     { type: "disconnect" },
   ];
 
@@ -115,5 +125,25 @@ describe("parseVoiceBridgeCommand", () => {
       parseVoiceBridgeCommand({ type: "setMutedForMe", muted: true }),
     ).toBeNull();
     expect(parseVoiceBridgeCommand("{roto")).toBeNull();
+  });
+
+  it("descarta un tema desconocido o una foto vacia", () => {
+    expect(
+      parseVoiceBridgeCommand({
+        type: "setAppearance",
+        theme: "sepia",
+        localAvatarUrl: null,
+      }),
+    ).toBeNull();
+    expect(
+      parseVoiceBridgeCommand({
+        type: "setAppearance",
+        theme: "dark",
+        localAvatarUrl: "",
+      }),
+    ).toBeNull();
+    expect(
+      parseVoiceBridgeCommand({ type: "setAppearance", theme: "dark" }),
+    ).toBeNull();
   });
 });

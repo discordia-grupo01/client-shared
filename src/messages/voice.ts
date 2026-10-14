@@ -19,6 +19,8 @@ export const VOICE_PARTICIPANTS_FAILED =
   "No pudimos cargar quién está en los canales de voz.";
 export const VOICE_MIC_DENIED =
   "Necesitamos acceso al micrófono para que te escuchen. Habilitalo en la configuración y volvé a entrar.";
+export const VOICE_CAMERA_DENIED =
+  "Necesitamos acceso a la cámara para que te vean. Habilitala en la configuración e intentá de nuevo.";
 export const VOICE_AUDIO_BLOCKED =
   "Tocá en cualquier lugar de la pantalla para escuchar la llamada.";
 export const VOICE_MODERATOR_MUTED =
@@ -52,6 +54,7 @@ export function voiceErrorMessage(
 
 const MEDIA_ERROR_MESSAGES: Readonly<Record<VoiceMediaError, string>> = {
   mic_denied: VOICE_MIC_DENIED,
+  camera_denied: VOICE_CAMERA_DENIED,
   connect_failed: VOICE_CONNECT_FAILED,
   audio_blocked: VOICE_AUDIO_BLOCKED,
 };
