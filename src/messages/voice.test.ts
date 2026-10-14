@@ -43,6 +43,10 @@ describe("voiceMediaErrorMessage", () => {
   it("explica que hace falta el microfono", () => {
     expect(voiceMediaErrorMessage("mic_denied")).toMatch(/micrófono/);
   });
+
+  it("explica que hace falta la camara", () => {
+    expect(voiceMediaErrorMessage("camera_denied")).toMatch(/cámara/);
+  });
 });
 
 describe("voiceDisconnectMessage", () => {
