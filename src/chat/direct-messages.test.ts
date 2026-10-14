@@ -13,12 +13,14 @@ import {
   conversationSummaries,
   dmCandidatesFrom,
   joinUserChannel,
+  mergeConversations,
   conversationReadKey,
   partnerIdsMissingProfile,
   withLocalReads,
   sendDirectMessage,
   unknownAuthor,
   upsertConversation,
+  withDraftConversations,
 } from "./direct-messages";
 
 function message(id: string, userId: string): Message {
@@ -349,5 +351,106 @@ describe("sendDirectMessage", () => {
     );
     expect(result.ok).toBe(false);
     expect(room.push).not.toHaveBeenCalled();
+  });
+});
+
+describe("withDraftConversations", () => {
+  it("pone arriba los borradores y omite a quien ya tiene conversacion", () => {
+    const summaries = conversationSummaries(
+      [conversation("a", "pa", { last_message: message("m1", "pa") })],
+      {},
+      new Set(),
+    );
+    const result = withDraftConversations(
+      summaries,
+      ["pb", "pa"],
+      {},
+      new Set(),
+    );
+    expect(result.map((s) => [s.partner.id, s.conversationId])).toEqual([
+      ["pb", null],
+      ["pa", "a"],
+    ]);
+  });
+});
+
+describe("carreras entre la lista del back y el socket", () => {
+  function msg(id: string, at: string, userId = "pa"): Message {
+    return { ...message(id, userId), inserted_at: at };
+  }
+
+  it("un new_dm repetido no vuelve a dejar sin leer lo ya leido", () => {
+    const list = [
+      conversation("a", "pa", {
+        unread: false,
+        last_message: msg("m1", "2026-10-01T12:00:00.000Z"),
+      }),
+    ];
+    const payload = {
+      conversation_id: "a",
+      partner_id: "pa",
+      message: msg("m1", "2026-10-01T12:00:00.000Z"),
+    };
+    expect(applyNewDm(list, payload, "me")[0].unread).toBe(false);
+  });
+
+  it("un new_dm mas viejo que el ultimo no lo pisa", () => {
+    const list = [
+      conversation("a", "pa", {
+        unread: false,
+        last_message: msg("m2", "2026-10-01T12:00:05.000Z"),
+      }),
+    ];
+    const payload = {
+      conversation_id: "a",
+      partner_id: "pa",
+      message: msg("m1", "2026-10-01T12:00:00.000Z"),
+    };
+    const result = applyNewDm(list, payload, "me");
+    expect(result[0].last_message?.id).toBe("m2");
+    expect(result[0].unread).toBe(false);
+  });
+
+  it("una lista vieja no revive lo leido ni pisa un mensaje mas nuevo", () => {
+    const local = [
+      conversation("a", "pa", {
+        unread: false,
+        last_message: msg("m1", "2026-10-01T12:00:00.000Z"),
+      }),
+      conversation("b", "pb", {
+        unread: true,
+        last_message: msg("m3", "2026-10-01T12:00:09.000Z"),
+      }),
+    ];
+    const remote = [
+      conversation("a", "pa", {
+        unread: true,
+        last_message: msg("m1", "2026-10-01T12:00:00.000Z"),
+      }),
+      conversation("b", "pb", {
+        unread: false,
+        last_message: msg("m2", "2026-10-01T12:00:03.000Z"),
+      }),
+    ];
+    const result = mergeConversations(local, remote);
+    expect(result.find((c) => c.id === "a")?.unread).toBe(false);
+    expect(result.find((c) => c.id === "b")?.last_message?.id).toBe("m3");
+  });
+
+  it("conserva lo que solo existe localmente y toma lo nuevo del back", () => {
+    const local = [
+      conversation("n", "pn", {
+        last_message: msg("m9", "2026-10-01T12:00:09.000Z", "me"),
+      }),
+    ];
+    const remote = [
+      conversation("a", "pa", {
+        unread: true,
+        last_message: msg("m5", "2026-10-01T12:00:05.000Z"),
+      }),
+    ];
+    const result = mergeConversations(local, remote);
+    expect(result.map((c) => c.id)).toEqual(["n", "a"]);
+    expect(result[1].unread).toBe(true);
   });
 });
