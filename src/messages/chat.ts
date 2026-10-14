@@ -46,8 +46,7 @@ export const MESSAGE_ERROR_MESSAGES: Record<MessageErrorCode, string> = {
 };
 
 /** No se pudo enviar y no hay un codigo que explique por que (timeout, canal caido). */
-export const MESSAGE_SEND_FAILED =
-  "No pudimos enviar el mensaje. Intentá de nuevo.";
+export const MESSAGE_SEND_FAILED = "No pudimos enviar el mensaje.";
 
 /** No se pudo subir un adjunto y no hay un codigo que explique por que (sin red, timeout). */
 export const ATTACHMENT_UPLOAD_FAILED =
@@ -83,6 +82,10 @@ export const MENTIONS_MARK_READ_FAILED =
 
 /** El WebSocket se cayo y se esta reconectando. */
 export const CHAT_RECONNECTING_NOTICE = "Reconectando…";
+export const CHAT_OFFLINE_NOTICE_WEB =
+  "Error de conexión. Recargá la página para volver a conectarte.";
+export const CHAT_OFFLINE_NOTICE_MOBILE =
+  "Error de conexión. Reiniciá la app para volver a conectarte.";
 
 /** Texto cuando el back cierra el canal porque ya no hay acceso (`access_revoked`). */
 export const ACCESS_REVOKED_MESSAGES: Readonly<

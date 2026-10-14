@@ -32,6 +32,7 @@ export type ChatStatus =
   | "loading"
   | "ready"
   | "reconnecting"
+  | "offline"
   | "forbidden"
   | "notFound"
   | "sessionExpired"
@@ -46,7 +47,7 @@ export type ReactionResult = MessageActionResult;
 /** Lo que `useChannelMessages` le entrega a la pantalla del chat (web y mobile). */
 export interface ChannelMessages {
   status: ChatStatus;
-  /** Texto para mostrar cuando `status` no es `ready`/`loading`/`reconnecting`. */
+  /** Texto para mostrar cuando `status` no es `ready`/`loading`/`reconnecting`/`offline`. */
   statusMessage: string | null;
   /** `null` mientras carga el historial. De mas viejo a mas nuevo. */
   messages: Message[] | null;
@@ -91,11 +92,16 @@ const TERMINAL_CHAT_STATUSES: ReadonlySet<ChatStatus> = new Set([
   "sessionExpired",
 ]);
 
-/** Un corte de conexion pasa a "reconectando" salvo que el estado ya sea terminal. */
+/**
+ * Un corte de conexion pasa a "reconectando" salvo que el estado ya sea
+ * terminal o que ya se haya dado por perdida la conexion ("offline").
+ */
 export function chatStatusAfterConnectionLoss(
   previous: ChatStatus,
 ): ChatStatus {
-  return TERMINAL_CHAT_STATUSES.has(previous) ? previous : "reconnecting";
+  return TERMINAL_CHAT_STATUSES.has(previous) || previous === "offline"
+    ? previous
+    : "reconnecting";
 }
 
 /**

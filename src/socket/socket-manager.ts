@@ -49,12 +49,19 @@ export interface SocketManager<S> {
   closeSocket: () => void;
   /** Avisa cuando la sesion murio y el socket se cerro (no hay forma de seguir). */
   onSocketSessionExpired: (listener: () => void) => () => void;
+  /** Avisa cuando se agotaron los reintentos y el socket quedo desconectado. */
+  onSocketGaveUp: (listener: () => void) => () => void;
 }
 
 export const SOCKET_IDLE_CLOSE_MS = 5 * 1000;
 /** Espera entre intentos de conseguir un ticket (backoff hasta el maximo). */
 export const SOCKET_RETRY_MIN_MS = 1 * 1000;
 export const SOCKET_RETRY_MAX_MS = 30 * 1000;
+/**
+ * Intentos de reconexion seguidos antes de rendirse: con la espera creciente
+ * (inmediato, 1, 2, 4, 8, 16 y 30 s) son poco mas de un minuto.
+ */
+export const SOCKET_MAX_RETRIES = 7;
 
 interface SocketState<S> {
   socket: S;
@@ -104,10 +111,23 @@ export function createSocketManager<S extends RealtimeSocket>(
   let state: SocketState<S> | null = null;
   let opening: Promise<true | { sessionExpired: boolean }> | null = null;
   const sessionExpiredListeners = new Set<() => void>();
+  const gaveUpListeners = new Set<() => void>();
 
   function onSocketSessionExpired(listener: () => void): () => void {
     sessionExpiredListeners.add(listener);
     return () => sessionExpiredListeners.delete(listener);
+  }
+
+  function onSocketGaveUp(listener: () => void): () => void {
+    gaveUpListeners.add(listener);
+    return () => gaveUpListeners.delete(listener);
+  }
+
+  /** Se agotaron los intentos: el socket queda cerrado hasta que algo pida reconectar. */
+  function giveUp(current: SocketState<S>): void {
+    current.reconnecting = false;
+    current.failures = 0;
+    gaveUpListeners.forEach((listener) => listener());
   }
 
   async function acquireSocket(): Promise<AcquireSocketResult<S>> {
@@ -207,7 +227,13 @@ export function createSocketManager<S extends RealtimeSocket>(
   }
 
   async function reconnect(current: SocketState<S>): Promise<void> {
+    // `failures` ya cuenta este cierre: los intentos hechos son los anteriores.
+    if (current.failures - 1 >= SOCKET_MAX_RETRIES) {
+      giveUp(current);
+      return;
+    }
     let delayMs = SOCKET_RETRY_MIN_MS;
+    let ticketFailures = 0;
     // El primer cierre se reintenta enseguida; si el siguiente tambien cierra sin
     // abrir, se espera cada vez mas (1 s, 2 s... hasta 30 s).
     if (current.failures > 1) {
@@ -236,6 +262,11 @@ export function createSocketManager<S extends RealtimeSocket>(
       }
 
       // Fallo transitorio (sin red, servicio caido): se reintenta con backoff.
+      ticketFailures += 1;
+      if (current.failures - 1 + ticketFailures >= SOCKET_MAX_RETRIES) {
+        giveUp(current);
+        return;
+      }
       await new Promise<void>((resolve) => {
         current.retryTimer = setTimeout(resolve, delayMs);
       });
@@ -253,5 +284,10 @@ export function createSocketManager<S extends RealtimeSocket>(
     current.socket.disconnect();
   }
 
-  return { acquireSocket, closeSocket, onSocketSessionExpired };
+  return {
+    acquireSocket,
+    closeSocket,
+    onSocketSessionExpired,
+    onSocketGaveUp,
+  };
 }
