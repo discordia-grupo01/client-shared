@@ -44,6 +44,14 @@ export function applyNewDm(
   currentUserId: string | null,
 ): DirectConversation[] {
   const existing = list.find((c) => c.id === payload.conversation_id);
+  // Un evento repetido o que llega tarde (ya se vio uno mas nuevo) no pisa el
+  // estado: no puede volver a dejar sin leer lo que ya se leyo.
+  if (
+    existing?.last_message &&
+    !isNewerMessage(payload.message, existing.last_message)
+  ) {
+    return [...list];
+  }
   const fromPartner = payload.message.user_id !== currentUserId;
   return upsertConversation(list, {
     id: payload.conversation_id,
@@ -53,6 +61,65 @@ export function applyNewDm(
     last_message_at: payload.message.inserted_at,
     last_message: payload.message,
   });
+}
+
+function timeOf(conversation: DirectConversation): number {
+  const at =
+    conversation.last_message?.inserted_at ?? conversation.last_message_at;
+  return Date.parse(at ?? "") || 0;
+}
+
+function isNewerMessage(
+  candidate: { id: string; inserted_at: string },
+  current: { id: string; inserted_at: string },
+): boolean {
+  if (candidate.id === current.id) return false;
+  return Date.parse(candidate.inserted_at) >= Date.parse(current.inserted_at);
+}
+
+/**
+ * Junta la lista que devolvio el back con lo que ya se sabe localmente. La
+ * lista pudo pedirse antes de que llegaran mensajes por el socket o de que se
+ * leyera una conversacion, asi que no debe pisarlos:
+ * - si lo local tiene un mensaje mas nuevo, se queda lo local;
+ * - si es el mismo ultimo mensaje, esta sin leer solo si ambos lo dicen;
+ * - lo que solo existe localmente (recien creado al enviar) se conserva.
+ */
+export function mergeConversations(
+  local: readonly DirectConversation[],
+  remote: readonly DirectConversation[],
+): DirectConversation[] {
+  const localById = new Map(local.map((c) => [c.id, c]));
+  const merged = remote.map((incoming) => {
+    const mine = localById.get(incoming.id);
+    if (!mine?.last_message || !incoming.last_message) return incoming;
+    if (isNewerMessage(mine.last_message, incoming.last_message)) return mine;
+    if (mine.last_message.id === incoming.last_message.id) {
+      return { ...incoming, unread: mine.unread && incoming.unread };
+    }
+    return incoming;
+  });
+  const remoteIds = new Set(remote.map((c) => c.id));
+  const onlyLocal = local.filter((c) => !remoteIds.has(c.id));
+  return [...merged, ...onlyLocal].sort((a, b) => timeOf(b) - timeOf(a));
+}
+
+/**
+ * Deja `conversationId` leida en la lista, una vez que el back confirmo la
+ * lectura. Si mientras tanto llego otro mensaje (`lastMessageId` ya no es el
+ * ultimo) sigue sin leer: esa lectura no lo cubria.
+ */
+export function markConversationReadIn(
+  list: readonly DirectConversation[],
+  conversationId: string,
+  lastMessageId: string | undefined,
+): DirectConversation[] {
+  return list.map((conversation) =>
+    conversation.id === conversationId &&
+    conversation.last_message?.id === lastMessageId
+      ? { ...conversation, unread: false }
+      : conversation,
+  );
 }
 
 /**
@@ -80,6 +147,18 @@ export function withLocalReads(
     readKeys.has(
       conversationReadKey(summary.conversationId, summary.lastMessage?.id),
     )
+      ? { ...summary, isUnread: false }
+      : summary,
+  );
+}
+
+/** La conversacion que se esta mirando no se marca sin leer: se lee al llegar. */
+export function withActiveRead(
+  summaries: readonly ConversationSummary[],
+  activePartnerId: string | null,
+): ConversationSummary[] {
+  return summaries.map((summary) =>
+    summary.isUnread && summary.partner.id === activePartnerId
       ? { ...summary, isUnread: false }
       : summary,
   );
@@ -140,6 +219,24 @@ export function activeConversationSummary(
       blockedByMe: blockedIds.has(partnerId),
     }
   );
+}
+
+/**
+ * Suma a la lista los borradores: contactos con los que se abrio el chat pero
+ * todavia no hay mensajes (en el back no existe la conversacion). Van arriba y
+ * dejan de ser borrador cuando aparece la conversacion real.
+ */
+export function withDraftConversations(
+  summaries: readonly ConversationSummary[],
+  draftPartnerIds: readonly string[],
+  partners: Readonly<Record<string, MessageAuthor>>,
+  blockedIds: ReadonlySet<string>,
+): ConversationSummary[] {
+  const withConversation = new Set(summaries.map((s) => s.partner.id));
+  const drafts = draftPartnerIds
+    .filter((id) => !withConversation.has(id))
+    .map((id) => activeConversationSummary(id, [], partners, blockedIds));
+  return [...drafts, ...summaries];
 }
 
 /**

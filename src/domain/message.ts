@@ -49,6 +49,14 @@ export interface Message {
 
   /** Archivos adjuntos; ausente o vacio en mensajes sin adjuntos. */
   attachments?: MessageAttachment[];
+
+  /**
+   * Solo en el cliente, nunca viene del back (que no guarda mensajes fallidos):
+   * un mensaje propio que no se pudo enviar. Ver `failed-messages`.
+   */
+  delivery?: "failed";
+  /** Motivo del fallo cuando `delivery` es `failed`. */
+  delivery_error?: string;
 }
 
 /** Respuesta de `GET /v1/channels/:id/messages` (de mas viejo a mas nuevo). */
