@@ -108,6 +108,7 @@ export * from "./format/mention-draft-segments";
 export * from "./chat/attachment-upload";
 export * from "./chat/channel-chat";
 export * from "./chat/direct-messages";
+export * from "./chat/failed-messages";
 export * from "./chat/mentions";
 export * from "./chat/mention-suggestions";
 export * from "./chat/mention-draft";

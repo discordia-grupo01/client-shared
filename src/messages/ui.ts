@@ -326,6 +326,7 @@ export const RETRY_LABEL = "Reintentar";
 export const EDIT_MESSAGE_LABEL = "Editar mensaje";
 export const DELETE_MESSAGE_LABEL = "Eliminar mensaje";
 export const MESSAGE_EDITED_LABEL = "(editado)";
+export const MESSAGE_NOT_SENT_LABEL = "No se pudo enviar el mensaje.";
 export const DELETE_MESSAGE_CONFIRM_TITLE = "¿Eliminar mensaje?";
 export const DELETE_MESSAGE_CONFIRM_BODY =
   "Se va a eliminar para todos los miembros y no se puede deshacer.";
