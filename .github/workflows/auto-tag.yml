@@ -7,6 +7,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: auto-tag-release
+  cancel-in-progress: false
+
 jobs:
   release:
     # Evita que el commit de bump dispare este mismo workflow otra vez
@@ -62,9 +66,20 @@ jobs:
       - name: Bump version and tag
         id: bump
         run: |
-          NEW_VERSION=$(npm version ${{ steps.bump-type.outputs.type }} -m "chore: bump version to %s [skip ci]")
-          git push origin HEAD:main
-          git push origin "$NEW_VERSION"
+          git fetch --tags --force origin
+          npm version ${{ steps.bump-type.outputs.type }} --no-git-tag-version > /dev/null
+          VERSION=$(node -p "require('./package.json').version")
+          # Si el tag ya existe (creado a mano o por un run que fallo a medias), seguimos subiendo patch
+          while git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null; do
+            echo "::warning::El tag v$VERSION ya existe, se saltea"
+            npm version patch --no-git-tag-version > /dev/null
+            VERSION=$(node -p "require('./package.json').version")
+          done
+          NEW_VERSION="v$VERSION"
+          git commit -am "chore: bump version to $VERSION [skip ci]"
+          git tag -a "$NEW_VERSION" -m "chore: bump version to $VERSION [skip ci]"
+          # --atomic: o se suben el commit y el tag juntos, o ninguno
+          git push --atomic origin HEAD:main "$NEW_VERSION"
           echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Sync develop with the version bump
