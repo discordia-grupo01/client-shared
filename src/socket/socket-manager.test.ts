@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   createSocketManager,
+  SOCKET_MAX_RETRIES,
   type SocketLifecycleControls,
   type SocketManager,
   type SocketTicketResult,
@@ -286,6 +287,50 @@ describe("reconexion con un ticket nuevo", () => {
 
     expect(fetchTicket).not.toHaveBeenCalled();
     expect(socket.connect).not.toHaveBeenCalled();
+  });
+});
+
+describe("limite de reintentos", () => {
+  async function openAndClose() {
+    await manager.acquireSocket();
+    const socket = lastSocket();
+    socket.params();
+    socket.connect.mockClear();
+    return socket;
+  }
+
+  it("si el servidor rechaza siempre, se rinde tras el maximo de intentos y avisa", async () => {
+    const socket = await openAndClose();
+    const gaveUp = vi.fn();
+    manager.onSocketGaveUp(gaveUp);
+    fetchTicket.mockResolvedValue(ticket("X"));
+
+    for (let i = 0; i < SOCKET_MAX_RETRIES; i += 1) {
+      socket.closeCallback?.();
+      await vi.advanceTimersByTimeAsync(60_000);
+    }
+    expect(socket.connect).toHaveBeenCalledTimes(SOCKET_MAX_RETRIES);
+    expect(gaveUp).not.toHaveBeenCalled();
+
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(socket.connect).toHaveBeenCalledTimes(SOCKET_MAX_RETRIES);
+    expect(gaveUp).toHaveBeenCalledTimes(1);
+  });
+
+  it("si no consigue ticket por la red, se rinde tras el maximo de intentos", async () => {
+    const socket = await openAndClose();
+    const gaveUp = vi.fn();
+    manager.onSocketGaveUp(gaveUp);
+    fetchTicket.mockClear();
+    fetchTicket.mockResolvedValue(TRANSIENT);
+
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(5 * 60_000);
+
+    expect(fetchTicket).toHaveBeenCalledTimes(SOCKET_MAX_RETRIES);
+    expect(socket.connect).not.toHaveBeenCalled();
+    expect(gaveUp).toHaveBeenCalledTimes(1);
   });
 });
 
