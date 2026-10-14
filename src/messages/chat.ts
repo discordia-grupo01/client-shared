@@ -82,10 +82,13 @@ export const MENTIONS_MARK_READ_FAILED =
 
 /** El WebSocket se cayo y se esta reconectando. */
 export const CHAT_RECONNECTING_NOTICE = "Reconectando…";
-export const CHAT_OFFLINE_NOTICE_WEB =
-  "Error de conexión. Recargá la página para volver a conectarte.";
-export const CHAT_OFFLINE_NOTICE_MOBILE =
-  "Error de conexión. Reiniciá la app para volver a conectarte.";
+export const CHAT_OFFLINE_TITLE = "Sin conexión con el chat";
+export const CHAT_OFFLINE_HINT_WEB =
+  "Recargá la página para volver a conectarte.";
+export const CHAT_OFFLINE_HINT_MOBILE =
+  "Reiniciá la app para volver a conectarte.";
+export const CHAT_OFFLINE_BAR_WEB = "Sin conexión. Recargá la página.";
+export const CHAT_OFFLINE_BAR_MOBILE = "Sin conexión. Reiniciá la app.";
 
 /** Texto cuando el back cierra el canal porque ya no hay acceso (`access_revoked`). */
 export const ACCESS_REVOKED_MESSAGES: Readonly<

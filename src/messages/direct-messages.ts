@@ -1,7 +1,7 @@
 import { messageErrorFor } from "./chat";
 
 export const DM_CONVERSATIONS_LOAD_FAILED =
-  "No pudimos cargar tus conversaciones. Intentá de nuevo.";
+  "No pudimos cargar tus conversaciones.";
 export const DM_MARK_READ_FAILED =
   "No pudimos marcar la conversación como leída.";
 export const DM_SEND_FAILED = "No pudimos enviar el mensaje.";
