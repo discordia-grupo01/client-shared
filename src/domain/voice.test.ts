@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  pinOnScreenShareChange,
   presenceByChannel,
+  screenSharerOf,
   sortVoiceParticipants,
   toVoicePresence,
   voiceErrorCodeOf,
@@ -162,5 +164,47 @@ describe("voiceSidebarPreview", () => {
 
     expect(shown).toHaveLength(4);
     expect(hidden).toEqual([]);
+  });
+});
+
+describe("screenSharerOf", () => {
+  const base: VoiceParticipant = {
+    identity: "u-ana",
+    name: "Ana",
+    isLocal: false,
+    muted: false,
+    speaking: false,
+    cameraOn: false,
+    screenSharing: false,
+    mutedForMe: false,
+  };
+
+  it("devuelve a quien comparte pantalla, sin contarte a vos", () => {
+    expect(
+      screenSharerOf([
+        { ...base, identity: "yo", isLocal: true, screenSharing: true },
+        { ...base, identity: "u-beto", screenSharing: true },
+      ]),
+    ).toBe("u-beto");
+  });
+
+  it("devuelve null si nadie comparte", () => {
+    expect(screenSharerOf([base])).toBeNull();
+  });
+});
+
+describe("pinOnScreenShareChange", () => {
+  it("fija a quien empieza a compartir", () => {
+    expect(pinOnScreenShareChange(null, null, "u-ana")).toBe("u-ana");
+    expect(pinOnScreenShareChange("u-beto", null, "u-ana")).toBe("u-ana");
+  });
+
+  it("vuelve a la grilla cuando deja de compartir quien estaba fijado", () => {
+    expect(pinOnScreenShareChange("u-ana", "u-ana", null)).toBeNull();
+  });
+
+  it("respeta lo que elegiste mientras no cambie quien comparte", () => {
+    expect(pinOnScreenShareChange(null, "u-ana", "u-ana")).toBeNull();
+    expect(pinOnScreenShareChange("u-beto", "u-ana", null)).toBe("u-beto");
   });
 });

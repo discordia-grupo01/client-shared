@@ -30,6 +30,8 @@ describe("parseVoiceBridgeEvent", () => {
     { type: "cameraStopped" },
     { type: "muteForMeRequested", identity: "u-beto" },
     { type: "participantsRequested" },
+    { type: "pinRequested", identity: "u-beto" },
+    { type: "pinRequested", identity: null },
     { type: "disconnected", reason: "removed" },
     { type: "error", error: "mic_denied" },
     { type: "error", error: "camera_denied" },

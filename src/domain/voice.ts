@@ -104,6 +104,25 @@ export function sortVoiceParticipants(
   });
 }
 
+export function screenSharerOf(
+  participants: readonly VoiceParticipant[],
+): string | null {
+  const sharer = participants.find(
+    (participant) => participant.screenSharing && !participant.isLocal,
+  );
+  return sharer?.identity ?? null;
+}
+
+export function pinOnScreenShareChange(
+  pinned: string | null,
+  previousSharer: string | null,
+  sharer: string | null,
+): string | null {
+  if (sharer === previousSharer) return pinned;
+  if (sharer) return sharer;
+  return pinned === previousSharer ? null : pinned;
+}
+
 export interface VoiceSidebarPreview<T> {
   shown: T[];
   hidden: T[];
