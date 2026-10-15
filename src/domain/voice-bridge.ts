@@ -29,7 +29,6 @@ export type VoiceBridgeCommand =
   | { type: "setMicrophoneEnabled"; enabled: boolean }
   | { type: "setCameraEnabled"; enabled: boolean }
   | { type: "setMutedForMe"; identity: string; muted: boolean }
-  /** A quien se ve en grande en la llamada; `null` vuelve a la grilla. */
   | { type: "setPinned"; identity: string | null }
   | {
       type: "setAppearance";
@@ -49,6 +48,7 @@ export type VoiceBridgeEvent =
   | { type: "cameraStopped" }
   | { type: "muteForMeRequested"; identity: string }
   | { type: "participantsRequested" }
+  | { type: "pinRequested"; identity: string | null }
   | { type: "disconnected"; reason: VoiceDisconnectReason }
   | { type: "error"; error: VoiceMediaError };
 
@@ -159,6 +159,10 @@ export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
         : null;
     case "participantsRequested":
       return { type: "participantsRequested" };
+    case "pinRequested":
+      return message.identity === null || isNonEmptyString(message.identity)
+        ? { type: "pinRequested", identity: message.identity }
+        : null;
     case "disconnected":
       return oneOf(DISCONNECT_REASONS, message.reason)
         ? { type: "disconnected", reason: message.reason }
