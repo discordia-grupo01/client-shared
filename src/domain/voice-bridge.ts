@@ -29,6 +29,8 @@ export type VoiceBridgeCommand =
   | { type: "setMicrophoneEnabled"; enabled: boolean }
   | { type: "setCameraEnabled"; enabled: boolean }
   | { type: "setMutedForMe"; identity: string; muted: boolean }
+  /** A quien se ve en grande en la llamada; `null` vuelve a la grilla. */
+  | { type: "setPinned"; identity: string | null }
   | {
       type: "setAppearance";
       theme: ThemeName;
@@ -46,6 +48,7 @@ export type VoiceBridgeEvent =
   | { type: "speakPermission"; allowed: boolean }
   | { type: "cameraStopped" }
   | { type: "muteForMeRequested"; identity: string }
+  | { type: "participantsRequested" }
   | { type: "disconnected"; reason: VoiceDisconnectReason }
   | { type: "error"; error: VoiceMediaError };
 
@@ -154,6 +157,8 @@ export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
       return isNonEmptyString(message.identity)
         ? { type: "muteForMeRequested", identity: message.identity }
         : null;
+    case "participantsRequested":
+      return { type: "participantsRequested" };
     case "disconnected":
       return oneOf(DISCONNECT_REASONS, message.reason)
         ? { type: "disconnected", reason: message.reason }
@@ -194,6 +199,10 @@ export function parseVoiceBridgeCommand(
             identity: message.identity,
             muted: message.muted,
           }
+        : null;
+    case "setPinned":
+      return message.identity === null || isNonEmptyString(message.identity)
+        ? { type: "setPinned", identity: message.identity }
         : null;
     case "setAppearance": {
       const { localAvatarUrl } = message;
