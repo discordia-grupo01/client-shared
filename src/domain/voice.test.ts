@@ -197,10 +197,10 @@ describe("pinOnScreenShareChange", () => {
     );
   });
 
-  it("no te fija a vos cuando compartis", () => {
-    expect(
-      pinOnScreenShareChange(null, [], [sharing(viewer), sharer]),
-    ).toBeNull();
+  it("tambien te fija a vos cuando compartis", () => {
+    expect(pinOnScreenShareChange(null, [], [sharing(viewer), sharer])).toBe(
+      "yo",
+    );
   });
 
   it("vuelve a la grilla cuando deja de compartir quien estaba fijado", () => {
