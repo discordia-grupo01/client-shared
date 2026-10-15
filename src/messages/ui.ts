@@ -139,6 +139,14 @@ export const VOICE_CAMERA_OFF_ACTION = "Apagar cámara";
 export const VOICE_SCREEN_SHARE_START = "Compartir pantalla";
 export const VOICE_SCREEN_SHARE_STOP = "Dejar de compartir pantalla";
 export const VOICE_CONTROLS_LABEL = "Controles de la llamada";
+export const VOICE_PARTICIPANTS_TITLE = "Participantes";
+export const VOICE_PARTICIPANTS_BUTTON = "Personas";
+export const VOICE_PARTICIPANTS_OPEN = "Ver participantes";
+export const VOICE_PARTICIPANTS_CLOSE = "Cerrar participantes";
+export const VOICE_PIN = "Fijar";
+export const VOICE_UNPIN = "Quitar";
+export const VOICE_BACK_TO_GRID = "Volver a la grilla";
+export const VOICE_SHOW_LESS = "Mostrar menos";
 
 // Pantalla previa a entrar a un canal de voz.
 export const VOICE_JOIN = "Unirse al canal";
@@ -157,6 +165,24 @@ export function voicePresenceCount(count: number): string {
   return count === 1
     ? "Hay 1 persona en el canal."
     : `Hay ${count} personas en el canal.`;
+}
+
+/** Tile del final de la grilla y fila de la lista de canales con quienes no entran. */
+export function voiceHiddenCount(count: number): string {
+  return `+${count} más`;
+}
+
+export function voiceHiddenCountLabel(count: number): string {
+  return count === 1 ? "Ver 1 persona más" : `Ver ${count} personas más`;
+}
+
+/** Nombre en la lista de participantes: el tuyo lleva "(vos)". */
+export function voiceParticipantName(name: string, isLocal: boolean): string {
+  return isLocal ? `${name} (vos)` : name;
+}
+
+export function voicePinLabel(name: string, isPinned: boolean): string {
+  return isPinned ? `Dejar de fijar a ${name}` : `Fijar a ${name}`;
 }
 
 /** Segunda linea de "Voz conectada", arriba del panel de usuario. */
