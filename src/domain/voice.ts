@@ -120,7 +120,6 @@ export function pinOnScreenShareChange(
   const started = participants.find(
     (participant) =>
       participant.screenSharing &&
-      !participant.isLocal &&
       !previousSharingIds.includes(participant.identity),
   );
   if (started) return started.identity;
