@@ -5,6 +5,7 @@ import {
   sortVoiceParticipants,
   toVoicePresence,
   voiceErrorCodeOf,
+  voiceSidebarPreview,
   withLivePresence,
   type VoiceParticipant,
 } from "./voice";
@@ -138,5 +139,28 @@ describe("voiceErrorCodeOf", () => {
     expect(voiceErrorCodeOf({ message: "Unauthorized" })).toBeUndefined();
     expect(voiceErrorCodeOf(null)).toBeUndefined();
     expect(voiceErrorCodeOf("voice_forbidden")).toBeUndefined();
+  });
+});
+
+describe("voiceSidebarPreview", () => {
+  const people = [
+    { name: "Ana", speaking: false },
+    { name: "Beto", speaking: false },
+    { name: "Carla", speaking: true },
+    { name: "Dani", speaking: false },
+  ];
+
+  it("muestra primero a quien habla y respeta el orden del resto", () => {
+    const { shown, hidden } = voiceSidebarPreview(people, 2);
+
+    expect(shown.map((p) => p.name)).toEqual(["Carla", "Ana"]);
+    expect(hidden.map((p) => p.name)).toEqual(["Beto", "Dani"]);
+  });
+
+  it("no esconde a nadie si entran todos", () => {
+    const { shown, hidden } = voiceSidebarPreview(people, 5);
+
+    expect(shown).toHaveLength(4);
+    expect(hidden).toEqual([]);
   });
 });

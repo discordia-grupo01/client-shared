@@ -29,6 +29,7 @@ describe("parseVoiceBridgeEvent", () => {
     { type: "speakPermission", allowed: false },
     { type: "cameraStopped" },
     { type: "muteForMeRequested", identity: "u-beto" },
+    { type: "participantsRequested" },
     { type: "disconnected", reason: "removed" },
     { type: "error", error: "mic_denied" },
     { type: "error", error: "camera_denied" },
@@ -145,5 +146,18 @@ describe("parseVoiceBridgeCommand", () => {
     expect(
       parseVoiceBridgeCommand({ type: "setAppearance", theme: "dark" }),
     ).toBeNull();
+  });
+
+  it("fija a alguien o vuelve a la grilla", () => {
+    expect(
+      parseVoiceBridgeCommand({ type: "setPinned", identity: "u-beto" }),
+    ).toEqual({ type: "setPinned", identity: "u-beto" });
+    expect(
+      parseVoiceBridgeCommand({ type: "setPinned", identity: null }),
+    ).toEqual({ type: "setPinned", identity: null });
+    expect(
+      parseVoiceBridgeCommand({ type: "setPinned", identity: "" }),
+    ).toBeNull();
+    expect(parseVoiceBridgeCommand({ type: "setPinned" })).toBeNull();
   });
 });
