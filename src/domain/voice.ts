@@ -104,23 +104,34 @@ export function sortVoiceParticipants(
   });
 }
 
-export function screenSharerOf(
+export function screenSharingIds(
   participants: readonly VoiceParticipant[],
-): string | null {
-  const sharer = participants.find(
-    (participant) => participant.screenSharing && !participant.isLocal,
-  );
-  return sharer?.identity ?? null;
+): string[] {
+  return participants
+    .filter((participant) => participant.screenSharing)
+    .map((participant) => participant.identity);
 }
 
 export function pinOnScreenShareChange(
   pinned: string | null,
-  previousSharer: string | null,
-  sharer: string | null,
+  previousSharingIds: readonly string[],
+  participants: readonly VoiceParticipant[],
 ): string | null {
-  if (sharer === previousSharer) return pinned;
-  if (sharer) return sharer;
-  return pinned === previousSharer ? null : pinned;
+  const started = participants.find(
+    (participant) =>
+      participant.screenSharing &&
+      !participant.isLocal &&
+      !previousSharingIds.includes(participant.identity),
+  );
+  if (started) return started.identity;
+  const pinnedStopped =
+    pinned !== null &&
+    previousSharingIds.includes(pinned) &&
+    !participants.some(
+      (participant) =>
+        participant.identity === pinned && participant.screenSharing,
+    );
+  return pinnedStopped ? null : pinned;
 }
 
 export interface VoiceSidebarPreview<T> {

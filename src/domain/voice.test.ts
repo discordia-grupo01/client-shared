@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   pinOnScreenShareChange,
   presenceByChannel,
-  screenSharerOf,
+  screenSharingIds,
   sortVoiceParticipants,
   toVoicePresence,
   voiceErrorCodeOf,
@@ -167,44 +167,58 @@ describe("voiceSidebarPreview", () => {
   });
 });
 
-describe("screenSharerOf", () => {
-  const base: VoiceParticipant = {
-    identity: "u-ana",
-    name: "Ana",
-    isLocal: false,
-    muted: false,
-    speaking: false,
-    cameraOn: false,
-    screenSharing: false,
-    mutedForMe: false,
-  };
+const sharingBase: VoiceParticipant = {
+  identity: "u-ana",
+  name: "Ana",
+  isLocal: false,
+  muted: false,
+  speaking: false,
+  cameraOn: false,
+  screenSharing: false,
+  mutedForMe: false,
+};
+const viewer = { ...sharingBase, identity: "yo", isLocal: true };
+const sharer = sharingBase;
+const sharing = (participant: VoiceParticipant) => ({
+  ...participant,
+  screenSharing: true,
+});
 
-  it("devuelve a quien comparte pantalla, sin contarte a vos", () => {
-    expect(
-      screenSharerOf([
-        { ...base, identity: "yo", isLocal: true, screenSharing: true },
-        { ...base, identity: "u-beto", screenSharing: true },
-      ]),
-    ).toBe("u-beto");
-  });
-
-  it("devuelve null si nadie comparte", () => {
-    expect(screenSharerOf([base])).toBeNull();
+describe("screenSharingIds", () => {
+  it("lista a todos los que comparten, vos incluido", () => {
+    expect(screenSharingIds([sharing(viewer), sharer])).toEqual(["yo"]);
   });
 });
 
 describe("pinOnScreenShareChange", () => {
   it("fija a quien empieza a compartir", () => {
-    expect(pinOnScreenShareChange(null, null, "u-ana")).toBe("u-ana");
-    expect(pinOnScreenShareChange("u-beto", null, "u-ana")).toBe("u-ana");
+    expect(pinOnScreenShareChange(null, [], [viewer, sharing(sharer)])).toBe(
+      "u-ana",
+    );
+  });
+
+  it("no te fija a vos cuando compartis", () => {
+    expect(
+      pinOnScreenShareChange(null, [], [sharing(viewer), sharer]),
+    ).toBeNull();
   });
 
   it("vuelve a la grilla cuando deja de compartir quien estaba fijado", () => {
-    expect(pinOnScreenShareChange("u-ana", "u-ana", null)).toBeNull();
+    expect(
+      pinOnScreenShareChange("u-ana", ["u-ana"], [viewer, sharer]),
+    ).toBeNull();
+    expect(pinOnScreenShareChange("yo", ["yo"], [viewer, sharer])).toBeNull();
   });
 
-  it("respeta lo que elegiste mientras no cambie quien comparte", () => {
-    expect(pinOnScreenShareChange(null, "u-ana", "u-ana")).toBeNull();
-    expect(pinOnScreenShareChange("u-beto", "u-ana", null)).toBe("u-beto");
+  it("respeta lo que elegiste mientras sigue compartiendo", () => {
+    expect(
+      pinOnScreenShareChange(null, ["u-ana"], [viewer, sharing(sharer)]),
+    ).toBeNull();
+  });
+
+  it("no toca a alguien fijado a mano que no compartia", () => {
+    expect(pinOnScreenShareChange("yo", ["u-ana"], [viewer, sharer])).toBe(
+      "yo",
+    );
   });
 });
