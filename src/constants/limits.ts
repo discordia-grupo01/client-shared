@@ -52,6 +52,8 @@ export const MIN_CHANNEL_NAME = 1;
  */
 export const MEMBER_PAGE_LIMIT = 100;
 
+export const SEARCH_DEBOUNCE_MS = 300;
+
 /** Motivo de un baneo, en runas. Es opcional. */
 export const BAN_REASON_MAX_LENGTH = 512;
 

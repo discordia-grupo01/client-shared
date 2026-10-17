@@ -455,3 +455,20 @@ export const ROLE_MEMBERS_EMPTY = "Nadie tiene este rol todavía.";
 export function roleMembersCount(total: number): string {
   return total === 1 ? "1 miembro" : `${total} miembros`;
 }
+export function roleMembersWithTab(total: number): string {
+  return `Con este rol (${total})`;
+}
+export function roleMembersWithoutTab(total: number): string {
+  return `Sin este rol (${total})`;
+}
+export const ROLE_MEMBERS_WITHOUT_EMPTY =
+  "Todos los miembros ya tienen este rol.";
+export const ROLE_MEMBERS_EVERYONE_HINT =
+  "Todos los miembros del servidor tienen este rol automáticamente.";
+
+// --- Listados de miembros (paginados y con busqueda en el back) ---
+export const MEMBERS_SEARCH_LABEL = "Buscar miembros por nombre";
+export const MEMBERS_SEARCH_PLACEHOLDER = "Buscar por nombre...";
+export const MEMBERS_EMPTY_SEARCH =
+  "No hay miembros que coincidan con la búsqueda.";
+export const MEMBERS_LOADING_MORE = "Cargando más miembros...";

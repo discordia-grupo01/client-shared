@@ -37,3 +37,28 @@ export interface MemberInfo {
   avatarUrl: string | null;
   roleIds: string[];
 }
+
+export interface MemberPageQuery {
+  search?: string;
+  limit?: number;
+  offset?: number;
+  hasRole?: boolean;
+}
+
+export function memberPageQueryString(query: MemberPageQuery): string {
+  const params: string[] = [];
+  const search = query.search?.trim() ?? "";
+  if (search !== "") params.push(`q=${encodeURIComponent(search)}`);
+  if (query.hasRole === false) params.push("has_role=false");
+  if (query.limit != null) params.push(`limit=${query.limit}`);
+  if (query.offset) params.push(`offset=${query.offset}`);
+  return params.length > 0 ? `?${params.join("&")}` : "";
+}
+
+export function appendMembersPage(
+  loaded: readonly Member[],
+  page: readonly Member[],
+): Member[] {
+  const seen = new Set(loaded.map((member) => member.user_id));
+  return [...loaded, ...page.filter((member) => !seen.has(member.user_id))];
+}
