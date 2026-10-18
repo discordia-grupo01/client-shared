@@ -6,7 +6,8 @@
  * Las paginas son 1-based, porque es lo que ve el usuario.
  */
 
-export const DEFAULT_PAGE_SIZE = 20;
+export const DEFAULT_PAGE_SIZE = 15;
+export const TRANSFER_CANDIDATES_PAGE_SIZE = 10;
 
 /** Cuantos numeros de pagina se muestran a la vez en la barra. */
 export const PAGE_WINDOW_SIZE = 5;
