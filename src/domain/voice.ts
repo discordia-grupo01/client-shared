@@ -4,7 +4,9 @@
  * - `POST /api/voice/token` -> `VoiceToken` (entrar o cambiar de canal).
  * - `DELETE /api/voice/session` -> 204 (salir).
  * - `GET /api/voice/participants?server_id=` -> `VoiceParticipantsResponse`
- *   (quien esta en cada canal de voz, sin estar conectado: #20).
+ *   (snapshot inicial de quienes estan en cada canal de voz).
+ * - `/voice/socket`, topic `voice_server:<server_id>` -> eventos
+ *   `voice.participant_joined` y `voice.participant_left`.
  *
  * El audio no pasa por el Gateway: con `url` y `token` cada app se conecta
  * directo a LiveKit. Web con `livekit-client`; mobile desde un WebView que
