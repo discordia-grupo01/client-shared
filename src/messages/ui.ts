@@ -16,7 +16,7 @@
 export const EMPTY_HOME_TITLE = "Tu espacio está esperándote";
 export const CREATE_FIRST_SERVER_TITLE = "Crear mi primer servidor";
 export const CREATE_FIRST_SERVER_DESCRIPTION =
-  "Elegí un nombre e ícono. El resto lo hacemos nosotros: dos canales listos para usar desde el principio.";
+  "Elegí un nombre y, si querés, un ícono. El resto lo hacemos nosotros: dos canales listos para usar desde el principio.";
 export const JOIN_WITH_LINK_TITLE = "Unirme con un enlace";
 export const JOIN_WITH_LINK_DESCRIPTION =
   "¿Tenés un código de invitación? Pegalo acá y entrás al instante.";
@@ -39,6 +39,7 @@ export const ALREADY_MEMBER_SUFFIX = " ya te tenía como miembro.";
 
 // --- Perfil propio ---
 export const CHANGE_AVATAR_LABEL = "Cambiar foto de perfil";
+export const REMOVE_AVATAR_LABEL = "Eliminar foto de perfil";
 export const CANCEL_NAME_EDIT_LABEL = "Cancelar edición del nombre";
 export const DESCRIPTION_PLACEHOLDER = "Contá algo sobre vos...";
 export const NO_DESCRIPTION_YET = "Todavía no agregaste una descripción.";
