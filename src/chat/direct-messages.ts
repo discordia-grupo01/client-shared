@@ -15,6 +15,7 @@ import { validateMessageContent } from "../validation/message";
 import {
   pushToChannel,
   withAttachmentIds,
+  withClientId,
   type MessageActionResult,
   type RealtimeChannel,
 } from "./channel-chat";
@@ -311,6 +312,7 @@ export function sendDirectMessage(
   content: string,
   onSent: (sent: SentDmPayload) => void,
   attachmentIds: readonly string[] = [],
+  clientId?: string,
 ): Promise<SendDmResult> {
   const invalid = validateMessageContent(content, attachmentIds.length > 0);
   if (invalid) return Promise.resolve({ ok: false, message: invalid });
@@ -318,7 +320,7 @@ export function sendDirectMessage(
     room,
     isJoined,
     "send_dm",
-    withAttachmentIds({ to, content }, attachmentIds),
+    withClientId(withAttachmentIds({ to, content }, attachmentIds), clientId),
     {
       failedMessage: DM_SEND_FAILED,
       errorMessageFor: dmErrorFor,

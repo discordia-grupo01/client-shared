@@ -337,6 +337,7 @@ describe("sendDirectMessage", () => {
     expect(resolved).toEqual({
       ok: false,
       message: "No se pudo entregar el mensaje.",
+      retryable: false,
     });
   });
 

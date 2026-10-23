@@ -38,7 +38,13 @@ export type ChatStatus =
   | "sessionExpired"
   | "error";
 
-export type MessageActionResult = { ok: true } | { ok: false; message: string };
+/**
+ * `retryable` solo vale en un fallo: `true` si repetir el pedido puede salir
+ * bien (sin conexion, timeout, back caido) y `false` si el back lo rechazo a
+ * proposito (sin permiso, palabra prohibida).
+ */
+export type MessageActionResult =
+  { ok: true } | { ok: false; message: string; retryable?: boolean };
 export type SendMessageResult = MessageActionResult;
 export type DeleteMessageResult = MessageActionResult;
 export type EditMessageResult = MessageActionResult;
@@ -323,7 +329,11 @@ export function pushToChannel(
   payload: object,
   options: PushOptions,
 ): Promise<MessageActionResult> {
-  const failed = { ok: false, message: options.failedMessage } as const;
+  const failed = {
+    ok: false,
+    message: options.failedMessage,
+    retryable: true,
+  } as const;
   const errorMessageFor = options.errorMessageFor ?? messageErrorFor;
   return new Promise((resolve) => {
     if (!room || !isJoined) return resolve(failed);
@@ -342,6 +352,7 @@ export function pushToChannel(
             code === "BANNED_WORD"
               ? bannedWordMessage(bannedWordsOf(response))
               : errorMessageFor(code, options.failedMessage),
+          retryable: code === undefined || code === "MESSAGES_UNAVAILABLE",
         });
       })
       .receive("timeout", () => resolve(failed));
@@ -356,6 +367,14 @@ export function withAttachmentIds<T extends object>(
   return attachmentIds.length > 0
     ? { ...payload, attachment_ids: [...attachmentIds] }
     : payload;
+}
+
+/** Payload de `new_message`/`send_dm`: `client_id` solo viaja en los envios que se pueden reintentar. */
+export function withClientId<T extends object>(
+  payload: T,
+  clientId?: string,
+): T | (T & { client_id: string }) {
+  return clientId ? { ...payload, client_id: clientId } : payload;
 }
 
 /** `pushToChannel` sobre el canal de un chat: solo se manda con el chat `ready`. */

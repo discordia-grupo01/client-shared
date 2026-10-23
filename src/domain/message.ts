@@ -51,10 +51,17 @@ export interface Message {
   attachments?: MessageAttachment[];
 
   /**
-   * Solo en el cliente, nunca viene del back (que no guarda mensajes fallidos):
-   * un mensaje propio que no se pudo enviar. Ver `failed-messages`.
+   * Id que genera el cliente al enviar. El back lo devuelve en el mensaje (y en
+   * su eco por el socket): asi se reconoce el mensaje propio y un reintento no
+   * lo duplica.
    */
-  delivery?: "failed";
+  client_id?: string;
+
+  /**
+   * Solo en el cliente, nunca viene del back: un mensaje propio que todavia se
+   * esta enviando (`sending`) o que no se pudo enviar (`failed`). Ver `send-queue`.
+   */
+  delivery?: "sending" | "failed";
   /** Motivo del fallo cuando `delivery` es `failed`. */
   delivery_error?: string;
 }
