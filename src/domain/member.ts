@@ -13,6 +13,8 @@ export interface Member {
   profile?: MemberProfile | null;
   /** Hasta cuando esta silenciado (ISO); `null` o ausente si no lo esta. */
   muted_until?: string | null;
+  /** Ids de sus roles (`@everyone` incluido); se cruzan con `GET /roles`. */
+  role_ids?: string[];
 }
 
 /** Paginado: el back usa limit 20 por defecto y corta en 100. */

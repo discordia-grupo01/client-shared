@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { PERMISSION_COPY } from "../constants/roles";
 
 import {
+  highestRoleOf,
   outranksRole,
   removesViewChannelsFromEveryone,
   ROLE_PERMISSIONS,
@@ -188,5 +189,36 @@ describe("removesViewChannelsFromEveryone", () => {
         [],
       ),
     ).toBe(false);
+  });
+});
+
+describe("highestRoleOf", () => {
+  const role = (id: string, position: number, is_everyone = false) => ({
+    id,
+    position,
+    is_everyone,
+  });
+  const roles = [
+    role("r3", 3),
+    role("r1", 1),
+    role("r2", 2),
+    role("every", 0, true),
+  ];
+
+  it("elige el de menor position entre los que tiene el miembro", () => {
+    expect(highestRoleOf(["r3", "r2", "every"], roles)?.id).toBe("r2");
+  });
+
+  it("es null si solo tiene @everyone", () => {
+    expect(highestRoleOf(["every"], roles)).toBeNull();
+  });
+
+  it("es null sin roles o sin role_ids", () => {
+    expect(highestRoleOf([], roles)).toBeNull();
+    expect(highestRoleOf(undefined, roles)).toBeNull();
+  });
+
+  it("ignora ids que no estan en la lista de roles", () => {
+    expect(highestRoleOf(["gone"], roles)).toBeNull();
   });
 });
