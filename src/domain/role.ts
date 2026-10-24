@@ -97,6 +97,27 @@ export function sortRolesByPosition<
 }
 
 /**
+ * El rol que define el nombre y el color de un miembro: el de menor `position`
+ * (el mas alto) entre los que tiene, sin contar `@everyone`. Es `null` si no
+ * tiene ninguno, y entonces el nombre conserva el color normal.
+ *
+ * `roles` son todos los roles del servidor (`GET /roles`); se cruzan con los
+ * `role_ids` del miembro en memoria, sin pedir nada por miembro.
+ */
+export function highestRoleOf<
+  T extends Pick<Role, "id" | "position" | "is_everyone">,
+>(roleIds: readonly string[] | undefined, roles: readonly T[]): T | null {
+  if (!roleIds || roleIds.length === 0) return null;
+  const held = new Set(roleIds);
+  let top: T | null = null;
+  for (const role of roles) {
+    if (role.is_everyone || !held.has(role.id)) continue;
+    if (top === null || role.position < top.position) top = role;
+  }
+  return top;
+}
+
+/**
  * Contexto minimo para evaluar, del lado del cliente, si el usuario actual
  * puede ejercer un permiso de gestion. Espeja `role.Standing.Has` del backend
  * (`servers/internal/model/role/standing.go`): el owner puede todo, el resto
