@@ -318,6 +318,90 @@ describe("limite de reintentos", () => {
     expect(gaveUp).toHaveBeenCalledTimes(1);
   });
 
+  async function giveUpAfterMaxRetries() {
+    const socket = await openAndClose();
+    fetchTicket.mockResolvedValue(ticket("X"));
+    for (let i = 0; i <= SOCKET_MAX_RETRIES; i += 1) {
+      socket.closeCallback?.();
+      await vi.advanceTimersByTimeAsync(60_000);
+    }
+    socket.connect.mockClear();
+    fetchTicket.mockClear();
+    return socket;
+  }
+
+  it("despues de rendirse, pedir el socket otra vez lo reabre con un ticket nuevo", async () => {
+    const socket = await giveUpAfterMaxRetries();
+    fetchTicket.mockResolvedValue(ticket("NUEVO"));
+
+    const result = await manager.acquireSocket();
+
+    expect(result.ok).toBe(true);
+    expect(fetchTicket).toHaveBeenCalledTimes(1);
+    expect(socket.connect).toHaveBeenCalledTimes(1);
+    expect(socket.params()).toEqual({ ticket: "NUEVO" });
+    expect(sockets).toHaveLength(1);
+  });
+
+  it("despues de rendirse, si el servicio sigue caido avisa enseguida y no abre nada", async () => {
+    const socket = await giveUpAfterMaxRetries();
+    fetchTicket.mockResolvedValue(TRANSIENT);
+
+    const result = await manager.acquireSocket();
+
+    expect(result).toEqual({ ok: false, sessionExpired: false });
+    expect(socket.connect).not.toHaveBeenCalled();
+  });
+
+  it("despues de un intento fallido, el siguiente pedido vuelve a intentar", async () => {
+    const socket = await giveUpAfterMaxRetries();
+    fetchTicket.mockResolvedValue(TRANSIENT);
+    await manager.acquireSocket();
+    fetchTicket.mockResolvedValue(ticket("OTRO"));
+
+    const result = await manager.acquireSocket();
+
+    expect(result.ok).toBe(true);
+    expect(socket.connect).toHaveBeenCalledTimes(1);
+  });
+
+  it("varios pedidos a la vez tras rendirse comparten un solo ticket", async () => {
+    await giveUpAfterMaxRetries();
+    fetchTicket.mockResolvedValue(ticket("NUEVO"));
+
+    const [a, b] = await Promise.all([
+      manager.acquireSocket(),
+      manager.acquireSocket(),
+    ]);
+
+    expect(a.ok && b.ok).toBe(true);
+    expect(fetchTicket).toHaveBeenCalledTimes(1);
+  });
+
+  it("si la sesion murio al reabrir, cierra el socket y avisa", async () => {
+    await giveUpAfterMaxRetries();
+    const expired = vi.fn();
+    manager.onSocketSessionExpired(expired);
+    fetchTicket.mockResolvedValue(SESSION_DEAD);
+
+    const result = await manager.acquireSocket();
+
+    expect(result).toEqual({ ok: false, sessionExpired: true });
+    expect(expired).toHaveBeenCalledTimes(1);
+  });
+
+  it("reabierto, si vuelve a cerrarse reintenta de nuevo desde cero", async () => {
+    const socket = await giveUpAfterMaxRetries();
+    fetchTicket.mockResolvedValue(ticket("NUEVO"));
+    await manager.acquireSocket();
+    socket.connect.mockClear();
+
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(socket.connect).toHaveBeenCalledTimes(1);
+  });
+
   it("si no consigue ticket por la red, se rinde tras el maximo de intentos", async () => {
     const socket = await openAndClose();
     const gaveUp = vi.fn();
