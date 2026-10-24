@@ -76,6 +76,8 @@ interface SocketState<S> {
   failures: number;
   /** La plataforma pidio no reconectar (ej. la pagina se esta yendo). */
   reconnectSuspended: boolean;
+  /** Se agotaron los reintentos: el socket esta cerrado hasta que alguien lo pida de nuevo. */
+  gaveUp: boolean;
   stopLifecycle: () => void;
 }
 
@@ -110,6 +112,7 @@ export function createSocketManager<S extends RealtimeSocket>(
 ): SocketManager<S> {
   let state: SocketState<S> | null = null;
   let opening: Promise<true | { sessionExpired: boolean }> | null = null;
+  let reviving: Promise<true | { sessionExpired: boolean }> | null = null;
   const sessionExpiredListeners = new Set<() => void>();
   const gaveUpListeners = new Set<() => void>();
 
@@ -127,6 +130,7 @@ export function createSocketManager<S extends RealtimeSocket>(
   function giveUp(current: SocketState<S>): void {
     current.reconnecting = false;
     current.failures = 0;
+    current.gaveUp = true;
     gaveUpListeners.forEach((listener) => listener());
   }
 
@@ -143,8 +147,47 @@ export function createSocketManager<S extends RealtimeSocket>(
             typeof result === "object" ? result.sessionExpired : false,
         };
       }
+    } else if (state.gaveUp) {
+      // Quien lo pide ahora quiere volver a intentarlo: se reabre el mismo
+      // socket (los canales que ya estan en el se vuelven a unir solos).
+      const current = state;
+      reviving ??= revive(current).finally(() => {
+        reviving = null;
+      });
+      const result = await reviving;
+      if (result !== true || !state) {
+        return {
+          ok: false,
+          sessionExpired:
+            typeof result === "object" ? result.sessionExpired : false,
+        };
+      }
     }
     return { ok: true, ...lease(state) };
+  }
+
+  /**
+   * Vuelve a abrir un socket que se rindio. Si no hay ticket (servicio caido)
+   * no abre nada y el socket sigue rendido: quien lo pidio se entera enseguida.
+   */
+  async function revive(
+    current: SocketState<S>,
+  ): Promise<true | { sessionExpired: boolean }> {
+    const result = await options.fetchTicket();
+    if (state !== current) return { sessionExpired: false };
+    if (!result.ok) {
+      if (result.sessionExpired) {
+        closeSocket();
+        sessionExpiredListeners.forEach((listener) => listener());
+      }
+      return { sessionExpired: result.sessionExpired };
+    }
+    current.gaveUp = false;
+    current.ticket = result.ticket;
+    current.failures = 0;
+    current.reconnecting = false;
+    current.socket.connect();
+    return true;
   }
 
   function lease(current: SocketState<S>): SocketLease<S> {
@@ -188,6 +231,7 @@ export function createSocketManager<S extends RealtimeSocket>(
       reconnecting: false,
       failures: 0,
       reconnectSuspended: false,
+      gaveUp: false,
       stopLifecycle: () => {},
     };
     state = current;
@@ -220,6 +264,7 @@ export function createSocketManager<S extends RealtimeSocket>(
     if (state !== current || current.reconnecting || current.reconnectSuspended)
       return;
     current.reconnecting = true;
+    current.gaveUp = false;
     current.failures += 1;
     current.socket.disconnect(() => {
       void reconnect(current);

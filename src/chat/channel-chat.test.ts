@@ -332,11 +332,16 @@ describe("pushMessageEvent", () => {
   it("no manda nada si el canal no esta unido", async () => {
     const { room, result } = push("reconnecting");
 
-    expect(await result).toEqual({ ok: false, message: "fallo" });
+    expect(await result).toEqual({
+      ok: false,
+      message: "fallo",
+      retryable: true,
+    });
     expect(room.push).not.toHaveBeenCalled();
     expect(await pushMessageEvent(null, "ready", "e", {}, options)).toEqual({
       ok: false,
       message: "fallo",
+      retryable: true,
     });
   });
 
@@ -375,6 +380,7 @@ describe("pushMessageEvent", () => {
       ok: false,
       message:
         "Tu mensaje contiene palabras prohibidas en este servidor: «tonto», «no sirve».",
+      retryable: false,
     });
   });
 
@@ -386,17 +392,44 @@ describe("pushMessageEvent", () => {
     expect(await result).toEqual({
       ok: false,
       message: "Tu mensaje contiene una palabra prohibida en este servidor.",
+      retryable: false,
     });
   });
 
   it("un error desconocido o un timeout usa el mensaje de fallo", async () => {
     const unknown = push();
     unknown.room.pushes[0].push.fire("error", { error: { code: "???" } });
-    expect(await unknown.result).toEqual({ ok: false, message: "fallo" });
+    expect(await unknown.result).toEqual({
+      ok: false,
+      message: "fallo",
+      retryable: false,
+    });
 
     const timeout = push();
     timeout.room.pushes[0].push.fire("timeout");
-    expect(await timeout.result).toEqual({ ok: false, message: "fallo" });
+    expect(await timeout.result).toEqual({
+      ok: false,
+      message: "fallo",
+      retryable: true,
+    });
+  });
+
+  it("MESSAGES_UNAVAILABLE se puede reintentar; un error con codigo, no", async () => {
+    const unavailable = push();
+    unavailable.room.pushes[0].push.fire("error", {
+      error: { code: "MESSAGES_UNAVAILABLE" },
+    });
+    expect(await unavailable.result).toMatchObject({
+      ok: false,
+      retryable: true,
+    });
+
+    const sinCodigo = push();
+    sinCodigo.room.pushes[0].push.fire("error", {});
+    expect(await sinCodigo.result).toMatchObject({
+      ok: false,
+      retryable: true,
+    });
   });
 });
 
@@ -435,6 +468,7 @@ describe("pushReaction", () => {
     expect(await result).toEqual({
       ok: false,
       message: "No tenés permiso para reaccionar en este canal.",
+      retryable: false,
     });
     expect(onReaction).not.toHaveBeenCalled();
   });
