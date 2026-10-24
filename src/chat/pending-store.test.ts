@@ -47,14 +47,14 @@ describe("parsePending", () => {
     });
   });
 
-  it("descarta lo de mas de 24 h y los chats que quedan vacios", () => {
+  it("descarta lo de mas de 2 h y los chats que quedan vacios", () => {
     const old = new Date(NOW - PENDING_TTL_MS - 1).toISOString();
     const raw = serializePending({ c1: [entry("a", old)], c2: [entry("b")] });
 
     expect(Object.keys(parsePending(raw, NOW))).toEqual(["c2"]);
   });
 
-  it("lo que justo cumple 24 h ya se descarta", () => {
+  it("lo que justo cumple 2 h ya se descarta", () => {
     const exact = new Date(NOW - PENDING_TTL_MS).toISOString();
 
     expect(

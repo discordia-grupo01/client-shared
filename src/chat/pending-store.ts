@@ -31,7 +31,7 @@ export function serializePending(byChat: PendingByChat): string {
 }
 
 /**
- * Lo guardado, sin los mensajes de mas de 24 h (se descartan sin aviso). Tras
+ * Lo guardado, sin los mensajes de mas de 2 h (se descartan sin aviso). Tras
  * recargar nada se reenvia solo: todo vuelve como `failed`, para que el usuario
  * decida con Reintentar o Eliminar.
  */

@@ -271,7 +271,7 @@ describe("createSendQueue", () => {
     ]);
   });
 
-  it("descarta lo que supero las 24 h", async () => {
+  it("descarta lo que supero las 2 h", async () => {
     let now = Date.parse("2026-10-01T12:00:00.000Z");
     const { queue, send, setReady } = setup({ ready: false, now: () => now });
     queue.enqueue("viejo");
@@ -448,6 +448,48 @@ describe("withPendingMessages", () => {
       delivery: "failed",
       delivery_error: "No se pudo",
     });
+  });
+
+  it("un pendiente queda en el lugar donde se escribio, por hora; uno nuevo va al final", () => {
+    const old = (id: string, inserted_at: string): Message => ({
+      ...msg(id),
+      inserted_at,
+    });
+    const shown = withPendingMessages(
+      [
+        old("ayer-1", "2026-10-23T15:00:00.000Z"),
+        old("ayer-2", "2026-10-23T17:00:00.000Z"),
+        old("hoy-1", "2026-10-24T06:00:00.000Z"),
+      ],
+      [
+        pending("fallido-ayer", {
+          status: "failed",
+          createdAt: "2026-10-23T16:15:00.000Z",
+        }),
+        pending("recien", { createdAt: "2026-10-24T06:30:00.000Z" }),
+      ],
+      "me",
+      "c1",
+    );
+
+    expect(shown.map((m) => m.id)).toEqual([
+      "ayer-1",
+      "pending:fallido-ayer",
+      "ayer-2",
+      "hoy-1",
+      "pending:recien",
+    ]);
+  });
+
+  it("varios pendientes de la misma hora mantienen el orden de envio", () => {
+    const shown = withPendingMessages(
+      [msg("m1")],
+      [pending("a"), pending("b")],
+      "me",
+      "c1",
+    );
+
+    expect(shown.map((m) => m.id)).toEqual(["m1", "pending:a", "pending:b"]);
   });
 
   it("un envio normal no avisa nada; si es lento, esta en cola o ya se reintento, avisa que se demora", () => {

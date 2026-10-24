@@ -9,7 +9,7 @@ export const SEND_MAX_ATTEMPTS = 3;
 /** Espera tras el intento 1 y tras el 2. */
 export const SEND_RETRY_DELAYS_MS = [1_000, 3_000] as const;
 /** Cuanto vive un mensaje sin enviar, enviando o fallido. */
-export const PENDING_TTL_MS = 24 * 60 * 60 * 1000;
+export const PENDING_TTL_MS = 2 * 60 * 60 * 1000;
 /** Desde cuando un envio sin confirmar se considera lento y deja de verse como normal. */
 export const SEND_SLOW_MS = 2_000;
 /** Tiempo que se espera el eco de un mensaje que el back ya confirmo. */
@@ -297,7 +297,10 @@ function deliveryOf(entry: PendingMessage): NonNullable<Message["delivery"]> {
 }
 
 /**
- * Los mensajes del chat y, al final, los propios pendientes (en orden de envio).
+ * Los mensajes del chat con los propios pendientes en el lugar donde se
+ * escribieron (por hora): uno recien enviado queda al final, uno fallido de
+ * ayer queda entre los de ayer. Cuando un reintento sale, el mensaje real
+ * tiene la hora del envio y aparece al final.
  * Un pendiente cuyo `client_id` ya esta entre los mensajes se oculta: es el
  * mismo mensaje, que ya llego.
  */
@@ -328,5 +331,14 @@ export function withPendingMessages(
       ...(entry.error ? { delivery_error: entry.error } : {}),
     }));
 
-  return [...messages, ...shown];
+  const result = [...messages];
+  for (const entry of shown) {
+    const time = Date.parse(entry.inserted_at);
+    let index = result.length;
+    while (index > 0 && Date.parse(result[index - 1].inserted_at) > time) {
+      index -= 1;
+    }
+    result.splice(index, 0, entry);
+  }
+  return result;
 }
