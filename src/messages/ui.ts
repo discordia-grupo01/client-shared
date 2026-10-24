@@ -348,6 +348,8 @@ export const CHAT_FEATURE_NOT_AVAILABLE = "Todavía no está disponible";
 export const LOAD_OLDER_MESSAGES_LABEL = "Cargar mensajes anteriores";
 export const LOADING_MESSAGES_LABEL = "Cargando mensajes…";
 export const RETRY_LABEL = "Reintentar";
+export const SENDING_LABEL = "Enviando…";
+export const DISCARD_MESSAGE_LABEL = "Eliminar";
 
 // --- Editar / eliminar mensaje ---
 export const EDIT_MESSAGE_LABEL = "Editar mensaje";
