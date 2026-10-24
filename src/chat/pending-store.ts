@@ -67,6 +67,7 @@ export function parsePending(raw: string | null, nowMs: number): PendingByChat {
           error: null,
           createdAt: stored.createdAt,
           acked: false,
+          slow: false,
         },
       ];
     });

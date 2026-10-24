@@ -6,6 +6,7 @@ import {
   createSendQueue,
   PENDING_TTL_MS,
   SEND_MAX_ATTEMPTS,
+  SEND_SLOW_MS,
   type PendingMessage,
   withPendingMessages,
 } from "./send-queue";
@@ -294,6 +295,7 @@ describe("createSendQueue", () => {
       error: null,
       createdAt: "2000-01-01T00:00:00.000Z",
       acked: false,
+      slow: false,
     };
 
     queue.restore([old, { ...old, clientId: "c1" }]);
@@ -359,6 +361,36 @@ describe("createSendQueue", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
+  it("pasados 2 s sin confirmar el envio se marca lento; si se confirma antes, no", async () => {
+    const { queue, resolvers } = setup();
+    queue.enqueue("a");
+
+    await vi.advanceTimersByTimeAsync(SEND_SLOW_MS - 1);
+    expect(queue.getEntries()[0].slow).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(queue.getEntries()[0].slow).toBe(true);
+
+    resolvers[0](OK);
+    queue.enqueue("b");
+    await vi.advanceTimersByTimeAsync(0);
+    resolvers[1]?.(OK);
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(SEND_SLOW_MS);
+    expect(queue.getEntries().find((e) => e.content === "b")?.slow).toBe(false);
+  });
+
+  it("Reintentar vuelve a empezar la cuenta de lentitud", async () => {
+    const { queue, resolvers } = setup();
+    queue.enqueue("a");
+    await vi.advanceTimersByTimeAsync(SEND_SLOW_MS);
+    resolvers[0](fail("x", false));
+    await vi.advanceTimersByTimeAsync(0);
+
+    queue.retry("c1");
+
+    expect(queue.getEntries()[0].slow).toBe(false);
+  });
+
   it("start sin haber parado no repite el envio en curso", () => {
     const { queue, send } = setup();
     queue.enqueue("hola");
@@ -381,6 +413,7 @@ describe("withPendingMessages", () => {
     error: null,
     createdAt: "2026-10-01T12:00:00.000Z",
     acked: false,
+    slow: false,
     ...overrides,
   });
 
@@ -417,15 +450,17 @@ describe("withPendingMessages", () => {
     });
   });
 
-  it("uno en cola se ve como enviando", () => {
-    const shown = withPendingMessages(
-      [],
-      [pending("a", { status: "queued" })],
-      "me",
-      "c1",
-    );
+  it("un envio normal no avisa nada; si es lento, esta en cola o ya se reintento, avisa que se demora", () => {
+    const delivery = (overrides: Partial<PendingMessage>) =>
+      withPendingMessages([], [pending("a", overrides)], "me", "c1")[0]
+        .delivery;
 
-    expect(shown[0].delivery).toBe("sending");
+    expect(delivery({ status: "sending", attempts: 1 })).toBe("sending");
+    expect(delivery({ status: "sending", attempts: 1, slow: true })).toBe(
+      "waiting",
+    );
+    expect(delivery({ status: "sending", attempts: 2 })).toBe("waiting");
+    expect(delivery({ status: "queued", attempts: 0 })).toBe("waiting");
   });
 
   it("se oculta el pendiente cuyo mensaje ya llego con su client id", () => {

@@ -38,6 +38,9 @@ export type ChatStatus =
   | "sessionExpired"
   | "error";
 
+/** Cuanto se espera antes de mostrar "Reconectando…", para no parpadear en cortes de un instante. */
+export const CONNECTION_NOTICE_DELAY_MS = 1_500;
+
 /**
  * `retryable` solo vale en un fallo: `true` si repetir el pedido puede salir
  * bien (sin conexion, timeout, back caido) y `false` si el back lo rechazo a

@@ -24,6 +24,7 @@ const entry = (
   error: null,
   createdAt,
   acked: false,
+  slow: false,
 });
 
 describe("parsePending", () => {
@@ -40,6 +41,7 @@ describe("parsePending", () => {
           error: null,
           createdAt: "2026-10-02T11:00:00.000Z",
           acked: false,
+          slow: false,
         },
       ],
     });

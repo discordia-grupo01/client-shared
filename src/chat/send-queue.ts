@@ -1,8 +1,6 @@
 import type { Message } from "../domain/message";
 import type { MessageActionResult } from "./channel-chat";
 
-// El paquete no tiene tipos de timers (lib ES2020 sin "dom" ni @types/node);
-// en runtime son los globales de cada plataforma.
 declare function setTimeout(callback: () => void, ms: number): unknown;
 declare function clearTimeout(id: unknown): void;
 
@@ -12,6 +10,8 @@ export const SEND_MAX_ATTEMPTS = 3;
 export const SEND_RETRY_DELAYS_MS = [1_000, 3_000] as const;
 /** Cuanto vive un mensaje sin enviar, enviando o fallido. */
 export const PENDING_TTL_MS = 24 * 60 * 60 * 1000;
+/** Desde cuando un envio sin confirmar se considera lento y deja de verse como normal. */
+export const SEND_SLOW_MS = 2_000;
 /** Tiempo que se espera el eco de un mensaje que el back ya confirmo. */
 const ACKED_GRACE_MS = 30_000;
 
@@ -34,6 +34,8 @@ export interface PendingMessage {
   createdAt: string;
   /** El back ya lo confirmo; se oculta cuando llega su eco por el socket. */
   acked: boolean;
+  /** Lleva mas de `SEND_SLOW_MS` sin confirmarse. */
+  slow: boolean;
 }
 
 export interface SendQueueOptions {
@@ -122,6 +124,20 @@ export function createSendQueue(options: SendQueueOptions): SendQueue {
     waits.add(expire);
   }
 
+  function markSlowLater(clientId: string) {
+    const mark = () => {
+      clearTimeout(id);
+      waits.delete(mark);
+      if (stopped) return;
+      const entry = entries.find((item) => item.clientId === clientId);
+      if (entry && !entry.acked && entry.status !== "failed" && !entry.slow) {
+        patch(clientId, { slow: true });
+      }
+    };
+    const id = setTimeout(mark, SEND_SLOW_MS);
+    waits.add(mark);
+  }
+
   function acknowledge(clientId: string) {
     patch(clientId, { acked: true });
     expireAckedLater(clientId);
@@ -199,18 +215,21 @@ export function createSendQueue(options: SendQueueOptions): SendQueue {
     },
     enqueue(content) {
       if (stopped) return;
+      const clientId = options.newId();
       commit([
         ...entries,
         {
-          clientId: options.newId(),
+          clientId,
           content,
           status: handlers.isReady() ? "sending" : "queued",
           attempts: 0,
           error: null,
           createdAt: new Date(now()).toISOString(),
           acked: false,
+          slow: false,
         },
       ]);
+      markSlowLater(clientId);
       void run();
     },
     restore(restored) {
@@ -230,7 +249,9 @@ export function createSendQueue(options: SendQueueOptions): SendQueue {
         status: handlers.isReady() ? "sending" : "queued",
         attempts: 0,
         error: null,
+        slow: false,
       });
+      markSlowLater(clientId);
       void run();
     },
     discard(clientId) {
@@ -253,6 +274,11 @@ export function createSendQueue(options: SendQueueOptions): SendQueue {
       entries
         .filter((entry) => entry.acked)
         .forEach((entry) => expireAckedLater(entry.clientId));
+      entries
+        .filter(
+          (entry) => !entry.acked && entry.status !== "failed" && !entry.slow,
+        )
+        .forEach((entry) => markSlowLater(entry.clientId));
       void run();
     },
     stop() {
@@ -260,6 +286,14 @@ export function createSendQueue(options: SendQueueOptions): SendQueue {
       [...waits].forEach((done) => done());
     },
   };
+}
+
+/** Un envio normal no se distingue de un mensaje ya enviado; solo el que se demora o fallo. */
+function deliveryOf(entry: PendingMessage): NonNullable<Message["delivery"]> {
+  if (entry.status === "failed") return "failed";
+  return entry.status === "queued" || entry.attempts > 1 || entry.slow
+    ? "waiting"
+    : "sending";
 }
 
 /**
@@ -290,7 +324,7 @@ export function withPendingMessages(
       content: entry.content,
       inserted_at: entry.createdAt,
       client_id: entry.clientId,
-      delivery: entry.status === "failed" ? "failed" : "sending",
+      delivery: deliveryOf(entry),
       ...(entry.error ? { delivery_error: entry.error } : {}),
     }));
 

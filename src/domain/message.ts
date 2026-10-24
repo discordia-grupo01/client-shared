@@ -59,9 +59,11 @@ export interface Message {
 
   /**
    * Solo en el cliente, nunca viene del back: un mensaje propio que todavia se
-   * esta enviando (`sending`) o que no se pudo enviar (`failed`). Ver `send-queue`.
+   * esta enviando (`sending`, se ve igual que uno ya enviado), que se demora
+   * (`waiting`: lento, reintentando o sin conexion) o que no se pudo enviar
+   * (`failed`). Ver `send-queue`.
    */
-  delivery?: "sending" | "failed";
+  delivery?: "sending" | "waiting" | "failed";
   /** Motivo del fallo cuando `delivery` es `failed`. */
   delivery_error?: string;
 }
