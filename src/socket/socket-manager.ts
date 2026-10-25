@@ -82,7 +82,8 @@ interface SocketState<S> {
 }
 
 /**
- * Manager del WebSocket de mensajes: UN solo `Socket` para toda la app.
+ * Manager de un WebSocket de Phoenix con tickets (mensajes y presencia de voz):
+ * UN solo `Socket` por servicio para toda la app.
  * Cambiar de canal es hacer `leave` + `join` sobre el mismo socket.
  *
  * Vive fuera de React a proposito: es una conexion de larga duracion que tiene

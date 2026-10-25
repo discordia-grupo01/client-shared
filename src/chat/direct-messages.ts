@@ -7,6 +7,11 @@ import type {
 import type { Member } from "../domain/member";
 import type { MentionEventPayload } from "../domain/mention";
 import type { MessageAuthor } from "../domain/message";
+import type {
+  OwnStatusPayload,
+  PresenceEntry,
+  UserChannelJoinReply,
+} from "../domain/presence";
 import { messageAuthorOf } from "../format/message-author";
 import { displayNameOf } from "../format/profile";
 import { DM_SEND_FAILED, dmErrorFor } from "../messages/direct-messages";
@@ -273,6 +278,14 @@ export interface UserRoomCallbacks {
   onMention?: (payload: MentionEventPayload) => void;
   /** La sala se volvio a unir tras un corte: conviene recargar lo que se pudo perder. */
   onRejoined?: () => void;
+  /** La sala quedo unida (tambien la primera vez), con la respuesta del `join`. */
+  onJoined?: (reply: UserChannelJoinReply | undefined) => void;
+  /** Se corto la sala; Phoenix la vuelve a unir sola. */
+  onConnectionLost?: () => void;
+  /** Cambio el estado visible de un contacto de DM. */
+  onPresenceUpdated?: (entry: PresenceEntry) => void;
+  /** Cambiaste tu estado (desde esta u otra sesion). */
+  onOwnStatusUpdated?: (payload: OwnStatusPayload) => void;
 }
 
 /** Lo que el hook de cada app hace con lo que pasa en la sala personal `user:<id>`. */
@@ -283,7 +296,12 @@ export interface UserChannelHandlers {
   /** Corte de conexion o sala caida: Phoenix re-une solo. */
   connectionLost: () => void;
   /** La sala quedo unida. `isFirstJoin` es `false` al re-unirse tras un corte. */
-  joined: (isFirstJoin: boolean) => void;
+  joined: (
+    isFirstJoin: boolean,
+    reply: UserChannelJoinReply | undefined,
+  ) => void;
+  presenceUpdated?: (entry: PresenceEntry) => void;
+  ownStatusUpdated?: (payload: OwnStatusPayload) => void;
 }
 
 /** Engancha los eventos de la sala personal y la une. */
@@ -295,12 +313,18 @@ export function joinUserChannel(
   room.on("mention", (payload: MentionEventPayload) =>
     handlers.mention?.(payload),
   );
+  room.on("presence_updated", (entry: PresenceEntry) =>
+    handlers.presenceUpdated?.(entry),
+  );
+  room.on("own_status_updated", (payload: OwnStatusPayload) =>
+    handlers.ownStatusUpdated?.(payload),
+  );
   room.onError(() => handlers.connectionLost());
   room.onClose(() => handlers.connectionLost());
 
   let isFirstJoin = true;
-  room.join().receive("ok", () => {
-    handlers.joined(isFirstJoin);
+  room.join().receive("ok", (reply) => {
+    handlers.joined(isFirstJoin, reply as UserChannelJoinReply | undefined);
     isFirstJoin = false;
   });
 }
