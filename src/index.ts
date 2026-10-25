@@ -33,6 +33,7 @@ export * from "./domain/attachment";
 export * from "./domain/message";
 export * from "./domain/mention";
 export * from "./domain/direct-message";
+export * from "./domain/presence";
 export * from "./domain/block";
 export * from "./domain/word-filter";
 export * from "./domain/moderation";
@@ -83,6 +84,7 @@ export * from "./messages/moderation-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 export * from "./messages/direct-messages";
+export * from "./messages/presence";
 export * from "./messages/voice";
 
 // --- Formatters ---
@@ -108,6 +110,7 @@ export * from "./format/mention-draft-segments";
 export * from "./chat/attachment-upload";
 export * from "./chat/channel-chat";
 export * from "./chat/direct-messages";
+export * from "./chat/presence";
 export * from "./chat/pending-store";
 export * from "./chat/send-queue";
 export * from "./chat/mentions";
