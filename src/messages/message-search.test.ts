@@ -5,6 +5,7 @@ import {
   MESSAGE_SEARCH_PAGE_FAILED,
   MESSAGE_SEARCH_RATE_LIMITED,
   messageAttachmentsCount,
+  messageSearchPlaceholder,
   messageSearchErrorFor,
   messageSearchResultsCount,
 } from "./message-search";
@@ -33,5 +34,11 @@ describe("messageAttachmentsCount", () => {
   it("singular y plural", () => {
     expect(messageAttachmentsCount(1)).toBe("1 adjunto");
     expect(messageAttachmentsCount(3)).toBe("3 adjuntos");
+  });
+});
+
+describe("messageSearchPlaceholder", () => {
+  it("nombra el servidor", () => {
+    expect(messageSearchPlaceholder("Equipo")).toBe("Buscar en Equipo");
   });
 });
