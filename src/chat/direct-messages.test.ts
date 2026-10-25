@@ -253,7 +253,38 @@ describe("joinUserChannel", () => {
 
     expect(handlers.newDm).toHaveBeenCalledWith(payload);
     expect(handlers.connectionLost).toHaveBeenCalledTimes(2);
-    expect(handlers.joined.mock.calls).toEqual([[true], [false]]);
+    expect(handlers.joined.mock.calls).toEqual([
+      [true, undefined],
+      [false, undefined],
+    ]);
+  });
+
+  it("entrega la respuesta del join y los eventos de estado de actividad", () => {
+    const room = createRoom();
+    const handlers = {
+      newDm: vi.fn(),
+      connectionLost: vi.fn(),
+      joined: vi.fn(),
+      presenceUpdated: vi.fn(),
+      ownStatusUpdated: vi.fn(),
+    };
+    joinUserChannel(room as unknown as RealtimeChannel, handlers);
+
+    const reply = { status: "dnd", idle_after_ms: 1000 };
+    room.joinPush.hooks.ok(reply);
+    room.events.presence_updated({ user_id: "b", status: "idle", version: 3 });
+    room.events.own_status_updated({ status: "invisible", version: 4 });
+
+    expect(handlers.joined).toHaveBeenCalledWith(true, reply);
+    expect(handlers.presenceUpdated).toHaveBeenCalledWith({
+      user_id: "b",
+      status: "idle",
+      version: 3,
+    });
+    expect(handlers.ownStatusUpdated).toHaveBeenCalledWith({
+      status: "invisible",
+      version: 4,
+    });
   });
 
   it("delega el evento mention cuando el hook lo pide", () => {
