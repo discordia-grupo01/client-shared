@@ -136,3 +136,15 @@ export const BLOCKS_PAGE_LIMIT = 100;
  * es 50, el maximo 100). Si hay mas, el contador muestra hasta esa cantidad.
  */
 export const UNREAD_MENTIONS_LIMIT = 100;
+
+/** Largo maximo del texto a buscar en mensajes (lo valida `messaging`). */
+export const MAX_MESSAGE_SEARCH_LENGTH = 100;
+
+/** Resultados por pagina de la busqueda de mensajes (el back acepta hasta 50). */
+export const MESSAGE_SEARCH_PAGE_SIZE = 25;
+
+/**
+ * Cuantos mensajes se piden al saltar a uno (`around`): la mitad antes y la
+ * mitad despues. El back acepta hasta 100.
+ */
+export const MESSAGE_JUMP_WINDOW = 50;
