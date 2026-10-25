@@ -227,6 +227,30 @@ describe("joinMessageChannel", () => {
     expect(handlers.catchUp).toHaveBeenCalledWith("m1");
   });
 
+  it("mientras se ve el pasado no agrega lo nuevo, pero si aplica ediciones", () => {
+    const room = createRoom();
+    const { handlers, getMessages } = createHandlers();
+    let viewingPast = false;
+    joinMessageChannel(
+      room as unknown as RealtimeChannel,
+      {},
+      {
+        ...handlers,
+        isViewingPast: () => viewingPast,
+      },
+    );
+    room.events.new_message(M1);
+
+    viewingPast = true;
+    room.events.new_message(M2);
+    room.events.missed_messages({ messages: [M2], next_cursor: "m2" });
+    room.events.message_updated({ ...M1, content: "editado" });
+
+    expect(getMessages().map((m) => m.id)).toEqual(["m1"]);
+    expect(getMessages()[0].content).toBe("editado");
+    expect(handlers.catchUp).not.toHaveBeenCalled();
+  });
+
   it("access_revoked avisa al hook con el estado que corresponde", () => {
     const { room, handlers } = join();
 
