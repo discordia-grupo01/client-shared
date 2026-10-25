@@ -71,8 +71,8 @@ export interface Message {
 /** Respuesta de `GET /v1/channels/:id/messages` (de mas viejo a mas nuevo). */
 export interface MessageHistory {
   messages: Message[];
-  /** Id de mensaje para pedir la pagina anterior (`before`, o `after` si se pidio con `after`); `null` si no hay mas. */
   next_cursor: string | null;
+  newer_cursor?: string | null;
 }
 
 /** Payload del evento `"message_updated"`: el mensaje completo, ya editado. */
@@ -156,8 +156,26 @@ export type MessageErrorCode =
   | "STORAGE_UNAVAILABLE";
 
 export type ListMessagesResult =
-  | { ok: true; messages: Message[]; nextCursor: string | null }
+  | {
+      ok: true;
+      messages: Message[];
+      nextCursor: string | null;
+      /** Solo con `around`: ver `MessageHistory.newer_cursor`. */
+      newerCursor?: string | null;
+    }
   | { ok: false; message: string; code?: MessageErrorCode };
+
+/** Opciones de `GET /v1/channels/:id/messages`; `before`, `after` y `around` son excluyentes. */
+export interface ListMessagesOptions {
+  /** Default 50, maximo 100 (lo clampea el back). */
+  limit?: number;
+  /** `next_cursor` de la pagina anterior. */
+  before?: string;
+  /** Id del ultimo mensaje que se tiene: devuelve los posteriores. */
+  after?: string;
+  /** Id de un mensaje: devuelve el historial alrededor de el, incluido. */
+  around?: string;
+}
 
 /**
  * Autor de un mensaje ya resuelto para pintarlo. Lo arma el front cruzando

@@ -63,36 +63,32 @@ export interface ChannelMessages {
   hasMore: boolean;
   isLoadingOlder: boolean;
   loadOlder: () => Promise<void>;
-  /** Vuelve a intentar desde cero (tras un error). */
+  hasNewer: boolean;
+  isLoadingNewer: boolean;
+  loadNewer: () => Promise<void>;
+  jumpToMessage: (messageId: string) => Promise<MessageActionResult>;
+  jumpToPresent: () => void;
+  focusedMessage: FocusedMessage | null;
   retry: () => void;
-  /**
-   * Manda el mensaje. NO lo agrega a la lista: el servidor lo devuelve por el
-   * socket (`new_message`) igual que a los demas, y de ahi llega a `messages`.
-   */
   sendMessage: (
     content: string,
     attachmentIds?: readonly string[],
   ) => Promise<SendMessageResult>;
-  /**
-   * Elimina el mensaje (autor o `MANAGE_MESSAGES`, lo valida el back). Al
-   * confirmarse se saca de la lista; a los demas les llega por `message_deleted`.
-   */
   deleteMessage: (messageId: string) => Promise<DeleteMessageResult>;
-  /**
-   * Edita el mensaje (solo el autor, lo valida el back). Al confirmarse se
-   * actualiza en la lista; a los demas les llega por `message_updated`.
-   */
   editMessage: (
     messageId: string,
     content: string,
   ) => Promise<EditMessageResult>;
-  /**
-   * Agrega la reaccion, o la saca si el usuario ya habia reaccionado con ese
-   * emoji (CA2). Se aplica con lo que confirma el back; a los demas les llega
-   * por `reaction_updated`.
-   */
   toggleReaction: (messageId: string, emoji: string) => Promise<ReactionResult>;
 }
+
+export interface FocusedMessage {
+  id: string;
+  nonce: number;
+}
+
+/** Cuanto dura el resaltado del mensaje al que se salto. */
+export const FOCUSED_MESSAGE_HIGHLIGHT_MS = 2_500;
 
 /** Estados de los que no se sale solo: no se pisan con un corte de conexion. */
 const TERMINAL_CHAT_STATUSES: ReadonlySet<ChatStatus> = new Set([
@@ -230,6 +226,11 @@ export interface MessageChannelHandlers {
   ) => void;
   /** Usuario actual, para saber si un `reaction_updated` cambia su `reacted_by_me`. */
   currentUserId?: string | null;
+  /**
+   * `true` mientras se ve un tramo del pasado (ver `ChannelMessages.hasNewer`):
+   * los mensajes nuevos no se agregan porque quedarian despues de un hueco.
+   */
+  isViewingPast?: () => boolean;
 }
 
 /** Engancha los eventos del canal de mensajes y lo une. */
@@ -239,9 +240,11 @@ export function joinMessageChannel(
   handlers: MessageChannelHandlers,
 ): void {
   room.on("new_message", (message: Message) => {
+    if (handlers.isViewingPast?.()) return;
     handlers.updateMessages((current) => mergeMessages(current, [message]));
   });
   room.on("missed_messages", (payload: MissedMessagesPayload) => {
+    if (handlers.isViewingPast?.()) return;
     handlers.updateMessages((current) =>
       mergeMessages(current, payload.messages),
     );
