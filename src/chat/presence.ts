@@ -316,7 +316,9 @@ export async function loadPresence(
   userIds: readonly string[],
   request: (userIds: string[]) => Promise<ListPresenceResult>,
 ): Promise<void> {
-  const results = await Promise.all(presenceIdBatches(userIds).map(request));
+  const results = await Promise.all(
+    presenceIdBatches(userIds).map((batch) => request(batch)),
+  );
   for (const result of results) {
     if (result.ok) store.applyEntries(result.presences);
   }
