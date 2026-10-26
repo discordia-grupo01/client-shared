@@ -33,7 +33,8 @@ export type GetOwnProfileResult =
   { ok: true; user: User } | { ok: false; message: string };
 
 export type GetPublicProfileResult =
-  { ok: true; user: PublicUser } | { ok: false; message: string };
+  | { ok: true; user: PublicUser }
+  | { ok: false; message: string; unavailable?: boolean };
 
 export type UpdateOwnProfileResult =
   | { ok: true; user: User }

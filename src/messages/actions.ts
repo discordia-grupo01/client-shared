@@ -137,6 +137,7 @@ export const ROLE_IS_DEFAULT =
 // --- Perfil ---
 export const OWN_PROFILE_LOAD_FAILED = failedTo("cargar tu perfil");
 export const PROFILE_LOAD_FAILED = failedTo("cargar el perfil");
+export const PROFILE_UNAVAILABLE = "Este perfil no está disponible.";
 export const PROFILE_UPDATE_FAILED = failedTo("actualizar tu perfil");
 export const STATUS_UPDATE_FAILED = failedTo("actualizar tu estado");
 export const STATUS_CLEAR_FAILED = failedTo("borrar tu estado");
