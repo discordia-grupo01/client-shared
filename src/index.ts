@@ -16,6 +16,7 @@ export const SHARED_VERSION = "0.15.0";
 // --- Dominio ---
 export * from "./domain/errors";
 export * from "./domain/api-result";
+export * from "./domain/account-suspension";
 export * from "./domain/auth";
 export * from "./domain/two-factor";
 export * from "./domain/user";
@@ -78,6 +79,7 @@ export * from "./messages/actions";
 export * from "./messages/chat";
 export * from "./messages/blocks";
 export * from "./messages/auth";
+export * from "./messages/account-suspension";
 export * from "./messages/two-factor";
 export * from "./messages/permissions";
 export * from "./messages/ban-failures";

@@ -1,3 +1,5 @@
+import { ACCOUNT_SUSPENDED_MESSAGE } from "./account-suspension";
+
 export const OWN_STATUS_FAILED =
   "No pudimos cambiar tu estado. Intentá de nuevo.";
 
@@ -8,7 +10,7 @@ const PRESENCE_ERROR_MESSAGES: Readonly<Record<string, string>> = {
     "El estado tiene que ser en línea, ausente, no molestar o invisible.",
   PRESENCE_UNAVAILABLE:
     "No se pudo actualizar tu estado de actividad, intentá de nuevo en un momento.",
-  ACCOUNT_SUSPENDED: "Tu cuenta está suspendida: no podés realizar acciones.",
+  ACCOUNT_SUSPENDED: ACCOUNT_SUSPENDED_MESSAGE,
 };
 
 /** Texto de un `error.code` de `set_status`, `activity` o `GET /v1/presence`. */

@@ -1,7 +1,9 @@
+import { isAccountSuspended } from "../domain/account-suspension";
 import type { ApiFailure } from "../domain/api-result";
 import { isNetworkFailure } from "../domain/api-result";
 import { reasonOf } from "../domain/errors";
 
+import { ACCOUNT_SUSPENDED_MESSAGE } from "./account-suspension";
 import { NETWORK_ERROR_MESSAGE, UNEXPECTED_ERROR_MESSAGE } from "./errors";
 
 /** `details.reason` del backend -> texto para el usuario. */
@@ -26,6 +28,8 @@ export function messageFor(
     // El cliente HTTP ya distingue "sin red" de "timeout" en el message.
     return failure.message || NETWORK_ERROR_MESSAGE;
   }
+
+  if (isAccountSuspended(failure)) return ACCOUNT_SUSPENDED_MESSAGE;
 
   const reason = reasonOf(failure.details);
   if (reason && catalog[reason]) return catalog[reason];
