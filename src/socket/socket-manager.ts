@@ -12,7 +12,12 @@ export interface RealtimeSocket {
 }
 
 export type SocketTicketResult =
-  { ok: true; ticket: string } | { ok: false; sessionExpired: boolean };
+  | { ok: true; ticket: string }
+  | {
+      ok: false;
+      sessionExpired: boolean;
+      accountSuspended?: boolean;
+    };
 
 export type AcquireSocketResult<S> =
   ({ ok: true } & SocketLease<S>) | { ok: false; sessionExpired: boolean };
@@ -180,6 +185,8 @@ export function createSocketManager<S extends RealtimeSocket>(
       if (result.sessionExpired) {
         closeSocket();
         sessionExpiredListeners.forEach((listener) => listener());
+      } else if (result.accountSuspended) {
+        closeSocket();
       }
       return { sessionExpired: result.sessionExpired };
     }
@@ -304,6 +311,10 @@ export function createSocketManager<S extends RealtimeSocket>(
       if (result.sessionExpired) {
         closeSocket();
         sessionExpiredListeners.forEach((listener) => listener());
+        return;
+      }
+      if (result.accountSuspended) {
+        closeSocket();
         return;
       }
 
