@@ -35,6 +35,11 @@ function ticket(value: string): SocketTicketResult {
 
 const TRANSIENT: SocketTicketResult = { ok: false, sessionExpired: false };
 const SESSION_DEAD: SocketTicketResult = { ok: false, sessionExpired: true };
+const SUSPENDED: SocketTicketResult = {
+  ok: false,
+  sessionExpired: false,
+  accountSuspended: true,
+};
 
 let sockets: FakeSocket[];
 let fetchTicket: ReturnType<typeof vi.fn<() => Promise<SocketTicketResult>>>;
@@ -275,6 +280,21 @@ describe("reconexion con un ticket nuevo", () => {
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(socket.connect).not.toHaveBeenCalled();
+  });
+
+  it("con la cuenta suspendida cierra el socket y no vuelve a pedir ticket", async () => {
+    const socket = await openAndClose();
+    const listener = vi.fn();
+    manager.onSocketSessionExpired(listener);
+    fetchTicket.mockClear();
+    fetchTicket.mockResolvedValue(SUSPENDED);
+
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(60_000);
+
+    expect(fetchTicket).toHaveBeenCalledTimes(1);
+    expect(socket.connect).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
   });
 
   it("no reconecta cuando el cierre lo provoca el propio manager", async () => {
