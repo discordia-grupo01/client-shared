@@ -34,7 +34,10 @@ export type VoiceBridgeCommand =
       type: "setAppearance";
       theme: ThemeName;
       localAvatarUrl: string | null;
+      /** La app sabe mostrar pantalla grande. Sin el campo (app vieja) es `false`. */
+      canExpand?: boolean;
     }
+  | { type: "setExpanded"; identity: string | null }
   | { type: "disconnect" };
 
 export type VoiceMediaError =
@@ -49,6 +52,7 @@ export type VoiceBridgeEvent =
   | { type: "muteForMeRequested"; identity: string }
   | { type: "participantsRequested" }
   | { type: "pinRequested"; identity: string | null }
+  | { type: "expandRequested"; identity: string | null }
   | { type: "disconnected"; reason: VoiceDisconnectReason }
   | { type: "error"; error: VoiceMediaError };
 
@@ -89,6 +93,10 @@ function oneOf<T extends string>(
   return (
     typeof value === "string" && (allowed as readonly string[]).includes(value)
   );
+}
+
+function isIdentityOrNull(value: unknown): value is string | null {
+  return value === null || isNonEmptyString(value);
 }
 
 function toObject(raw: unknown): Json | null {
@@ -163,6 +171,10 @@ export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
       return message.identity === null || isNonEmptyString(message.identity)
         ? { type: "pinRequested", identity: message.identity }
         : null;
+    case "expandRequested":
+      return isIdentityOrNull(message.identity)
+        ? { type: "expandRequested", identity: message.identity }
+        : null;
     case "disconnected":
       return oneOf(DISCONNECT_REASONS, message.reason)
         ? { type: "disconnected", reason: message.reason }
@@ -214,8 +226,17 @@ export function parseVoiceBridgeCommand(
       if (localAvatarUrl !== null && !isNonEmptyString(localAvatarUrl)) {
         return null;
       }
-      return { type: "setAppearance", theme: message.theme, localAvatarUrl };
+      return {
+        type: "setAppearance",
+        theme: message.theme,
+        localAvatarUrl,
+        canExpand: message.canExpand === true,
+      };
     }
+    case "setExpanded":
+      return isIdentityOrNull(message.identity)
+        ? { type: "setExpanded", identity: message.identity }
+        : null;
     case "disconnect":
       return { type: "disconnect" };
     default:
