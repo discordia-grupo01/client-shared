@@ -32,6 +32,8 @@ describe("parseVoiceBridgeEvent", () => {
     { type: "participantsRequested" },
     { type: "pinRequested", identity: "u-beto" },
     { type: "pinRequested", identity: null },
+    { type: "expandRequested", identity: "u-beto" },
+    { type: "expandRequested", identity: null },
     { type: "disconnected", reason: "removed" },
     { type: "error", error: "mic_denied" },
     { type: "error", error: "camera_denied" },
@@ -94,12 +96,20 @@ describe("parseVoiceBridgeCommand", () => {
     { type: "setMicrophoneEnabled", enabled: false },
     { type: "setCameraEnabled", enabled: true },
     { type: "setMutedForMe", identity: "u-beto", muted: true },
-    { type: "setAppearance", theme: "light", localAvatarUrl: null },
+    {
+      type: "setAppearance",
+      theme: "light",
+      localAvatarUrl: null,
+      canExpand: false,
+    },
     {
       type: "setAppearance",
       theme: "dark",
       localAvatarUrl: "https://cdn.example/a.png",
+      canExpand: true,
     },
+    { type: "setExpanded", identity: "u-beto" },
+    { type: "setExpanded", identity: null },
     { type: "disconnect" },
   ];
 
@@ -161,5 +171,47 @@ describe("parseVoiceBridgeCommand", () => {
       parseVoiceBridgeCommand({ type: "setPinned", identity: "" }),
     ).toBeNull();
     expect(parseVoiceBridgeCommand({ type: "setPinned" })).toBeNull();
+  });
+
+  it("sin canExpand (app vieja) no habilita la pantalla grande", () => {
+    expect(
+      parseVoiceBridgeCommand({
+        type: "setAppearance",
+        theme: "dark",
+        localAvatarUrl: null,
+      }),
+    ).toEqual({
+      type: "setAppearance",
+      theme: "dark",
+      localAvatarUrl: null,
+      canExpand: false,
+    });
+    expect(
+      parseVoiceBridgeCommand({
+        type: "setAppearance",
+        theme: "dark",
+        localAvatarUrl: null,
+        canExpand: "si",
+      }),
+    ).toMatchObject({ canExpand: false });
+  });
+
+  it("amplia a alguien o vuelve a la llamada", () => {
+    expect(
+      parseVoiceBridgeCommand({ type: "setExpanded", identity: "" }),
+    ).toBeNull();
+    expect(parseVoiceBridgeCommand({ type: "setExpanded" })).toBeNull();
+    expect(
+      parseVoiceBridgeCommand({ type: "setExpanded", identity: 7 }),
+    ).toBeNull();
+  });
+});
+
+describe("expandRequested", () => {
+  it("descarta una identidad vacia o faltante", () => {
+    expect(
+      parseVoiceBridgeEvent({ type: "expandRequested", identity: "" }),
+    ).toBeNull();
+    expect(parseVoiceBridgeEvent({ type: "expandRequested" })).toBeNull();
   });
 });
