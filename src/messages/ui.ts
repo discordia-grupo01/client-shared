@@ -149,6 +149,13 @@ export const VOICE_UNPIN = "Quitar";
 export const VOICE_BACK_TO_GRID = "Volver a la grilla";
 export const VOICE_SHOW_LESS = "Mostrar menos";
 
+// Pantalla grande de lo que muestra un participante (pantalla o camara).
+export const VOICE_FULLSCREEN_ENTER = "Pantalla grande";
+export const VOICE_FULLSCREEN_EXIT = "Salir";
+export const VOICE_FULLSCREEN_EXIT_LABEL = "Salir de pantalla grande";
+export const VOICE_FULLSCREEN_HINT = "Seguís escuchando a toda la llamada";
+export const VOICE_FULLSCREEN_ESC_HINT = "Esc para salir";
+
 // Pantalla previa a entrar a un canal de voz.
 export const VOICE_JOIN = "Unirse al canal";
 export const VOICE_SWITCH = "Cambiar a este canal";
@@ -184,6 +191,11 @@ export function voiceParticipantName(name: string, isLocal: boolean): string {
 
 export function voicePinLabel(name: string, isPinned: boolean): string {
   return isPinned ? `Dejar de fijar a ${name}` : `Fijar a ${name}`;
+}
+
+/** Para lectores de pantalla: el boton dice solo "Pantalla grande". */
+export function voiceFullscreenLabel(name: string): string {
+  return `Ver a ${name} en pantalla grande`;
 }
 
 /** Segunda linea de "Voz conectada", arriba del panel de usuario. */

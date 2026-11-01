@@ -7,6 +7,7 @@ import { VOICE_CONNECT_FORBIDDEN } from "./permissions";
 import {
   voiceConnectedCount,
   voiceConnectedLocation,
+  voiceFullscreenLabel,
   voicePresenceCount,
 } from "./ui";
 import {
@@ -80,6 +81,12 @@ describe("copy del canal de voz", () => {
   it("arma la ubicacion como en el prototipo", () => {
     expect(voiceConnectedLocation("General", "Discordia HQ")).toBe(
       "General • Discordia HQ",
+    );
+  });
+
+  it("nombra a quien se amplia en pantalla grande", () => {
+    expect(voiceFullscreenLabel("PixelHunter")).toBe(
+      "Ver a PixelHunter en pantalla grande",
     );
   });
 });
