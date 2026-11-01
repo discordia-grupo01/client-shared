@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   callStartsByChannel,
+  hasExpandableVideo,
   pinOnScreenShareChange,
   presenceByChannel,
   screenSharingIds,
@@ -303,5 +304,19 @@ describe("pinOnScreenShareChange", () => {
     expect(pinOnScreenShareChange("yo", ["u-ana"], [viewer, sharer])).toBe(
       "yo",
     );
+  });
+});
+
+describe("hasExpandableVideo", () => {
+  it("es true si la persona sigue con camara o pantalla", () => {
+    expect(
+      hasExpandableVideo([viewer, { ...sharer, cameraOn: true }], "u-ana"),
+    ).toBe(true);
+    expect(hasExpandableVideo([viewer, sharing(sharer)], "u-ana")).toBe(true);
+  });
+
+  it("es false si apago el video o se fue de la llamada", () => {
+    expect(hasExpandableVideo([viewer, sharer], "u-ana")).toBe(false);
+    expect(hasExpandableVideo([viewer], "u-ana")).toBe(false);
   });
 });

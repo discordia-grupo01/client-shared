@@ -187,6 +187,17 @@ export interface VoiceSidebarPreview<T> {
   hidden: T[];
 }
 
+export function hasExpandableVideo(
+  participants: readonly VoiceParticipant[],
+  identity: string,
+): boolean {
+  return participants.some(
+    (participant) =>
+      participant.identity === identity &&
+      (participant.cameraOn || participant.screenSharing),
+  );
+}
+
 export function voiceSidebarPreview<T extends { speaking?: boolean }>(
   participants: readonly T[],
   limit: number,
