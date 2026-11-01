@@ -148,6 +148,7 @@ export const VOICE_PIN = "Fijar";
 export const VOICE_UNPIN = "Quitar";
 export const VOICE_BACK_TO_GRID = "Volver a la grilla";
 export const VOICE_SHOW_LESS = "Mostrar menos";
+export const VOICE_CALL_DURATION_LABEL = "Duración de la llamada";
 
 // Pantalla grande de lo que muestra un participante (pantalla o camara).
 export const VOICE_FULLSCREEN_ENTER = "Pantalla grande";
