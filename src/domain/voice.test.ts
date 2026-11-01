@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  callStartsByChannel,
   pinOnScreenShareChange,
   presenceByChannel,
   screenSharingIds,
@@ -8,13 +9,95 @@ import {
   toVoicePresence,
   voiceErrorCodeOf,
   voiceSidebarPreview,
+  withCallStart,
   withLivePresence,
+  type VoicePresenceEvent,
   type VoiceParticipant,
 } from "./voice";
 
 const ana = { participant_id: "u-ana", name: "Ana" };
 const beto = { participant_id: "u-beto", name: "beto" };
 const carla = { participant_id: "u-carla", name: "Carla" };
+
+const START = "2026-11-01T16:00:00.123Z";
+const START_MS = Date.parse(START);
+
+describe("callStartsByChannel", () => {
+  it("toma el inicio de cada canal con gente, en ms", () => {
+    const starts = callStartsByChannel({
+      server_id: "s1",
+      channels: [
+        { channel_id: "general", started_at: START, participants: [ana] },
+        {
+          channel_id: "juegos",
+          started_at: "2026-11-01T16:05:00Z",
+          participants: [beto],
+        },
+      ],
+    });
+
+    expect(starts).toEqual({
+      general: START_MS,
+      juegos: Date.parse("2026-11-01T16:05:00Z"),
+    });
+  });
+
+  it("ignora canales sin inicio, con un inicio ilegible o vacios", () => {
+    const starts = callStartsByChannel({
+      server_id: "s1",
+      channels: [
+        { channel_id: "back-viejo", participants: [ana] },
+        { channel_id: "nulo", started_at: null, participants: [beto] },
+        { channel_id: "roto", started_at: "ayer", participants: [carla] },
+        { channel_id: "vacio", started_at: START, participants: [] },
+      ],
+    });
+
+    expect(starts).toEqual({});
+  });
+});
+
+describe("withCallStart", () => {
+  const event = (
+    room_started_at: string | null | undefined,
+    room_id = "general",
+  ): VoicePresenceEvent => ({
+    event_type: "voice.participant_joined",
+    server_id: "s1",
+    room_id,
+    participant_id: "u-ana",
+    name: "Ana",
+    ...(room_started_at === undefined ? {} : { room_started_at }),
+  });
+
+  it("guarda el inicio que manda el back", () => {
+    expect(withCallStart({}, event(START))).toEqual({ general: START_MS });
+  });
+
+  it("lo borra cuando el canal queda vacio", () => {
+    const starts = { general: START_MS, juegos: 1 };
+    expect(withCallStart(starts, event(null))).toEqual({ juegos: 1 });
+  });
+
+  it("no toca nada con un evento de un back viejo o un valor ilegible", () => {
+    const starts = { general: START_MS };
+    expect(withCallStart(starts, event(undefined))).toBe(starts);
+    expect(withCallStart(starts, event("ayer"))).toBe(starts);
+  });
+
+  it("devuelve el mismo objeto si no cambia, para no re-renderizar", () => {
+    const starts = { general: START_MS };
+    expect(withCallStart(starts, event(START))).toBe(starts);
+    expect(withCallStart(starts, event(null, "otro"))).toBe(starts);
+  });
+
+  it("no modifica el mapa que recibe", () => {
+    const starts = { general: START_MS };
+    withCallStart(starts, event(null));
+    withCallStart(starts, event(START, "juegos"));
+    expect(starts).toEqual({ general: START_MS });
+  });
+});
 
 describe("presenceByChannel", () => {
   it("arma un mapa por canal con cada lista ordenada por nombre", () => {
