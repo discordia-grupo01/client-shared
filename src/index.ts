@@ -93,6 +93,7 @@ export * from "./messages/presence";
 export * from "./messages/voice";
 
 // --- Formatters ---
+export * from "./format/call-duration";
 export * from "./format/date";
 export * from "./format/color";
 export * from "./format/file-size";

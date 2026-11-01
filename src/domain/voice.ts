@@ -4,9 +4,10 @@
  * - `POST /api/voice/token` -> `VoiceToken` (entrar o cambiar de canal).
  * - `DELETE /api/voice/session` -> 204 (salir).
  * - `GET /api/voice/participants?server_id=` -> `VoiceParticipantsResponse`
- *   (snapshot inicial de quienes estan en cada canal de voz).
+ *   (snapshot inicial de quienes estan en cada canal de voz y desde cuando
+ *   hay llamada en cada uno).
  * - `/voice/socket`, topic `voice_server:<server_id>` -> eventos
- *   `voice.participant_joined` y `voice.participant_left`.
+ *   `voice.participant_joined` y `voice.participant_left` (`VoicePresenceEvent`).
  *
  * El audio no pasa por el Gateway: con `url` y `token` cada app se conecta
  * directo a LiveKit. Web con `livekit-client`; mobile desde un WebView que
@@ -27,7 +28,17 @@ export interface VoicePresenceParticipant {
 
 export interface VoiceChannelPresence {
   channel_id: string;
+  started_at?: string | null;
   participants: VoicePresenceParticipant[];
+}
+
+export interface VoicePresenceEvent {
+  event_type: "voice.participant_joined" | "voice.participant_left";
+  server_id: string;
+  room_id: string;
+  participant_id: string;
+  name: string;
+  room_started_at?: string | null;
 }
 
 export interface VoiceParticipantsResponse {
@@ -69,6 +80,42 @@ export function withLivePresence(
   if (live.length > 0) result[channelId] = [...live].sort(byName);
 
   return result;
+}
+
+export type VoiceCallStarts = Readonly<Record<string, number>>;
+
+function parseCallStart(value: unknown): number | null {
+  if (typeof value !== "string") return null;
+  const startedAt = Date.parse(value);
+  return Number.isNaN(startedAt) ? null : startedAt;
+}
+
+export function callStartsByChannel(
+  response: VoiceParticipantsResponse,
+): VoiceCallStarts {
+  const result: Record<string, number> = {};
+  for (const { channel_id, started_at, participants } of response.channels) {
+    const startedAt = parseCallStart(started_at);
+    if (participants.length === 0 || startedAt === null) continue;
+    result[channel_id] = startedAt;
+  }
+  return result;
+}
+
+export function withCallStart(
+  starts: VoiceCallStarts,
+  event: VoicePresenceEvent,
+): VoiceCallStarts {
+  const { room_id: channelId, room_started_at: raw } = event;
+  if (raw === null) {
+    if (!(channelId in starts)) return starts;
+    const rest = { ...starts };
+    delete rest[channelId];
+    return rest;
+  }
+  const startedAt = parseCallStart(raw);
+  if (startedAt === null || starts[channelId] === startedAt) return starts;
+  return { ...starts, [channelId]: startedAt };
 }
 
 export type VoiceConnectionStatus =
@@ -181,5 +228,9 @@ export type VoiceTokenResult =
 export type LeaveVoiceResult = { ok: true } | { ok: false; message: string };
 
 export type VoiceParticipantsResult =
-  | { ok: true; byChannel: VoicePresenceByChannel }
+  | {
+      ok: true;
+      byChannel: VoicePresenceByChannel;
+      startsByChannel: VoiceCallStarts;
+    }
   | { ok: false; message: string };
