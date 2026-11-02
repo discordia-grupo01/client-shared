@@ -439,3 +439,10 @@ function compareMessages(a: Message, b: Message): number {
   if (byTime !== 0) return byTime;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
+
+export interface MessageLookupResponse {
+  messages: Message[];
+}
+
+export type LookupMessagesResult =
+  { ok: true; messages: Message[] } | { ok: false; message: string };
