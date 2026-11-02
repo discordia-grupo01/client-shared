@@ -9,6 +9,9 @@ import {
   voiceConnectedLocation,
   voiceFullscreenLabel,
   voicePresenceCount,
+  voiceTileFullscreenLabel,
+  voiceTileName,
+  voiceTilePinLabel,
 } from "./ui";
 import {
   VOICE_REMOVED,
@@ -98,6 +101,63 @@ describe("copy del canal de voz", () => {
   it("nombra a quien se amplia en pantalla grande", () => {
     expect(voiceFullscreenLabel("PixelHunter")).toBe(
       "Ver a PixelHunter en pantalla grande",
+    );
+  });
+});
+
+describe("voiceTileName", () => {
+  it("el tile de una persona dice su nombre", () => {
+    expect(
+      voiceTileName({ identity: "u-ana", name: "Ana", isLocal: false }),
+    ).toBe("Ana");
+  });
+
+  it("el tile de pantalla dice de quien es", () => {
+    expect(
+      voiceTileName({ identity: "u-ana:screen", name: "Ana", isLocal: false }),
+    ).toBe("Pantalla de Ana");
+  });
+
+  it("tu propia pantalla dice 'Tu pantalla'", () => {
+    expect(
+      voiceTileName({ identity: "yo:screen", name: "Juana", isLocal: true }),
+    ).toBe("Tu pantalla");
+  });
+});
+
+describe("voiceTileFullscreenLabel", () => {
+  it("distingue la camara de la pantalla de la misma persona", () => {
+    expect(
+      voiceTileFullscreenLabel({
+        identity: "u-ana",
+        name: "Ana",
+        isLocal: false,
+      }),
+    ).toBe(voiceFullscreenLabel("Ana"));
+    expect(
+      voiceTileFullscreenLabel({
+        identity: "u-ana:screen",
+        name: "Ana",
+        isLocal: false,
+      }),
+    ).toBe("Ver la pantalla de Ana en pantalla grande");
+  });
+});
+
+describe("voiceTilePinLabel", () => {
+  const ana = { identity: "u-ana", name: "Ana", isLocal: false };
+  const anaScreen = { ...ana, identity: "u-ana:screen" };
+
+  it("a una persona la fija por su nombre", () => {
+    expect(voiceTilePinLabel(ana, false)).toBe("Fijar a Ana");
+  });
+
+  it("a una pantalla la nombra como pantalla", () => {
+    expect(voiceTilePinLabel(anaScreen, false)).toBe(
+      "Fijar la pantalla de Ana",
+    );
+    expect(voiceTilePinLabel(anaScreen, true)).toBe(
+      "Dejar de fijar la pantalla de Ana",
     );
   });
 });
