@@ -29,6 +29,14 @@ export const VOICE_REMOVED = "Te desconectaron del canal de voz.";
 export const VOICE_ROOM_CLOSED = "El canal de voz se cerró.";
 export const VOICE_CONNECTION_LOST =
   "Se cortó la conexión con el canal de voz.";
+export const VOICE_SCREEN_SHARE_DENIED =
+  "No se dio permiso para compartir la pantalla.";
+export const VOICE_SCREEN_SHARE_FAILED =
+  "No pudimos compartir tu pantalla. Intentá de nuevo.";
+export const VOICE_SCREEN_SHARE_FORBIDDEN =
+  "No podés compartir pantalla mientras un moderador te tenga silenciado.";
+export const VOICE_SCREEN_SHARE_NOT_IN_CHANNEL =
+  "Entrá al canal de voz antes de compartir la pantalla.";
 
 /**
  * Por codigo de signaling. `voice_not_configured` sale tambien cuando
@@ -42,6 +50,8 @@ const VOICE_ERROR_MESSAGES: Readonly<Record<VoiceErrorCode, string>> = {
   invalid_channel_id: VOICE_CONNECT_FAILED,
   channel_id_required: VOICE_CONNECT_FAILED,
   server_id_required: VOICE_PARTICIPANTS_FAILED,
+  voice_screen_share_forbidden: VOICE_SCREEN_SHARE_FORBIDDEN,
+  voice_not_in_channel: VOICE_SCREEN_SHARE_NOT_IN_CHANNEL,
 };
 
 /** El mensaje para un error de signaling (ver `voiceErrorCodeOf`). */

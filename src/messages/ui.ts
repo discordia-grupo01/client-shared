@@ -139,6 +139,7 @@ export const VOICE_CAMERA_ON_ACTION = "Encender cámara";
 export const VOICE_CAMERA_OFF_ACTION = "Apagar cámara";
 export const VOICE_SCREEN_SHARE_START = "Compartir pantalla";
 export const VOICE_SCREEN_SHARE_STOP = "Dejar de compartir pantalla";
+export const VOICE_SCREEN_SHARE_SELF = "Estás compartiendo tu pantalla";
 export const VOICE_CONTROLS_LABEL = "Controles de la llamada";
 export const VOICE_PARTICIPANTS_TITLE = "Participantes";
 export const VOICE_PARTICIPANTS_BUTTON = "Personas";

@@ -216,6 +216,8 @@ export const VOICE_ERROR_CODES = [
   "invalid_channel_id",
   "channel_id_required",
   "server_id_required",
+  "voice_screen_share_forbidden",
+  "voice_not_in_channel",
 ] as const;
 
 export type VoiceErrorCode = (typeof VOICE_ERROR_CODES)[number];
