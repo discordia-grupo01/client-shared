@@ -6,6 +6,8 @@ import {
   mergeScreenShareCompanions,
   ownerOfScreenShareIdentity,
   screenShareIdentityOf,
+  voiceParticipantRows,
+  voiceTilesOf,
 } from "./voice-screen-share";
 
 const participant = (
@@ -83,5 +85,67 @@ describe("mergeScreenShareCompanions", () => {
   it("deja igual la lista sin acompañantes", () => {
     const participants = [participant("yo"), participant("u-ana")];
     expect(mergeScreenShareCompanions(participants)).toEqual(participants);
+  });
+});
+
+describe("voiceTilesOf", () => {
+  it("separa a quien comparte en su tile y el de su pantalla", () => {
+    const tiles = voiceTilesOf([
+      participant("yo", { isLocal: true, cameraOn: true, screenSharing: true }),
+      participant("u-ana"),
+    ]);
+
+    expect(tiles).toEqual([
+      participant("yo", { isLocal: true, cameraOn: true }),
+      participant("yo:screen", {
+        name: "yo",
+        isLocal: true,
+        screenSharing: true,
+      }),
+      participant("u-ana"),
+    ]);
+  });
+
+  it("el tile de pantalla no repite microfono, habla ni silencio para mi", () => {
+    const [, screenTile] = voiceTilesOf([
+      participant("u-ana", {
+        muted: true,
+        speaking: true,
+        mutedForMe: true,
+        screenSharing: true,
+      }),
+    ]);
+
+    expect(screenTile).toMatchObject({
+      identity: "u-ana:screen",
+      muted: false,
+      speaking: false,
+      mutedForMe: false,
+    });
+  });
+
+  it("sin nadie compartiendo deja la lista igual", () => {
+    const participants = [participant("yo"), participant("u-ana")];
+    expect(voiceTilesOf(participants)).toEqual(participants);
+  });
+});
+
+describe("voiceParticipantRows", () => {
+  it("pone la pantalla de cada persona debajo de ella", () => {
+    const rows = voiceParticipantRows([
+      participant("u-ana", { screenSharing: true }),
+      participant("u-beto"),
+    ]);
+
+    expect(rows.map(({ identity }) => identity)).toEqual([
+      "u-ana",
+      "u-ana:screen",
+      "u-beto",
+    ]);
+  });
+
+  it("no lista tu propia pantalla", () => {
+    const me = participant("yo", { isLocal: true, screenSharing: true });
+    expect(voiceParticipantRows([me])).toEqual([me]);
   });
 });
