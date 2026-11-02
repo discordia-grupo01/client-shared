@@ -29,6 +29,38 @@ export function isScreenShareIdentity(identity: string): boolean {
   return ownerOfScreenShareIdentity(identity) !== null;
 }
 
+export function voiceTilesOf(
+  participants: readonly VoiceParticipant[],
+): VoiceParticipant[] {
+  return participants.flatMap((participant) =>
+    participant.screenSharing
+      ? [{ ...participant, screenSharing: false }, screenTileOf(participant)]
+      : [participant],
+  );
+}
+
+export function voiceParticipantRows(
+  participants: readonly VoiceParticipant[],
+): VoiceParticipant[] {
+  return participants.flatMap((participant) =>
+    participant.screenSharing && !participant.isLocal
+      ? [participant, screenTileOf(participant)]
+      : [participant],
+  );
+}
+
+function screenTileOf(owner: VoiceParticipant): VoiceParticipant {
+  return {
+    ...owner,
+    identity: screenShareIdentityOf(owner.identity),
+    muted: false,
+    speaking: false,
+    cameraOn: false,
+    screenSharing: true,
+    mutedForMe: false,
+  };
+}
+
 export function mergeScreenShareCompanions(
   participants: readonly VoiceParticipant[],
 ): VoiceParticipant[] {
