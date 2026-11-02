@@ -12,6 +12,8 @@ import {
 } from "./ui";
 import {
   VOICE_REMOVED,
+  VOICE_SCREEN_SHARE_FORBIDDEN,
+  VOICE_SCREEN_SHARE_NOT_IN_CHANNEL,
   VOICE_UNAVAILABLE,
   voiceDisconnectMessage,
   voiceErrorMessage,
@@ -32,6 +34,15 @@ describe("voiceErrorMessage", () => {
   it("muestra lo mismo si la voz no esta configurada o no responde", () => {
     expect(voiceErrorMessage("voice_not_configured")).toBe(VOICE_UNAVAILABLE);
     expect(voiceErrorMessage("voice_unavailable")).toBe(VOICE_UNAVAILABLE);
+  });
+
+  it("explica por que no se puede compartir pantalla", () => {
+    expect(voiceErrorMessage("voice_screen_share_forbidden")).toBe(
+      VOICE_SCREEN_SHARE_FORBIDDEN,
+    );
+    expect(voiceErrorMessage("voice_not_in_channel")).toBe(
+      VOICE_SCREEN_SHARE_NOT_IN_CHANNEL,
+    );
   });
 
   it("sin codigo cae al fallback", () => {
