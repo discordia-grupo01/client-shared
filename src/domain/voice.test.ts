@@ -275,48 +275,60 @@ describe("screenSharingIds", () => {
 });
 
 describe("pinOnScreenShareChange", () => {
-  it("fija a quien empieza a compartir", () => {
+  it("fija la pantalla de quien empieza a compartir", () => {
     expect(pinOnScreenShareChange(null, [], [viewer, sharing(sharer)])).toBe(
-      "u-ana",
+      "u-ana:screen",
     );
   });
 
-  it("tambien te fija a vos cuando compartis", () => {
-    expect(pinOnScreenShareChange(null, [], [sharing(viewer), sharer])).toBe(
-      "yo",
-    );
-  });
-
-  it("vuelve a la grilla cuando deja de compartir quien estaba fijado", () => {
+  it("no fija tu propia pantalla: seguis viendo la grilla", () => {
     expect(
-      pinOnScreenShareChange("u-ana", ["u-ana"], [viewer, sharer]),
+      pinOnScreenShareChange(null, [], [sharing(viewer), sharer]),
     ).toBeNull();
-    expect(pinOnScreenShareChange("yo", ["yo"], [viewer, sharer])).toBeNull();
+  });
+
+  it("vuelve a la grilla cuando deja de compartir la pantalla fijada", () => {
+    expect(
+      pinOnScreenShareChange("u-ana:screen", ["u-ana"], [viewer, sharer]),
+    ).toBeNull();
+    expect(
+      pinOnScreenShareChange("u-ana:screen", ["u-ana"], [viewer]),
+    ).toBeNull();
   });
 
   it("respeta lo que elegiste mientras sigue compartiendo", () => {
     expect(
       pinOnScreenShareChange(null, ["u-ana"], [viewer, sharing(sharer)]),
     ).toBeNull();
+    expect(
+      pinOnScreenShareChange("u-ana", ["u-ana"], [viewer, sharing(sharer)]),
+    ).toBe("u-ana");
   });
 
-  it("no toca a alguien fijado a mano que no compartia", () => {
-    expect(pinOnScreenShareChange("yo", ["u-ana"], [viewer, sharer])).toBe(
-      "yo",
+  it("no toca a una persona fijada a mano cuando otro deja de compartir", () => {
+    expect(pinOnScreenShareChange("u-ana", ["yo"], [viewer, sharer])).toBe(
+      "u-ana",
     );
   });
 });
 
 describe("hasExpandableVideo", () => {
-  it("es true si la persona sigue con camara o pantalla", () => {
+  it("el tile de la persona se amplia mientras tenga camara", () => {
     expect(
       hasExpandableVideo([viewer, { ...sharer, cameraOn: true }], "u-ana"),
     ).toBe(true);
-    expect(hasExpandableVideo([viewer, sharing(sharer)], "u-ana")).toBe(true);
+    expect(hasExpandableVideo([viewer, sharing(sharer)], "u-ana")).toBe(false);
   });
 
-  it("es false si apago el video o se fue de la llamada", () => {
-    expect(hasExpandableVideo([viewer, sharer], "u-ana")).toBe(false);
+  it("el tile de pantalla se amplia mientras siga compartiendo", () => {
+    expect(hasExpandableVideo([viewer, sharing(sharer)], "u-ana:screen")).toBe(
+      true,
+    );
+    expect(hasExpandableVideo([viewer, sharer], "u-ana:screen")).toBe(false);
+  });
+
+  it("es false si se fue de la llamada", () => {
     expect(hasExpandableVideo([viewer], "u-ana")).toBe(false);
+    expect(hasExpandableVideo([viewer], "u-ana:screen")).toBe(false);
   });
 });
