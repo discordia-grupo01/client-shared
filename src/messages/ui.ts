@@ -12,6 +12,9 @@
  * pantalla, eso se queda en cada app y no se fuerza aca.
  */
 
+import type { VoiceParticipant } from "../domain/voice";
+import { isScreenShareIdentity } from "../domain/voice-screen-share";
+
 // --- Home sin servidores ---
 export const EMPTY_HOME_TITLE = "Tu espacio está esperándote";
 export const CREATE_FIRST_SERVER_TITLE = "Crear mi primer servidor";
@@ -198,6 +201,37 @@ export function voicePinLabel(name: string, isPinned: boolean): string {
 /** Para lectores de pantalla: el boton dice solo "Pantalla grande". */
 export function voiceFullscreenLabel(name: string): string {
   return `Ver a ${name} en pantalla grande`;
+}
+
+export const VOICE_OWN_SCREEN_TILE = "Tu pantalla";
+
+export function voiceScreenTileName(name: string, isLocal: boolean): string {
+  return isLocal ? VOICE_OWN_SCREEN_TILE : `Pantalla de ${name}`;
+}
+
+type VoiceTile = Pick<VoiceParticipant, "identity" | "name" | "isLocal">;
+
+export function voiceTileName({ identity, name, isLocal }: VoiceTile): string {
+  return isScreenShareIdentity(identity)
+    ? voiceScreenTileName(name, isLocal)
+    : name;
+}
+
+export function voiceTilePinLabel(tile: VoiceTile, isPinned: boolean): string {
+  if (!isScreenShareIdentity(tile.identity)) {
+    return voicePinLabel(tile.name, isPinned);
+  }
+  const screen = tile.isLocal ? "tu pantalla" : `la pantalla de ${tile.name}`;
+  return isPinned ? `Dejar de fijar ${screen}` : `Fijar ${screen}`;
+}
+
+export function voiceTileFullscreenLabel(tile: VoiceTile): string {
+  if (!isScreenShareIdentity(tile.identity)) {
+    return voiceFullscreenLabel(tile.name);
+  }
+  return tile.isLocal
+    ? "Ver tu pantalla en pantalla grande"
+    : `Ver la pantalla de ${tile.name} en pantalla grande`;
 }
 
 /** Segunda linea de "Voz conectada", arriba del panel de usuario. */

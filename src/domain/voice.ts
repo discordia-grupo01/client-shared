@@ -1,3 +1,8 @@
+import {
+  ownerOfScreenShareIdentity,
+  screenShareIdentityOf,
+} from "./voice-screen-share";
+
 /**
  * Contrato de voz con `voice-sfu/signaling` (Phoenix) a traves del Gateway:
  *
@@ -169,15 +174,17 @@ export function pinOnScreenShareChange(
   const started = participants.find(
     (participant) =>
       participant.screenSharing &&
+      !participant.isLocal &&
       !previousSharingIds.includes(participant.identity),
   );
-  if (started) return started.identity;
+  if (started) return screenShareIdentityOf(started.identity);
+  const pinnedOwner =
+    pinned === null ? null : ownerOfScreenShareIdentity(pinned);
   const pinnedStopped =
-    pinned !== null &&
-    previousSharingIds.includes(pinned) &&
+    pinnedOwner !== null &&
     !participants.some(
       (participant) =>
-        participant.identity === pinned && participant.screenSharing,
+        participant.identity === pinnedOwner && participant.screenSharing,
     );
   return pinnedStopped ? null : pinned;
 }
@@ -187,14 +194,16 @@ export interface VoiceSidebarPreview<T> {
   hidden: T[];
 }
 
+/** `identity` es la de un tile: la persona (su camara) o `<id>:screen`. */
 export function hasExpandableVideo(
   participants: readonly VoiceParticipant[],
   identity: string,
 ): boolean {
-  return participants.some(
-    (participant) =>
-      participant.identity === identity &&
-      (participant.cameraOn || participant.screenSharing),
+  const owner = ownerOfScreenShareIdentity(identity);
+  return participants.some((participant) =>
+    owner === null
+      ? participant.identity === identity && participant.cameraOn
+      : participant.identity === owner && participant.screenSharing,
   );
 }
 
