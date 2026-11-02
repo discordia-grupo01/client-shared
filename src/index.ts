@@ -42,6 +42,7 @@ export * from "./domain/moderation";
 export * from "./domain/voice";
 export * from "./domain/voice-bridge";
 export * from "./domain/voice-session";
+export * from "./domain/voice-screen-share";
 
 // --- Constantes ---
 export * from "./constants/app";
