@@ -8,6 +8,7 @@ import type {
 import {
   applyChannelNotificationSetting,
   applyServerNotificationSetting,
+  channelHasNotifications,
   channelNotificationLevel,
   configuredChannelLevel,
   configuredServerLevel,
@@ -55,6 +56,21 @@ describe("parseNotificationSettings", () => {
         preferences: { servers: [], channels: [] },
       }),
     ).toEqual(NO_NOTIFICATION_SETTINGS);
+  });
+});
+
+describe("channelHasNotifications", () => {
+  it("text channels have notifications", () => {
+    expect(channelHasNotifications({ kind: "text" })).toBe(true);
+  });
+
+  it("voice channels do not: there is nothing to mute in them", () => {
+    expect(channelHasNotifications({ kind: "voice" })).toBe(false);
+  });
+
+  it("anything that is not a text channel does not", () => {
+    expect(channelHasNotifications({ kind: "" })).toBe(false);
+    expect(channelHasNotifications({ kind: "stage" })).toBe(false);
   });
 });
 
