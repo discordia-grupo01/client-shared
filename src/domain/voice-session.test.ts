@@ -8,9 +8,11 @@ import {
   type VoiceSessionAction,
   type VoiceSessionState,
   type VoiceSessionTarget,
+  voiceTargetKey,
 } from "./voice-session";
 
 const general: VoiceSessionTarget = {
+  kind: "channel",
   serverId: "s1",
   serverName: "Discordia HQ",
   channelId: "voz-1",
@@ -20,6 +22,14 @@ const gaming: VoiceSessionTarget = {
   ...general,
   channelId: "voz-2",
   channelName: "Gaming Room",
+};
+const callWithBeto: VoiceSessionTarget = {
+  kind: "private_call",
+  callId: "call-1",
+  conversationId: "conv-1",
+  partnerId: "beto",
+  partnerName: "Beto",
+  partnerAvatarUrl: null,
 };
 
 function participant(
@@ -178,6 +188,14 @@ describe("voiceSessionReducer", () => {
     expect(second.focus?.nonce).toBe(2);
   });
 
+  it("en una llamada privada no hay canal al que volver", () => {
+    const state = voiceSessionReducer(initialVoiceSessionState, {
+      type: "join_requested",
+      target: callWithBeto,
+    });
+    expect(voiceSessionReducer(state, { type: "focus" }).focus).toBeNull();
+  });
+
   it("sin llamada no hay a donde ir", () => {
     expect(
       voiceSessionReducer(initialVoiceSessionState, { type: "focus" }).focus,
@@ -208,5 +226,36 @@ describe("voiceParticipantsOf", () => {
 
   it("sin llamada no hay nadie", () => {
     expect(voiceParticipantsOf(initialVoiceSessionState)).toEqual([]);
+  });
+});
+
+describe("llamada privada como target", () => {
+  it("se conecta igual que a un canal", () => {
+    const state = voiceSessionReducer(initialVoiceSessionState, {
+      type: "join_requested",
+      target: callWithBeto,
+    });
+    expect(state).toMatchObject({ target: callWithBeto, status: "connecting" });
+  });
+
+  it("pasar de un canal a una llamada cambia de sala", () => {
+    const inChannel = voiceSessionReducer(initialVoiceSessionState, {
+      type: "join_requested",
+      target: general,
+    });
+    expect(
+      voiceSessionReducer(inChannel, {
+        type: "join_requested",
+        target: callWithBeto,
+      }).target,
+    ).toBe(callWithBeto);
+  });
+
+  it("la clave distingue canales de llamadas aunque compartan id", () => {
+    expect(voiceTargetKey(general)).toBe("channel:voz-1");
+    expect(voiceTargetKey(callWithBeto)).toBe("private_call:call-1");
+    expect(voiceTargetKey({ ...callWithBeto, callId: "voz-1" })).not.toBe(
+      voiceTargetKey(general),
+    );
   });
 });
