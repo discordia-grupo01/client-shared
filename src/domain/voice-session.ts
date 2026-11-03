@@ -11,11 +11,29 @@ import {
  * que las reglas (que se conserva al cambiar de canal, cuando se puede hablar)
  * viven en un solo lugar.
  */
-export interface VoiceSessionTarget {
+export interface VoiceChannelTarget {
+  kind: "channel";
   serverId: string;
   serverName: string;
   channelId: string;
   channelName: string;
+}
+
+export interface PrivateCallTarget {
+  kind: "private_call";
+  callId: string;
+  conversationId: string;
+  partnerId: string;
+  partnerName: string;
+  partnerAvatarUrl: string | null;
+}
+
+export type VoiceSessionTarget = VoiceChannelTarget | PrivateCallTarget;
+
+export function voiceTargetKey(target: VoiceSessionTarget): string {
+  return target.kind === "channel"
+    ? `channel:${target.channelId}`
+    : `private_call:${target.callId}`;
 }
 
 export interface VoiceSessionState {
@@ -67,7 +85,11 @@ export function voiceSessionReducer(
 ): VoiceSessionState {
   switch (action.type) {
     case "join_requested":
-      if (state.target?.channelId === action.target.channelId) return state;
+      if (
+        state.target &&
+        voiceTargetKey(state.target) === voiceTargetKey(action.target)
+      )
+        return state;
       return {
         ...state,
         target: action.target,
@@ -119,7 +141,7 @@ export function voiceSessionReducer(
       };
     }
     case "focus":
-      return state.target
+      return state.target?.kind === "channel"
         ? {
             ...state,
             focus: {

@@ -5,6 +5,7 @@ import * as auth from "./auth";
 import * as errors from "./errors";
 import * as notFound from "./not-found";
 import * as permissions from "./permissions";
+import * as privateCall from "./private-call";
 import * as ui from "./ui";
 import * as voice from "./voice";
 import {
@@ -59,7 +60,15 @@ function textosDePantalla(): [string, string][] {
 }
 
 function todosLosMensajes(): [string, string][] {
-  const modulos = { actions, auth, errors, notFound, permissions, voice };
+  const modulos = {
+    actions,
+    auth,
+    errors,
+    notFound,
+    permissions,
+    privateCall,
+    voice,
+  };
   const catalogos = {
     SERVER_REASONS,
     CHANNEL_REASONS,

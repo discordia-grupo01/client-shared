@@ -227,6 +227,10 @@ export const VOICE_ERROR_CODES = [
   "server_id_required",
   "voice_screen_share_forbidden",
   "voice_not_in_channel",
+  "voice_call_forbidden",
+  "call_not_found",
+  "call_already_exists",
+  "invalid_call_state",
 ] as const;
 
 export type VoiceErrorCode = (typeof VOICE_ERROR_CODES)[number];

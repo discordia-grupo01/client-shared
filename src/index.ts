@@ -46,6 +46,8 @@ export * from "./domain/voice";
 export * from "./domain/voice-bridge";
 export * from "./domain/voice-session";
 export * from "./domain/voice-screen-share";
+export * from "./domain/private-call";
+export * from "./domain/private-call-state";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -98,6 +100,7 @@ export * from "./messages/message-search";
 export * from "./messages/direct-messages";
 export * from "./messages/presence";
 export * from "./messages/voice";
+export * from "./messages/private-call";
 
 // --- Formatters ---
 export * from "./format/call-duration";
