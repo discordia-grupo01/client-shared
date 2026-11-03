@@ -127,6 +127,7 @@ export * from "./chat/pending-store";
 export * from "./chat/send-queue";
 export * from "./chat/mentions";
 export * from "./chat/notification-history";
+export * from "./chat/notification-settings";
 export * from "./chat/mention-suggestions";
 export * from "./chat/mention-draft";
 
