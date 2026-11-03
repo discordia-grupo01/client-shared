@@ -37,6 +37,7 @@ export * from "./domain/mention";
 export * from "./domain/direct-message";
 export * from "./domain/notification-history";
 export * from "./domain/notification-settings";
+export * from "./domain/push";
 export * from "./domain/presence";
 export * from "./domain/block";
 export * from "./domain/word-filter";
