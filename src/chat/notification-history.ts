@@ -24,6 +24,9 @@ export const NOTIFICATION_PREVIEW_MAX_LENGTH = 240;
 export const NOTIFICATION_ALL_READ_KEY = "*";
 export const NOTIFICATION_READ_RETENTION_DAYS = 7;
 export const NOTIFICATION_LOOKUP_MAX_IDS = 50;
+export const NOTIFICATION_REFRESH_RETRY_DELAYS_MS: readonly number[] = [
+  1_500, 1_500, 2_000, 3_000, 4_000,
+];
 
 export interface NotificationPlace {
   serverName: string | null;
