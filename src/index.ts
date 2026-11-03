@@ -83,6 +83,7 @@ export * from "./messages/actions";
 export * from "./messages/chat";
 export * from "./messages/notifications";
 export * from "./messages/notification-settings";
+export * from "./messages/push";
 export * from "./messages/blocks";
 export * from "./messages/auth";
 export * from "./messages/account-suspension";
