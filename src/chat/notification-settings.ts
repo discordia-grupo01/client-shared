@@ -45,6 +45,10 @@ export function parseNotificationSettings(
   return { mutedServers, mutedChannels, serverLevels, channelLevels };
 }
 
+export function channelHasNotifications(channel: { kind: string }): boolean {
+  return channel.kind === "text";
+}
+
 export function isServerMuted(
   settings: NotificationSettings,
   serverId: string,
