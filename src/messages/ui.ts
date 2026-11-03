@@ -523,3 +523,22 @@ export const MEMBERS_SEARCH_PLACEHOLDER = "Buscar por nombre...";
 export const MEMBERS_EMPTY_SEARCH =
   "No hay miembros que coincidan con la búsqueda.";
 export const MEMBERS_LOADING_MORE = "Cargando más miembros...";
+
+// --- Llamada privada ---
+export const PRIVATE_CALL_START = "Iniciar llamada privada";
+export const PRIVATE_CALL_BLOCKED_HINT =
+  "No se puede llamar mientras exista un bloqueo";
+export const PRIVATE_CALL_OUTGOING = "Llamando…";
+export const PRIVATE_CALL_INCOMING = "Llamada entrante";
+export const PRIVATE_CALL_CONNECTED = "Conectado · llamada privada";
+export const PRIVATE_CALL_ACCEPT = "Aceptar";
+export const PRIVATE_CALL_DECLINE = "Rechazar";
+export const PRIVATE_CALL_CANCEL = "Cancelar";
+export const PRIVATE_CALL_HANG_UP = "Finalizar";
+export const PRIVATE_CALL_MINIMIZE = "Minimizar llamada";
+export function privateCallTitle(partnerName: string): string {
+  return `Llamada con ${partnerName}`;
+}
+export function privateCallDialogLabel(partnerName: string): string {
+  return `Llamada privada con ${partnerName}`;
+}

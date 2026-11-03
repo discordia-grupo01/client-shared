@@ -8,6 +8,12 @@ import type { VoiceMediaError } from "../domain/voice-bridge";
 
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
 import { VOICE_CONNECT_FORBIDDEN } from "./permissions";
+import {
+  PRIVATE_CALL_ALREADY_EXISTS,
+  PRIVATE_CALL_FORBIDDEN,
+  PRIVATE_CALL_INVALID_STATE,
+  PRIVATE_CALL_NOT_FOUND,
+} from "./private-call";
 
 export const VOICE_UNAVAILABLE =
   "La voz no está disponible en este momento. Intentá de nuevo en unos minutos.";
@@ -52,6 +58,10 @@ const VOICE_ERROR_MESSAGES: Readonly<Record<VoiceErrorCode, string>> = {
   server_id_required: VOICE_PARTICIPANTS_FAILED,
   voice_screen_share_forbidden: VOICE_SCREEN_SHARE_FORBIDDEN,
   voice_not_in_channel: VOICE_SCREEN_SHARE_NOT_IN_CHANNEL,
+  voice_call_forbidden: PRIVATE_CALL_FORBIDDEN,
+  call_not_found: PRIVATE_CALL_NOT_FOUND,
+  call_already_exists: PRIVATE_CALL_ALREADY_EXISTS,
+  invalid_call_state: PRIVATE_CALL_INVALID_STATE,
 };
 
 /** El mensaje para un error de signaling (ver `voiceErrorCodeOf`). */
