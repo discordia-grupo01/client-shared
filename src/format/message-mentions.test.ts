@@ -4,6 +4,7 @@ import type { MessageAuthor } from "../domain/message";
 import { authorFromMember, authorFromUser } from "./message-author";
 import {
   buildMentionResolver,
+  draftMentionsOf,
   isActiveMention,
   mentionsPerson,
 } from "./message-mentions";
@@ -126,5 +127,21 @@ describe("autores", () => {
     const result = authorFromMember({ user_id: "u1", profile: null }, null);
     expect(result.id).toBe("u1");
     expect(result.name).toBe("Usuario desconocido");
+  });
+});
+
+describe("draftMentionsOf", () => {
+  it("toma los usuarios y roles del texto, sin repetir", () => {
+    expect(
+      draftMentionsOf(`hola <@u1> y <@u1>, y <@&${ROLE_ID.toUpperCase()}>`),
+    ).toEqual({ mentions: ["u1"], mention_roles: [ROLE_ID] });
+  });
+
+  it("no da por valido @everyone", () => {
+    expect(draftMentionsOf("@everyone hola")).toEqual({});
+  });
+
+  it("sin menciones no agrega campos", () => {
+    expect(draftMentionsOf("hola")).toEqual({});
   });
 });
