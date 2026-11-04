@@ -39,6 +39,7 @@ export * from "./domain/notification-history";
 export * from "./domain/notification-settings";
 export * from "./domain/push";
 export * from "./domain/presence";
+export * from "./domain/platform-status";
 export * from "./domain/block";
 export * from "./domain/word-filter";
 export * from "./domain/moderation";
@@ -61,6 +62,7 @@ export * from "./constants/reactions";
 export * from "./constants/logo";
 export * from "./constants/loading-screen";
 export * from "./constants/voice";
+export * from "./constants/platform-services";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -99,6 +101,7 @@ export * from "./messages/ui";
 export * from "./messages/message-search";
 export * from "./messages/direct-messages";
 export * from "./messages/presence";
+export * from "./messages/platform-status";
 export * from "./messages/voice";
 export * from "./messages/private-call";
 
