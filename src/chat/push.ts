@@ -1,6 +1,7 @@
 import type {
   PushDeviceRequest,
   PushSettings,
+  PushTarget,
   WebPushDeviceRequest,
 } from "../domain/push";
 
@@ -77,4 +78,20 @@ export function parsePushSettings(body: unknown): PushSettings | null {
   if (typeof body !== "object" || body === null) return null;
   const { enabled } = body as Record<string, unknown>;
   return typeof enabled === "boolean" ? { enabled } : null;
+}
+
+export function pushNotificationTarget(data: unknown): PushTarget | null {
+  if (typeof data !== "object" || data === null) return null;
+  const { server_id, channel_id, author_id, conversation_id } = data as Record<
+    string,
+    unknown
+  >;
+
+  if (isText(server_id) && isText(channel_id)) {
+    return { kind: "channel", serverId: server_id, channelId: channel_id };
+  }
+  if (isText(conversation_id) && isText(author_id)) {
+    return { kind: "direct", partnerId: author_id };
+  }
+  return null;
 }
