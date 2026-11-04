@@ -6,6 +6,7 @@ import {
   serializeVoiceBridgeMessage,
   type VoiceBridgeCommand,
   type VoiceBridgeEvent,
+  withParticipantProfiles,
 } from "./voice-bridge";
 import type { VoiceParticipant } from "./voice";
 
@@ -110,6 +111,18 @@ describe("parseVoiceBridgeCommand", () => {
     },
     { type: "setExpanded", identity: "u-beto" },
     { type: "setExpanded", identity: null },
+    {
+      type: "setParticipantProfiles",
+      profiles: [
+        { identity: "u-ana", name: "Ana", avatarUrl: null },
+        {
+          identity: "u-beto",
+          name: "Beto",
+          avatarUrl: "https://cdn.example/b.png",
+        },
+      ],
+    },
+    { type: "setParticipantProfiles", profiles: [] },
     { type: "disconnect" },
   ];
 
@@ -213,5 +226,55 @@ describe("expandRequested", () => {
       parseVoiceBridgeEvent({ type: "expandRequested", identity: "" }),
     ).toBeNull();
     expect(parseVoiceBridgeEvent({ type: "expandRequested" })).toBeNull();
+  });
+});
+
+describe("setParticipantProfiles", () => {
+  it("descarta perfiles sin identidad, sin nombre o con foto vacia", () => {
+    const withProfile = (profile: unknown) =>
+      parseVoiceBridgeCommand({
+        type: "setParticipantProfiles",
+        profiles: [profile],
+      });
+
+    expect(withProfile({ name: "Ana", avatarUrl: null })).toBeNull();
+    expect(
+      withProfile({ identity: "u-ana", name: "", avatarUrl: null }),
+    ).toBeNull();
+    expect(
+      withProfile({ identity: "u-ana", name: "Ana", avatarUrl: "" }),
+    ).toBeNull();
+    expect(withProfile({ identity: "u-ana", name: "Ana" })).toBeNull();
+    expect(
+      parseVoiceBridgeCommand({ type: "setParticipantProfiles" }),
+    ).toBeNull();
+  });
+});
+
+describe("withParticipantProfiles", () => {
+  const beto: VoiceParticipant = {
+    ...ana,
+    identity: "u-beto",
+    name: "u-beto",
+    isLocal: false,
+  };
+
+  it("usa el nombre del perfil de cada uno", () => {
+    const named = withParticipantProfiles(
+      [{ ...ana, name: "u-ana" }, beto],
+      [
+        { identity: "u-ana", name: "Ana", avatarUrl: null },
+        { identity: "u-beto", name: "Beto", avatarUrl: null },
+      ],
+    );
+
+    expect(named.map((participant) => participant.name)).toEqual([
+      "Ana",
+      "Beto",
+    ]);
+  });
+
+  it("deja como esta a quien no tiene perfil", () => {
+    expect(withParticipantProfiles([beto], [])).toEqual([beto]);
   });
 });
