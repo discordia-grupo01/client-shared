@@ -417,6 +417,17 @@ describe("withPendingMessages", () => {
     ...overrides,
   });
 
+  it("un pendiente con una mencion ya la muestra como mencion", () => {
+    const [shown] = withPendingMessages(
+      [],
+      [pending("a", { content: "hola <@u1>" })],
+      "me",
+      "c1",
+    );
+
+    expect(shown.mentions).toEqual(["u1"]);
+  });
+
   it("sin pendientes devuelve los mensajes tal cual", () => {
     expect(withPendingMessages([msg("m1")], [], "me", "c1")).toEqual([
       msg("m1"),

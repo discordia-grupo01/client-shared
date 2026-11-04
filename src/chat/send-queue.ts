@@ -1,4 +1,5 @@
 import type { Message } from "../domain/message";
+import { draftMentionsOf } from "../format/message-mentions";
 import type { MessageActionResult } from "./channel-chat";
 
 declare function setTimeout(callback: () => void, ms: number): unknown;
@@ -325,6 +326,7 @@ export function withPendingMessages(
       server_id: "",
       user_id: userId,
       content: entry.content,
+      ...draftMentionsOf(entry.content),
       inserted_at: entry.createdAt,
       client_id: entry.clientId,
       delivery: deliveryOf(entry),
