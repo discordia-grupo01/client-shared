@@ -1,6 +1,6 @@
 import type { MessageAuthor, Message } from "../domain/message";
 import type { Role } from "../domain/role";
-import type { MessageToken } from "./message-content";
+import { type MessageToken, tokenizeMessageContent } from "./message-content";
 import type { MentionKind } from "./mention-tokens";
 
 export interface ResolvedMention {
@@ -61,4 +61,19 @@ export function mentionsPerson(
   return roleIds.some((roleId) =>
     mentionedRoles.includes(roleId.toLowerCase()),
   );
+}
+
+export function draftMentionsOf(
+  content: string,
+): Pick<Message, "mentions" | "mention_roles"> {
+  const users = new Set<string>();
+  const roles = new Set<string>();
+  for (const token of tokenizeMessageContent(content)) {
+    if (token.kind === "user") users.add(token.id);
+    if (token.kind === "role") roles.add(token.id.toLowerCase());
+  }
+  return {
+    ...(users.size > 0 ? { mentions: [...users] } : {}),
+    ...(roles.size > 0 ? { mention_roles: [...roles] } : {}),
+  };
 }
