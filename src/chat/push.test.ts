@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   parsePushDeviceRequest,
   parsePushSettings,
+  pushNotificationTarget,
   urlBase64ToBytes,
   webPushDeviceFromSubscription,
 } from "./push";
@@ -234,5 +235,57 @@ describe("parsePushSettings", () => {
     expect(parsePushSettings({ enabled: 1 })).toBeNull();
     expect(parsePushSettings(null)).toBeNull();
     expect(parsePushSettings("true")).toBeNull();
+  });
+});
+
+describe("pushNotificationTarget", () => {
+  it("a channel message opens its channel", () => {
+    expect(
+      pushNotificationTarget({
+        server_id: "s1",
+        channel_id: "c1",
+        author_id: "a1",
+        message_id: "m1",
+      }),
+    ).toEqual({ kind: "channel", serverId: "s1", channelId: "c1" });
+  });
+
+  it("a direct message opens the chat with who wrote it", () => {
+    expect(
+      pushNotificationTarget({
+        conversation_id: "conv1",
+        author_id: "b1",
+        message_id: "m1",
+      }),
+    ).toEqual({ kind: "direct", partnerId: "b1" });
+  });
+
+  it("a channel wins when the data carries both", () => {
+    expect(
+      pushNotificationTarget({
+        server_id: "s1",
+        channel_id: "c1",
+        conversation_id: "conv1",
+        author_id: "b1",
+      }),
+    ).toEqual({ kind: "channel", serverId: "s1", channelId: "c1" });
+  });
+
+  it("a server without channel and a conversation without author open nothing", () => {
+    expect(pushNotificationTarget({ server_id: "s1" })).toBeNull();
+    expect(pushNotificationTarget({ conversation_id: "conv1" })).toBeNull();
+  });
+
+  it("empty or non text ids open nothing", () => {
+    expect(
+      pushNotificationTarget({ server_id: "", channel_id: "c1" }),
+    ).toBeNull();
+    expect(pushNotificationTarget({ server_id: 1, channel_id: 2 })).toBeNull();
+  });
+
+  it("data that is not an object opens nothing", () => {
+    expect(pushNotificationTarget(null)).toBeNull();
+    expect(pushNotificationTarget(undefined)).toBeNull();
+    expect(pushNotificationTarget("s1")).toBeNull();
   });
 });

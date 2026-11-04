@@ -45,6 +45,10 @@ export interface PushNotificationPayload {
   data: PushNotificationData;
 }
 
+export type PushTarget =
+  | { kind: "channel"; serverId: string; channelId: string }
+  | { kind: "direct"; partnerId: string };
+
 export type LoadPushSettingsResult =
   ({ ok: true } & PushSettings) | { ok: false; message: string };
 
