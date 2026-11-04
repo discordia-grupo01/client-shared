@@ -24,6 +24,12 @@ import type {
   VoiceParticipant,
 } from "./voice";
 
+export interface VoiceParticipantProfile {
+  identity: string;
+  name: string;
+  avatarUrl: string | null;
+}
+
 export type VoiceBridgeCommand =
   | { type: "connect"; url: string; token: string }
   | { type: "setMicrophoneEnabled"; enabled: boolean }
@@ -38,6 +44,7 @@ export type VoiceBridgeCommand =
       canExpand?: boolean;
     }
   | { type: "setExpanded"; identity: string | null }
+  | { type: "setParticipantProfiles"; profiles: VoiceParticipantProfile[] }
   | { type: "disconnect" };
 
 export type VoiceMediaError =
@@ -135,6 +142,14 @@ function toParticipant(value: unknown): VoiceParticipant | null {
     screenSharing: screenSharing as boolean,
     mutedForMe: mutedForMe as boolean,
   };
+}
+
+function toProfile(value: unknown): VoiceParticipantProfile | null {
+  if (!isObject(value)) return null;
+  const { identity, name, avatarUrl } = value;
+  if (!isNonEmptyString(identity) || !isNonEmptyString(name)) return null;
+  if (avatarUrl !== null && !isNonEmptyString(avatarUrl)) return null;
+  return { identity, name, avatarUrl };
 }
 
 export function parseVoiceBridgeEvent(raw: unknown): VoiceBridgeEvent | null {
@@ -237,11 +252,31 @@ export function parseVoiceBridgeCommand(
       return isIdentityOrNull(message.identity)
         ? { type: "setExpanded", identity: message.identity }
         : null;
+    case "setParticipantProfiles": {
+      if (!Array.isArray(message.profiles)) return null;
+      const profiles = message.profiles.map(toProfile);
+      return profiles.every((p): p is VoiceParticipantProfile => p !== null)
+        ? { type: "setParticipantProfiles", profiles }
+        : null;
+    }
     case "disconnect":
       return { type: "disconnect" };
     default:
       return null;
   }
+}
+
+/** Los participantes con el nombre de su perfil, si la app mando uno. */
+export function withParticipantProfiles(
+  participants: readonly VoiceParticipant[],
+  profiles: readonly VoiceParticipantProfile[],
+): VoiceParticipant[] {
+  return participants.map((participant) => {
+    const profile = profiles.find(
+      (candidate) => candidate.identity === participant.identity,
+    );
+    return profile ? { ...participant, name: profile.name } : participant;
+  });
 }
 
 export function serializeVoiceBridgeMessage(
