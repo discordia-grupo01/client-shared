@@ -542,3 +542,6 @@ export function privateCallTitle(partnerName: string): string {
 export function privateCallDialogLabel(partnerName: string): string {
   return `Llamada privada con ${partnerName}`;
 }
+
+export const BILLING_SECTION_TITLE = "Premium y puntos";
+export const BILLING_SECTION_DESCRIPTION = "Suscripción y saldo";
