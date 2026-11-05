@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   MAX_ATTACHMENT_BYTES,
   MAX_ATTACHMENTS_PER_MESSAGE,
+  PREMIUM_MAX_ATTACHMENT_BYTES,
 } from "../constants/attachments";
 
 import {
@@ -53,6 +54,37 @@ describe("validateAttachment", () => {
 
   it("rechaza un archivo vacio", () => {
     expect(validateAttachment({ type: "image/png", size: 0 })).toBeDefined();
+  });
+
+  describe("con Premium", () => {
+    const premium = { premium: true };
+
+    it("acepta GIF", () => {
+      expect(
+        validateAttachment({ type: "image/gif", size: 1024 }, premium),
+      ).toBeUndefined();
+    });
+
+    it("acepta justo 50 MB y rechaza un byte mas", () => {
+      expect(
+        validateAttachment(
+          { type: "application/pdf", size: PREMIUM_MAX_ATTACHMENT_BYTES },
+          premium,
+        ),
+      ).toBeUndefined();
+      expect(
+        validateAttachment(
+          { type: "application/pdf", size: PREMIUM_MAX_ATTACHMENT_BYTES + 1 },
+          premium,
+        ),
+      ).toBe(ATTACHMENT_TOO_LARGE);
+    });
+
+    it("sigue rechazando otros formatos", () => {
+      expect(
+        validateAttachment({ type: "application/zip", size: 10 }, premium),
+      ).toBe(ATTACHMENT_UNSUPPORTED_TYPE);
+    });
   });
 });
 

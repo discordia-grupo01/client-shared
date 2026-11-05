@@ -67,7 +67,8 @@ export function normalizeName(value: string): string {
   return value.trim().split(/\s+/).join(" ");
 }
 
-function emailError(value: string): string | undefined {
+/** Error del campo email, o `undefined` si es válido. */
+export function validateEmail(value: string): string | undefined {
   const email = value.trim();
   if (email === "") return "Ingresá tu correo electrónico";
   if (!EMAIL_REGEX.test(email)) return "El correo electrónico no es válido";
@@ -114,7 +115,7 @@ export function validateUserName(
 
 export function validateLogin(values: LoginValues): LoginErrors {
   const errors: LoginErrors = {};
-  errors.email = emailError(values.email);
+  errors.email = validateEmail(values.email);
   if (values.password === "") errors.password = "Ingresá tu contraseña";
   return errors;
 }
@@ -122,7 +123,7 @@ export function validateLogin(values: LoginValues): LoginErrors {
 export function validateRegister(values: RegisterValues): RegisterErrors {
   return {
     name: validateUserName(values.name),
-    email: emailError(values.email),
+    email: validateEmail(values.email),
     password: passwordStrengthError(values.password),
   };
 }
@@ -130,7 +131,7 @@ export function validateRegister(values: RegisterValues): RegisterErrors {
 export function validateForgotPassword(
   values: ForgotPasswordValues,
 ): ForgotPasswordErrors {
-  return { email: emailError(values.email) };
+  return { email: validateEmail(values.email) };
 }
 
 export function validateResetPassword(
