@@ -49,6 +49,7 @@ export * from "./domain/voice-session";
 export * from "./domain/voice-screen-share";
 export * from "./domain/private-call";
 export * from "./domain/private-call-state";
+export * from "./domain/billing";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -63,6 +64,7 @@ export * from "./constants/logo";
 export * from "./constants/loading-screen";
 export * from "./constants/voice";
 export * from "./constants/platform-services";
+export * from "./constants/billing";
 
 // --- Validacion ---
 export * from "./validation/auth";
@@ -104,6 +106,7 @@ export * from "./messages/presence";
 export * from "./messages/platform-status";
 export * from "./messages/voice";
 export * from "./messages/private-call";
+export * from "./messages/billing";
 
 // --- Formatters ---
 export * from "./format/call-duration";
@@ -125,6 +128,7 @@ export * from "./format/message-author";
 export * from "./format/message-mentions";
 export * from "./format/mention-tokens";
 export * from "./format/mention-draft-segments";
+export * from "./format/billing";
 
 // --- Chat ---
 export * from "./chat/attachment-upload";
