@@ -10,6 +10,8 @@ export interface User {
   avatar_url: string;
   status_text: string;
   status_emoji: string;
+  /** Réplica de billing: `true` mientras Premium esté activo (incluido el período pago después de cancelar). */
+  premium: boolean;
   created_at: string;
 }
 
@@ -21,6 +23,8 @@ export interface PublicUser {
   avatar_url: string;
   status_text: string;
   status_emoji: string;
+  /** Para la insignia Premium del perfil público. */
+  premium: boolean;
   mutual_server_ids: string[];
   /**
    * Siempre llega undefined: identify-service todavia no tiene ningun
