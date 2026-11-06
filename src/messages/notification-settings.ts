@@ -17,6 +17,9 @@ export const NOTIFICATION_SETTINGS_MUTED_HINT =
 
 export const NOTIFICATION_SETTINGS_LEVEL_TITLE = "Qué te avisa";
 
+export const NOTIFICATION_SETTINGS_LEVEL_MUTED_NOTE =
+  "Mientras esté silenciado no te avisa nada, ni las menciones.";
+
 export const NOTIFICATION_SETTINGS_SERVER_MUTED_NOTE =
   "El servidor está silenciado: todos sus canales también.";
 
