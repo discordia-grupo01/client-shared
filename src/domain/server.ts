@@ -69,3 +69,7 @@ export type DeleteServerResult =
       message: string;
       fieldErrors?: DeleteServerFieldErrors;
     };
+
+export interface ServerLeftPayload {
+  server_id: string;
+}
