@@ -43,6 +43,9 @@ export const NOTIFICATIONS_UNKNOWN_ROLE_MENTION = "@rol";
 
 export const NOTIFICATIONS_MARK_ALL_READ_LABEL = "Marcar todo como leído";
 
+export const NOTIFICATIONS_MARK_ALL_READ_FAILED =
+  "No pudimos marcar todo como leído. Probá de nuevo.";
+
 export const NOTIFICATIONS_UNREAD_LABEL = "No leído";
 
 export const UNREAD_MESSAGES_LABEL = "Mensajes sin leer";
