@@ -287,6 +287,21 @@ describe("joinUserChannel", () => {
     });
   });
 
+  it("delega server_left cuando el hook lo pide", () => {
+    const room = createRoom();
+    const serverLeft = vi.fn();
+    joinUserChannel(room as unknown as RealtimeChannel, {
+      newDm: vi.fn(),
+      serverLeft,
+      connectionLost: vi.fn(),
+      joined: vi.fn(),
+    });
+
+    room.events.server_left({ server_id: "s1" });
+
+    expect(serverLeft).toHaveBeenCalledWith({ server_id: "s1" });
+  });
+
   it("delega el evento mention cuando el hook lo pide", () => {
     const room = createRoom();
     const mention = vi.fn();

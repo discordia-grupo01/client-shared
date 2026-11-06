@@ -7,6 +7,7 @@ import type {
 import type { Member } from "../domain/member";
 import type { MentionEventPayload } from "../domain/mention";
 import type { MessageAuthor } from "../domain/message";
+import type { ServerLeftPayload } from "../domain/server";
 import type {
   OwnStatusPayload,
   PresenceEntry,
@@ -286,6 +287,8 @@ export interface UserRoomCallbacks {
   onPresenceUpdated?: (entry: PresenceEntry) => void;
   /** Cambiaste tu estado (desde esta u otra sesion). */
   onOwnStatusUpdated?: (payload: OwnStatusPayload) => void;
+  /** Dejaste de ser miembro de un servidor; llega aunque no lo tengas abierto. */
+  onServerLeft?: (payload: ServerLeftPayload) => void;
 }
 
 /** Lo que el hook de cada app hace con lo que pasa en la sala personal `user:<id>`. */
@@ -302,6 +305,7 @@ export interface UserChannelHandlers {
   ) => void;
   presenceUpdated?: (entry: PresenceEntry) => void;
   ownStatusUpdated?: (payload: OwnStatusPayload) => void;
+  serverLeft?: (payload: ServerLeftPayload) => void;
 }
 
 /** Engancha los eventos de la sala personal y la une. */
@@ -318,6 +322,9 @@ export function joinUserChannel(
   );
   room.on("own_status_updated", (payload: OwnStatusPayload) =>
     handlers.ownStatusUpdated?.(payload),
+  );
+  room.on("server_left", (payload: ServerLeftPayload) =>
+    handlers.serverLeft?.(payload),
   );
   room.onError(() => handlers.connectionLost());
   room.onClose(() => handlers.connectionLost());
