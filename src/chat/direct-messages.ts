@@ -7,7 +7,10 @@ import type {
 import type { Member } from "../domain/member";
 import type { MentionEventPayload } from "../domain/mention";
 import type { MessageAuthor } from "../domain/message";
-import type { ServerLeftPayload } from "../domain/server";
+import type {
+  ServerLeftPayload,
+  ServerSuspensionPayload,
+} from "../domain/server";
 import type {
   OwnStatusPayload,
   PresenceEntry,
@@ -289,6 +292,10 @@ export interface UserRoomCallbacks {
   onOwnStatusUpdated?: (payload: OwnStatusPayload) => void;
   /** Dejaste de ser miembro de un servidor; llega aunque no lo tengas abierto. */
   onServerLeft?: (payload: ServerLeftPayload) => void;
+  /** El staff suspendió un servidor tuyo; llega aunque no lo tengas abierto. */
+  onServerSuspended?: (payload: ServerSuspensionPayload) => void;
+  /** El staff levantó la suspensión: hay que recargar sus canales. */
+  onServerReactivated?: (payload: ServerSuspensionPayload) => void;
 }
 
 /** Lo que el hook de cada app hace con lo que pasa en la sala personal `user:<id>`. */
@@ -306,6 +313,8 @@ export interface UserChannelHandlers {
   presenceUpdated?: (entry: PresenceEntry) => void;
   ownStatusUpdated?: (payload: OwnStatusPayload) => void;
   serverLeft?: (payload: ServerLeftPayload) => void;
+  serverSuspended?: (payload: ServerSuspensionPayload) => void;
+  serverReactivated?: (payload: ServerSuspensionPayload) => void;
 }
 
 /** Engancha los eventos de la sala personal y la une. */
@@ -325,6 +334,12 @@ export function joinUserChannel(
   );
   room.on("server_left", (payload: ServerLeftPayload) =>
     handlers.serverLeft?.(payload),
+  );
+  room.on("server_suspended", (payload: ServerSuspensionPayload) =>
+    handlers.serverSuspended?.(payload),
+  );
+  room.on("server_reactivated", (payload: ServerSuspensionPayload) =>
+    handlers.serverReactivated?.(payload),
   );
   room.onError(() => handlers.connectionLost());
   room.onClose(() => handlers.connectionLost());
