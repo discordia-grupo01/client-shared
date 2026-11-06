@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type {
   UnreadSnapshotPayload,
@@ -7,6 +7,7 @@ import type {
 import {
   applyUnreadSnapshot,
   applyUnreadUpdate,
+  createUnreadTracker,
   markUnreadChannelRead,
   NO_UNREAD,
   snapshotHasUnreadChannel,
@@ -149,5 +150,60 @@ describe("flags por canal y por servidor", () => {
     expect(
       unreadFlagsByServer(markUnreadChannelRead(state, "C3")),
     ).not.toHaveProperty("S2");
+  });
+});
+
+describe("createUnreadTracker", () => {
+  function setup() {
+    const markRead = vi.fn();
+    const onChange = vi.fn();
+    const tracker = createUnreadTracker({ markRead, onChange });
+    const latest = () => onChange.mock.lastCall?.[0];
+    return { tracker, markRead, onChange, latest };
+  }
+
+  it("aplica el snapshot y los cambios en vivo", () => {
+    const { tracker, markRead, latest } = setup();
+    tracker.applySnapshot(snapshot);
+    tracker.applyUpdate(update("C1", "S1", false));
+
+    expect(Object.keys(latest())).toEqual(["C2", "C3"]);
+    expect(markRead).not.toHaveBeenCalled();
+  });
+
+  it("abrir un canal lo apaga y lo marca leído", () => {
+    const { tracker, markRead, latest } = setup();
+    tracker.applySnapshot(snapshot);
+    tracker.setOpenChannel("C2");
+
+    expect(latest()).not.toHaveProperty("C2");
+    expect(markRead).toHaveBeenCalledWith("C2");
+  });
+
+  it("abrir el mismo canal dos veces no lo marca de nuevo", () => {
+    const { tracker, markRead } = setup();
+    tracker.setOpenChannel("C1");
+    tracker.setOpenChannel("C1");
+    expect(markRead).toHaveBeenCalledTimes(1);
+  });
+
+  it("si el canal abierto se enciende, lo vuelve a marcar sin mostrarlo", () => {
+    const { tracker, markRead, onChange } = setup();
+    tracker.setOpenChannel("C1");
+    markRead.mockClear();
+    tracker.applyUpdate(update("C1", "S1", true));
+
+    expect(markRead).toHaveBeenCalledWith("C1");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("si el snapshot trae el canal abierto, lo marca leído", () => {
+    const { tracker, markRead, latest } = setup();
+    tracker.setOpenChannel("C3");
+    markRead.mockClear();
+    tracker.applySnapshot(snapshot);
+
+    expect(markRead).toHaveBeenCalledWith("C3");
+    expect(latest()).not.toHaveProperty("C3");
   });
 });

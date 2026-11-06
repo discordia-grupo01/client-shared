@@ -9,10 +9,6 @@ export const NO_UNREAD: UnreadState = {};
 
 export const NO_UNREAD_FLAGS: UnreadFlags = { unread: false, mentionCount: 0 };
 
-/**
- * El canal abierto se toma como leído aunque el back todavía no se haya
- * enterado: la app le manda `mark_read` y así no parpadea el indicador.
- */
 export function applyUnreadSnapshot(
   snapshot: UnreadSnapshotPayload,
   openChannelId: string | null,
@@ -81,7 +77,6 @@ export function unreadFlagsByChannel(
   );
 }
 
-/** Un servidor está sin leer si alguno de sus canales lo está; las menciones se suman. */
 export function unreadFlagsByServer(
   state: UnreadState,
 ): Record<string, UnreadFlags> {
@@ -94,4 +89,46 @@ export function unreadFlagsByServer(
     };
   }
   return servers;
+}
+
+export interface UnreadTracker {
+  setOpenChannel: (channelId: string | null) => void;
+  applySnapshot: (payload: UnreadSnapshotPayload) => void;
+  applyUpdate: (payload: UnreadUpdatedPayload) => void;
+}
+
+export function createUnreadTracker(options: {
+  markRead: (channelId: string) => void;
+  onChange: (state: UnreadState) => void;
+}): UnreadTracker {
+  let state = NO_UNREAD;
+  let openChannelId: string | null = null;
+
+  function commit(next: UnreadState): void {
+    if (next === state) return;
+    state = next;
+    options.onChange(state);
+  }
+
+  return {
+    setOpenChannel: (channelId) => {
+      if (channelId === openChannelId) return;
+      openChannelId = channelId;
+      if (!channelId) return;
+      commit(markUnreadChannelRead(state, channelId));
+      options.markRead(channelId);
+    },
+    applySnapshot: (payload) => {
+      commit(applyUnreadSnapshot(payload, openChannelId));
+      if (openChannelId && snapshotHasUnreadChannel(payload, openChannelId)) {
+        options.markRead(openChannelId);
+      }
+    },
+    applyUpdate: (payload) => {
+      commit(applyUnreadUpdate(state, payload, openChannelId));
+      if (payload.unread && payload.channel_id === openChannelId) {
+        options.markRead(openChannelId);
+      }
+    },
+  };
 }
