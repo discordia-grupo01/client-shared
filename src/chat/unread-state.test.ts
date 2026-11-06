@@ -8,6 +8,7 @@ import {
   applyUnreadSnapshot,
   applyUnreadUpdate,
   createUnreadTracker,
+  hasAnyUnread,
   markUnreadChannelRead,
   NO_UNREAD,
   snapshotHasUnreadChannel,
@@ -122,6 +123,13 @@ describe("markUnreadChannelRead", () => {
   });
 });
 
+describe("hasAnyUnread", () => {
+  it("dice si queda algún canal sin leer", () => {
+    expect(hasAnyUnread(applyUnreadSnapshot(snapshot, null))).toBe(true);
+    expect(hasAnyUnread(NO_UNREAD)).toBe(false);
+  });
+});
+
 describe("snapshotHasUnreadChannel", () => {
   it("dice si el canal viene sin leer", () => {
     expect(snapshotHasUnreadChannel(snapshot, "C3")).toBe(true);
@@ -154,12 +162,13 @@ describe("flags por canal y por servidor", () => {
 });
 
 describe("createUnreadTracker", () => {
-  function setup() {
+  function setup(markAllReadResult = true) {
     const markRead = vi.fn();
+    const markAllRead = vi.fn(() => Promise.resolve(markAllReadResult));
     const onChange = vi.fn();
-    const tracker = createUnreadTracker({ markRead, onChange });
+    const tracker = createUnreadTracker({ markRead, markAllRead, onChange });
     const latest = () => onChange.mock.lastCall?.[0];
-    return { tracker, markRead, onChange, latest };
+    return { tracker, markRead, markAllRead, onChange, latest };
   }
 
   it("aplica el snapshot y los cambios en vivo", () => {
@@ -205,5 +214,43 @@ describe("createUnreadTracker", () => {
 
     expect(markRead).toHaveBeenCalledWith("C3");
     expect(latest()).not.toHaveProperty("C3");
+  });
+
+  it("marcar todo apaga todos los canales y avisa al servidor", async () => {
+    const { tracker, markAllRead, latest } = setup();
+    tracker.applySnapshot(snapshot);
+
+    await expect(tracker.markAllRead()).resolves.toBe(true);
+    expect(markAllRead).toHaveBeenCalledTimes(1);
+    expect(latest()).toBe(NO_UNREAD);
+  });
+
+  it("si marcar todo falla, vuelven a aparecer los canales", async () => {
+    const { tracker, latest } = setup(false);
+    tracker.applySnapshot(snapshot);
+
+    await expect(tracker.markAllRead()).resolves.toBe(false);
+    expect(Object.keys(latest())).toEqual(["C1", "C2", "C3"]);
+  });
+
+  it("si falla, conserva lo que llegó mientras esperaba", async () => {
+    let finish: (ok: boolean) => void = () => {};
+    const onChange = vi.fn();
+    const tracker = createUnreadTracker({
+      markRead: vi.fn(),
+      markAllRead: () => new Promise((resolve) => (finish = resolve)),
+      onChange,
+    });
+    tracker.applySnapshot(snapshot);
+
+    const pending = tracker.markAllRead();
+    tracker.applyUpdate(update("C4", "S2", true, 1));
+    finish(false);
+    await pending;
+
+    expect(onChange.mock.lastCall?.[0]).toMatchObject({
+      C1: { serverId: "S1" },
+      C4: { serverId: "S2", mentionCount: 1 },
+    });
   });
 });
