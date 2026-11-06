@@ -97,6 +97,7 @@ export const ACCESS_REVOKED_MESSAGES: Readonly<
   channel_deleted: "Este canal ya no existe.",
   server_deleted: "Este servidor ya no existe.",
   permissions_changed: "Ya no tenés acceso a este canal.",
+  server_suspended: "Este servidor está suspendido.",
 };
 
 export function isMessageErrorCode(code: unknown): code is MessageErrorCode {

@@ -124,7 +124,11 @@ export type ReactionEvent = "add_reaction" | "remove_reaction";
  * quitado), aunque sigue siendo miembro del servidor.
  */
 export type AccessRevokedReason =
-  "member_left" | "channel_deleted" | "server_deleted" | "permissions_changed";
+  | "member_left"
+  | "channel_deleted"
+  | "server_deleted"
+  | "permissions_changed"
+  | "server_suspended";
 
 export interface AccessRevokedPayload {
   channel_id: string;

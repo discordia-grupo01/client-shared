@@ -126,6 +126,13 @@ describe("access_revoked", () => {
     });
   });
 
+  it("si suspendieron el servidor queda sin acceso y lo dice", () => {
+    expect(chatStateForAccessRevoked("server_suspended")).toEqual({
+      status: "forbidden",
+      message: "Este servidor está suspendido.",
+    });
+  });
+
   it("un motivo desconocido se trata como perdida de acceso", () => {
     const state = chatStateForAccessRevoked("otra_cosa" as never);
     expect(state.status).toBe("forbidden");

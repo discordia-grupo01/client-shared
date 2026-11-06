@@ -11,6 +11,11 @@ export interface ServerSummary {
   created_at: string;
   channels: Channel[];
   categories: Category[];
+  /**
+   * `true` si el staff de la plataforma lo suspendió: `GET /v1/servers` lo
+   * sigue listando, pero sin canales ni categorías, y todo lo demás da 403.
+   */
+  suspended?: boolean;
 }
 
 export interface CreateServerFieldErrors {
@@ -71,5 +76,10 @@ export type DeleteServerResult =
     };
 
 export interface ServerLeftPayload {
+  server_id: string;
+}
+
+/** Payload de `server_suspended` y `server_reactivated` en la sala `user:<id>`. */
+export interface ServerSuspensionPayload {
   server_id: string;
 }
