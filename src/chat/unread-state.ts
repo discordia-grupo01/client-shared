@@ -55,6 +55,10 @@ export function markUnreadChannelRead(
   return next;
 }
 
+export function hasAnyUnread(state: UnreadState): boolean {
+  return Object.keys(state).length > 0;
+}
+
 export function snapshotHasUnreadChannel(
   snapshot: UnreadSnapshotPayload,
   channelId: string,
@@ -95,10 +99,12 @@ export interface UnreadTracker {
   setOpenChannel: (channelId: string | null) => void;
   applySnapshot: (payload: UnreadSnapshotPayload) => void;
   applyUpdate: (payload: UnreadUpdatedPayload) => void;
+  markAllRead: () => Promise<boolean>;
 }
 
 export function createUnreadTracker(options: {
   markRead: (channelId: string) => void;
+  markAllRead: () => Promise<boolean>;
   onChange: (state: UnreadState) => void;
 }): UnreadTracker {
   let state = NO_UNREAD;
@@ -129,6 +135,14 @@ export function createUnreadTracker(options: {
       if (payload.unread && payload.channel_id === openChannelId) {
         options.markRead(openChannelId);
       }
+    },
+    markAllRead: async () => {
+      const previous = state;
+      commit(NO_UNREAD);
+      const ok = await options.markAllRead();
+      // Si falla se restaura lo anterior sin pisar lo que llegó mientras tanto.
+      if (!ok) commit({ ...previous, ...state });
+      return ok;
     },
   };
 }
