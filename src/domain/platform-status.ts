@@ -27,5 +27,14 @@ export interface PlatformStatusResponse {
   incidents: Incident[];
 }
 
+export const PLATFORM_STATUS_SOCKET_EVENTS = {
+  changed: "status_changed",
+} as const;
+
+export interface PlatformStatusChangedPayload {
+  refetch: true;
+  status: PlatformStatus;
+}
+
 export type PlatformStatusResult =
   ({ ok: true } & PlatformStatusResponse) | { ok: false; message: string };
