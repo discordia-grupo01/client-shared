@@ -302,6 +302,25 @@ describe("joinUserChannel", () => {
     expect(serverLeft).toHaveBeenCalledWith({ server_id: "s1" });
   });
 
+  it("delega server_suspended y server_reactivated cuando el hook lo pide", () => {
+    const room = createRoom();
+    const serverSuspended = vi.fn();
+    const serverReactivated = vi.fn();
+    joinUserChannel(room as unknown as RealtimeChannel, {
+      newDm: vi.fn(),
+      serverSuspended,
+      serverReactivated,
+      connectionLost: vi.fn(),
+      joined: vi.fn(),
+    });
+
+    room.events.server_suspended({ server_id: "s1" });
+    room.events.server_reactivated({ server_id: "s2" });
+
+    expect(serverSuspended).toHaveBeenCalledWith({ server_id: "s1" });
+    expect(serverReactivated).toHaveBeenCalledWith({ server_id: "s2" });
+  });
+
   it("delega el evento mention cuando el hook lo pide", () => {
     const room = createRoom();
     const mention = vi.fn();
