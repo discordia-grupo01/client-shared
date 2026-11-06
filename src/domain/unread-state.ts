@@ -38,7 +38,12 @@ export const UNREAD_SOCKET_EVENTS = {
   snapshot: "snapshot",
   updated: "unread_updated",
   markRead: "mark_read",
+  markAllRead: "mark_all_read",
 } as const;
+
+export interface MarkAllReadReply {
+  channels: number;
+}
 
 export function unreadTopic(userId: string): string {
   return `notifications:${userId}`;
