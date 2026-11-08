@@ -24,6 +24,7 @@ export interface ApiFailure {
   code: string | number;
   message: string;
   details?: ApiErrorDetails;
+  retryAfterSeconds?: number;
 }
 
 /**
@@ -77,17 +78,28 @@ export interface ApiErrorBody {
  * `body` puede ser cualquier cosa: `null` en un 204, un string de HTML si
  * contesto un proxy, o el JSON del backend.
  */
-export function toApiResult<T>(status: number, body: unknown): ApiResult<T> {
+export function toApiResult<T>(
+  status: number,
+  body: unknown,
+  retryAfterHeader?: unknown,
+): ApiResult<T> {
   if (status >= 200 && status < 300) {
     return { ok: true, status, data: body as T };
   }
 
   const errorBody = body as ApiErrorBody | null | undefined;
+  const retryAfterSeconds =
+    typeof retryAfterHeader === "string" || typeof retryAfterHeader === "number"
+      ? Number(retryAfterHeader)
+      : Number.NaN;
   return {
     ok: false,
     status,
     code: errorBody?.error?.code ?? "UNKNOWN_ERROR",
     message: errorBody?.error?.message ?? UNEXPECTED_ERROR_MESSAGE,
     details: detailsOf(body),
+    ...(Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      ? { retryAfterSeconds: Math.ceil(retryAfterSeconds) }
+      : {}),
   };
 }

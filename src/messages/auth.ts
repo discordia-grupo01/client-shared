@@ -20,6 +20,15 @@ export const EMAIL_ALREADY_REGISTERED =
 export const INVALID_CREDENTIALS =
   "El correo electrónico o la contraseña son incorrectos.";
 
+export function formatLoginRateLimit(secondsLeft: number): string {
+  const seconds = Math.max(0, Math.ceil(secondsLeft));
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return minutes > 0
+    ? `Demasiados intentos fallidos. Podés volver a intentar en ${minutes}:${String(remainder).padStart(2, "0")}.`
+    : `Demasiados intentos fallidos. Podés volver a intentar en ${remainder} segundos.`;
+}
+
 /** 403 en `POST /v1/login` y `POST /v1/pin/login`. */
 export const EMAIL_NOT_VERIFIED =
   "Tu cuenta ya está registrada, pero debes confirmar tu correo electrónico antes de iniciar sesión.";
