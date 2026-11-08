@@ -19,7 +19,7 @@ export interface SessionBase {
 export type LoginResult =
   | { ok: true; twoFactorRequired?: false; user: User }
   | { ok: true; twoFactorRequired: true; expiresIn: number }
-  | { ok: false; message: string };
+  | { ok: false; message: string; retryAfterSeconds?: number };
 
 /**
  * Login en app-mobile: sin servidor propio en el medio, el token tiene que
@@ -39,7 +39,7 @@ export type LoginResultWithToken =
       challengeToken: string;
       expiresIn: number;
     }
-  | { ok: false; message: string };
+  | { ok: false; message: string; retryAfterSeconds?: number };
 
 /** Registrarse no deja logueado: `POST /v1/users` ya no devuelve token. */
 export type RegisterResult = { ok: true } | { ok: false; message: string };

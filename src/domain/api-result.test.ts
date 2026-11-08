@@ -47,6 +47,16 @@ describe("toApiResult", () => {
     if (!result.ok) expect(result.code).toBe(400);
   });
 
+  it("propaga Retry-After en segundos y redondea hacia arriba", () => {
+    const result = toApiResult(
+      429,
+      { error: { code: "LOGIN_ATTEMPTS_EXCEEDED", message: "limited" } },
+      "2.2",
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.retryAfterSeconds).toBe(3);
+  });
+
   it("no se rompe con un body que no es del backend", () => {
     for (const body of [null, undefined, "<html>502</html>", 42, {}]) {
       const result = toApiResult(502, body);
