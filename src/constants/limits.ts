@@ -70,16 +70,14 @@ export const BANNED_WORDS_MAX = 100;
 export const BAN_PAGE_LIMIT = 100;
 
 /**
- * Los dos backends aceptan formatos DISTINTOS, no es un descuido de este
- * archivo:
- *   identify-service (avatar) -> jpeg, png, webp, gif (profileimage/storage.go)
+ * Los dos backends aceptan los mismos formatos (la consigna no admite GIF):
+ *   identify-service (avatar) -> jpeg, png, webp (profileimage/storage.go)
  *   servers (icono/banner)    -> png, jpeg, webp  (iconstore/iconstore.go:12)
  */
 export const ALLOWED_AVATAR_TYPES = [
   "image/jpeg",
   "image/png",
   "image/webp",
-  "image/gif",
 ] as const;
 
 export const ALLOWED_SERVER_ICON_TYPES = [
