@@ -72,12 +72,13 @@ export const BAN_PAGE_LIMIT = 100;
 /**
  * Los dos backends aceptan formatos DISTINTOS, no es un descuido de este
  * archivo:
- *   identify-service (avatar) -> jpeg, png, gif   (profileimage/storage.go:33)
+ *   identify-service (avatar) -> jpeg, png, webp, gif (profileimage/storage.go)
  *   servers (icono/banner)    -> png, jpeg, webp  (iconstore/iconstore.go:12)
  */
 export const ALLOWED_AVATAR_TYPES = [
   "image/jpeg",
   "image/png",
+  "image/webp",
   "image/gif",
 ] as const;
 
