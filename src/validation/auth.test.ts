@@ -31,6 +31,22 @@ describe("validateLogin", () => {
     expect(errors.email).toBe("El correo electrónico no es válido");
   });
 
+  it.each(["a@b.c", "ada@mail.example.com", "a.b+c@d-e.fg", "a@b..c"])(
+    "acepta el email con forma de algo@algo.algo: %s",
+    (email) => {
+      expect(validateLogin({ email, password: "x" }).email).toBeUndefined();
+    },
+  );
+
+  it.each(["a@b", "a@.com", "a@b.", "@b.c", "a@@b.c", "a@b@c.d", "a b@c.d"])(
+    "rechaza el email que no tiene esa forma: %s",
+    (email) => {
+      expect(validateLogin({ email, password: "x" }).email).toBe(
+        "El correo electrónico no es válido",
+      );
+    },
+  );
+
   it("marca email y password vacios", () => {
     const errors = validateLogin({ email: "", password: "" });
     expect(errors.email).toBe("Ingresá tu correo electrónico");
