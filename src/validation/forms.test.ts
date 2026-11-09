@@ -130,12 +130,20 @@ describe("validateMaxUses", () => {
 describe("validacion de imagenes", () => {
   const mb = (n: number) => n * 1024 * 1024;
 
-  it("el avatar acepta gif pero no webp", () => {
-    expect(
-      validateAvatar({ mimeType: "image/gif", sizeBytes: mb(1) }),
-    ).toBeUndefined();
-    expect(validateAvatar({ mimeType: "image/webp", sizeBytes: mb(1) })).toBe(
-      "La imagen debe ser JPEG, PNG o GIF.",
+  it("el avatar acepta jpeg, png, webp y gif", () => {
+    for (const mimeType of [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ]) {
+      expect(validateAvatar({ mimeType, sizeBytes: mb(1) })).toBeUndefined();
+    }
+  });
+
+  it("el avatar rechaza otros formatos y nombra los admitidos", () => {
+    expect(validateAvatar({ mimeType: "image/bmp", sizeBytes: mb(1) })).toBe(
+      "La imagen debe ser JPEG, PNG, WEBP o GIF.",
     );
   });
 
