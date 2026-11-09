@@ -55,6 +55,27 @@ export function markUnreadChannelRead(
   return next;
 }
 
+/** Canales sin leer de `serverId`, para marcarlos leídos sin entrar al servidor. */
+export function unreadChannelIdsInServer(
+  state: UnreadState,
+  serverId: string,
+): string[] {
+  return Object.entries(state)
+    .filter(([, channel]) => channel.serverId === serverId)
+    .map(([channelId]) => channelId);
+}
+
+export function markUnreadServerRead(
+  state: UnreadState,
+  serverId: string,
+): UnreadState {
+  const ids = unreadChannelIdsInServer(state, serverId);
+  if (ids.length === 0) return state;
+  const next = { ...state };
+  for (const id of ids) delete next[id];
+  return next;
+}
+
 export function hasAnyUnread(state: UnreadState): boolean {
   return Object.keys(state).length > 0;
 }
@@ -100,6 +121,8 @@ export interface UnreadTracker {
   applySnapshot: (payload: UnreadSnapshotPayload) => void;
   applyUpdate: (payload: UnreadUpdatedPayload) => void;
   markAllRead: () => Promise<boolean>;
+  /** Marca leídos los canales sin leer de un servidor y devuelve cuáles eran. */
+  markServerRead: (serverId: string) => string[];
 }
 
 export function createUnreadTracker(options: {
@@ -143,6 +166,13 @@ export function createUnreadTracker(options: {
       // Si falla se restaura lo anterior sin pisar lo que llegó mientras tanto.
       if (!ok) commit({ ...previous, ...state });
       return ok;
+    },
+    markServerRead: (serverId) => {
+      const ids = unreadChannelIdsInServer(state, serverId);
+      if (ids.length === 0) return ids;
+      commit(markUnreadServerRead(state, serverId));
+      for (const id of ids) options.markRead(id);
+      return ids;
     },
   };
 }
