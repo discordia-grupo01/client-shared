@@ -33,7 +33,14 @@ import type {
 } from "../domain/two-factor";
 
 /** Suficiente para descartar tipeos: algo@algo.algo. */
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function isEmailShape(email: string): boolean {
+  if (/\s/.test(email)) return false;
+  const at = email.indexOf("@");
+  if (at < 1 || email.indexOf("@", at + 1) !== -1) return false;
+  const domain = email.slice(at + 1);
+  const dot = domain.indexOf(".", 1);
+  return dot !== -1 && dot <= domain.length - 2;
+}
 
 /** El back exige 8+ caracteres con mayuscula, minuscula y numero. */
 const PASSWORD_MIN = 8;
@@ -71,7 +78,7 @@ export function normalizeName(value: string): string {
 export function validateEmail(value: string): string | undefined {
   const email = value.trim();
   if (email === "") return "Ingresá tu correo electrónico";
-  if (!EMAIL_REGEX.test(email)) return "El correo electrónico no es válido";
+  if (!isEmailShape(email)) return "El correo electrónico no es válido";
   return undefined;
 }
 

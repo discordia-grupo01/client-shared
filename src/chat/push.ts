@@ -4,6 +4,7 @@ import type {
   PushTarget,
   WebPushDeviceRequest,
 } from "../domain/push";
+import { trimTrailing } from "../format/trim";
 
 export const PUSH_DEVICE_LIMIT = 10;
 
@@ -23,7 +24,7 @@ export function urlBase64ToBytes(value: string): Uint8Array {
   let buffer = 0;
   let bits = 0;
 
-  for (const char of value.replace(/=+$/, "")) {
+  for (const char of trimTrailing(value, "=")) {
     const index = BASE64_URL_ALPHABET.indexOf(
       char === "+" ? "-" : char === "/" ? "_" : char,
     );

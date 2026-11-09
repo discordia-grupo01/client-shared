@@ -8,6 +8,7 @@
  * conviene usarlo (haria falta que el back sepa la base del front).
  */
 import type { Invitation } from "../domain/invite";
+import { trimTrailing } from "./trim";
 
 export const INVITE_PATH = "/invite";
 
@@ -19,7 +20,7 @@ export const INVITE_PATH = "/invite";
 export function buildInviteLink(code: string, baseUrl: string | null): string {
   const path = `${INVITE_PATH}/${code}`;
   if (!baseUrl) return path;
-  return `${baseUrl.replace(/\/+$/, "")}${path}`;
+  return `${trimTrailing(baseUrl, "/")}${path}`;
 }
 
 /**
