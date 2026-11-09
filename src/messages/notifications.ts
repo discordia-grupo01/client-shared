@@ -49,3 +49,15 @@ export const NOTIFICATIONS_MARK_ALL_READ_FAILED =
 export const NOTIFICATIONS_UNREAD_LABEL = "No leído";
 
 export const UNREAD_MESSAGES_LABEL = "Mensajes sin leer";
+
+export const MARK_SERVER_READ_LABEL = "Marcar como leído";
+
+export function markServerReadLabel(serverName: string): string {
+  return `Marcar ${serverName} como leído`;
+}
+
+export function serverOptionsLabel(serverName: string): string {
+  return `Opciones de ${serverName}`;
+}
+
+export const SERVER_OPTIONS_CANCEL = "Cancelar";

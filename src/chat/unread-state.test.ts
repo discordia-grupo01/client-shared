@@ -10,9 +10,11 @@ import {
   createUnreadTracker,
   hasAnyUnread,
   markUnreadChannelRead,
+  markUnreadServerRead,
   NO_UNREAD,
   snapshotHasUnreadChannel,
   unreadFlagsByChannel,
+  unreadChannelIdsInServer,
   unreadFlagsByServer,
 } from "./unread-state";
 
@@ -120,6 +122,23 @@ describe("markUnreadChannelRead", () => {
 
   it("devuelve el mismo estado si ya estaba leído", () => {
     expect(markUnreadChannelRead(NO_UNREAD, "C1")).toBe(NO_UNREAD);
+  });
+});
+
+describe("canales sin leer de un servidor", () => {
+  const state = applyUnreadSnapshot(snapshot, null);
+
+  it("lista solo los canales de ese servidor", () => {
+    expect(unreadChannelIdsInServer(state, "S1")).toEqual(["C1", "C2"]);
+    expect(unreadChannelIdsInServer(state, "S9")).toEqual([]);
+  });
+
+  it("marcar el servidor saca sus canales y no toca los demás", () => {
+    expect(Object.keys(markUnreadServerRead(state, "S1"))).toEqual(["C3"]);
+  });
+
+  it("devuelve el mismo estado si el servidor no tenía nada", () => {
+    expect(markUnreadServerRead(state, "S9")).toBe(state);
   });
 });
 
@@ -252,5 +271,26 @@ describe("createUnreadTracker", () => {
       C1: { serverId: "S1" },
       C4: { serverId: "S2", mentionCount: 1 },
     });
+  });
+
+  it("marcar un servidor apaga sus canales y avisa uno por uno", () => {
+    const { tracker, markRead, latest } = setup();
+    tracker.applySnapshot(snapshot);
+
+    expect(tracker.markServerRead("S1")).toEqual(["C1", "C2"]);
+    expect(Object.keys(latest())).toEqual(["C3"]);
+    expect(markRead).toHaveBeenCalledTimes(2);
+    expect(markRead).toHaveBeenCalledWith("C1");
+    expect(markRead).toHaveBeenCalledWith("C2");
+  });
+
+  it("marcar un servidor sin nada sin leer no hace nada", () => {
+    const { tracker, markRead, onChange } = setup();
+    tracker.applySnapshot(snapshot);
+    onChange.mockClear();
+
+    expect(tracker.markServerRead("S9")).toEqual([]);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(markRead).not.toHaveBeenCalled();
   });
 });
