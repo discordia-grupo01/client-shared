@@ -120,6 +120,11 @@ export const BANNED_WORDS_SAVE_FAILED = failedTo(
   "guardar las palabras prohibidas",
 );
 
+// --- Reportes ---
+export const REPORT_CREATE_FAILED = failedTo("enviar el reporte");
+export const REPORTS_LOAD_FAILED = failedTo("cargar los reportes");
+export const REPORT_CLOSE_FAILED = failedTo("cerrar el reporte");
+
 // --- Transferencia de propiedad ---
 export const TRANSFER_START_FAILED = failedTo("iniciar la transferencia");
 export const TRANSFER_LOAD_FAILED = failedTo("cargar la transferencia");
