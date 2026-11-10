@@ -51,6 +51,7 @@ export * from "./domain/voice";
 export * from "./domain/voice-bridge";
 export * from "./domain/voice-session";
 export * from "./domain/voice-screen-share";
+export * from "./domain/voice-profiles";
 export * from "./domain/private-call";
 export * from "./domain/private-call-state";
 export * from "./domain/billing";
