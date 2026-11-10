@@ -22,3 +22,13 @@ export function formatPointsDelta(delta: number): string {
   if (delta === 0) return "0";
   return `${delta > 0 ? "+" : "−"}${groupThousands(Math.abs(delta))}`;
 }
+
+const BILLING_DATE_TIME = new Intl.DateTimeFormat("es-AR", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+export function formatBillingDate(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : BILLING_DATE_TIME.format(date);
+}
