@@ -57,6 +57,18 @@ export const SEARCH_DEBOUNCE_MS = 300;
 /** Motivo de un baneo, en runas. Es opcional. */
 export const BAN_REASON_MAX_LENGTH = 512;
 
+/** Motivo de un reporte, en runas (igual que `servers`). Es obligatorio. */
+export const REPORT_REASON_MAX_LENGTH = 512;
+
+/** Reportes por pagina en la lista del moderador (el back usa 20 por defecto). */
+export const REPORTS_PAGE_SIZE = 20;
+
+/**
+ * Cada cuanto se vuelve a pedir el total de reportes pendientes para el
+ * puntito del riel. No hay aviso en tiempo real cuando alguien reporta.
+ */
+export const PENDING_REPORTS_POLL_MS = 60_000;
+
 /** Una palabra o frase prohibida, en runas (igual que `servers`). */
 export const BANNED_WORD_MAX_LENGTH = 50;
 
