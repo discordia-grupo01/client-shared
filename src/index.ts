@@ -45,6 +45,8 @@ export * from "./domain/platform-status";
 export * from "./domain/block";
 export * from "./domain/word-filter";
 export * from "./domain/moderation";
+export * from "./domain/report";
+export * from "./domain/report-categories";
 export * from "./domain/voice";
 export * from "./domain/voice-bridge";
 export * from "./domain/voice-session";
@@ -85,6 +87,7 @@ export * from "./validation/attachment";
 export * from "./validation/message";
 export * from "./validation/message-search";
 export * from "./validation/word-filter";
+export * from "./validation/report";
 
 // --- Mensajes ---
 export * from "./messages/errors";
@@ -104,6 +107,7 @@ export * from "./messages/permissions";
 export * from "./messages/ban-failures";
 export * from "./messages/word-filter-failures";
 export * from "./messages/moderation-failures";
+export * from "./messages/report-failures";
 export * from "./messages/not-found";
 export * from "./messages/ui";
 export * from "./messages/message-search";

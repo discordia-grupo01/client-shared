@@ -545,3 +545,52 @@ export function privateCallDialogLabel(partnerName: string): string {
 
 export const BILLING_SECTION_TITLE = "Premium y puntos";
 export const BILLING_SECTION_DESCRIPTION = "Suscripción y saldo";
+
+// --- Reportar mensaje o usuario (#62) ---
+export const REPORT_ACTION_LABEL = "Reportar";
+export const REPORT_MESSAGE_LABEL = "Reportar mensaje";
+export const REPORT_USER_LABEL = "Reportar usuario";
+export const REPORT_CATEGORY_PROMPT =
+  "Elegí la opción que mejor describa el problema.";
+export const REPORT_BACK_LABEL = "Volver a las opciones";
+export const REPORT_DETAIL_LABEL = "Contanos más";
+export const REPORT_DETAIL_OPTIONAL_HINT = "(opcional)";
+export const REPORT_DETAIL_PLACEHOLDER =
+  "Sumá lo que ayude a los moderadores a entender qué pasó";
+export const REPORT_SUBMIT_ACTION = "Enviar reporte";
+export const REPORT_CANCEL_ACTION = "Cancelar";
+export const REPORT_SENT_NOTICE =
+  "Reporte enviado. Los moderadores lo van a revisar.";
+export function reportAudienceNotice(serverName: string): string {
+  return `Los moderadores de ${serverName} van a ver este reporte.`;
+}
+
+// --- Reportes (configuracion del servidor, solo moderadores) ---
+export const REPORTS_TITLE = "Reportes";
+export const REPORTS_DESCRIPTION = "Mensajes y usuarios reportados";
+export const REPORTS_PENDING_TAB = "Pendientes";
+export const REPORTS_CLOSED_TAB = "Cerrados";
+export const REPORTS_RESOLVED_FILTER = "Resueltos";
+export const REPORTS_DISMISSED_FILTER = "Descartados";
+export const REPORTS_PENDING_EMPTY = "No hay reportes pendientes.";
+export const REPORTS_RESOLVED_EMPTY = "Todavía no se resolvió ningún reporte.";
+export const REPORTS_DISMISSED_EMPTY = "Todavía no se descartó ningún reporte.";
+export const RESOLVE_REPORT_ACTION = "Resolver";
+export const DISMISS_REPORT_ACTION = "Descartar";
+export const REPORT_RESOLVED_BADGE = "Resuelto";
+export const REPORT_DISMISSED_BADGE = "Descartado";
+export const GO_TO_REPORTED_MESSAGE_ACTION = "Ir al mensaje";
+export const REPORTED_MESSAGE_GONE = "El mensaje ya no existe.";
+export const REPORTED_MESSAGE_UNKNOWN_CHANNEL =
+  "Mensaje en un canal que ya no existe";
+export function reportedMessageIn(channelName: string): string {
+  return `Mensaje en #${channelName}`;
+}
+export function reportedByLabel(name: string): string {
+  return `Reportado por ${name}`;
+}
+export function pendingReportsLabel(count: number, serverName: string): string {
+  return count === 1
+    ? `1 reporte pendiente en ${serverName}`
+    : `${count} reportes pendientes en ${serverName}`;
+}

@@ -12,6 +12,14 @@ export const CHANNEL_NOT_FOUND = "Este canal ya no existe.";
 export const ROLE_NOT_FOUND = "Este rol ya no existe.";
 export const INVITE_NOT_FOUND = "Este enlace ya no existe.";
 export const TRANSFER_NOT_FOUND = "Esta transferencia ya no existe.";
+export const REPORT_NOT_FOUND = "Este reporte ya no existe.";
+
+/**
+ * 404 al reportar: el back no distingue si el canal o el usuario dejaron de
+ * existir o si ya no los podes ver.
+ */
+export const REPORT_TARGET_NOT_FOUND =
+  "Ese mensaje o usuario ya no está disponible.";
 
 /**
  * El backend devuelve un solo 404 para las dos causas, asi que el mensaje no

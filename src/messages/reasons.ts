@@ -14,11 +14,12 @@ import {
   BANNED_WORD_MAX_LENGTH,
   BANNED_WORDS_MAX,
   MAX_ICON_FILE_MB,
+  REPORT_REASON_MAX_LENGTH,
 } from "../constants/limits";
 import { formatImageTypes } from "../format/image";
 
 import type { ReasonCatalog } from "./message-for";
-import { NOT_A_MEMBER, SERVER_NOT_FOUND } from "./not-found";
+import { NOT_A_MEMBER, REPORT_NOT_FOUND, SERVER_NOT_FOUND } from "./not-found";
 
 export const SERVER_REASONS: ReasonCatalog = {
   name_required: "Ingresá un nombre para el servidor.",
@@ -162,4 +163,20 @@ export const MUTE_REASONS: ReasonCatalog = {
   reason_too_long: `El motivo no puede superar los ${BAN_REASON_MAX_LENGTH} caracteres.`,
   reason_invalid_chars: "El motivo contiene caracteres no permitidos.",
   missing_permission: "No tenés permiso para silenciar miembros.",
+};
+
+export const REPORT_REASONS: ReasonCatalog = {
+  required: "Elegí qué querés reportar.",
+  kind_invalid: "Elegí qué querés reportar.",
+  reason_required: "Contanos por qué lo reportás.",
+  reason_too_long: `El motivo no puede superar los ${REPORT_REASON_MAX_LENGTH} caracteres.`,
+  reason_invalid_chars: "El motivo contiene caracteres no permitidos.",
+  cannot_report_self: "No podés reportarte a vos mismo.",
+  text_channel_required:
+    "Solo se pueden reportar mensajes de canales de texto.",
+  report_already_pending:
+    "Ya tenés un reporte pendiente sobre este contenido. Los moderadores todavía no lo revisaron.",
+  report_not_found: REPORT_NOT_FOUND,
+  report_not_pending: "Otro moderador ya cerró este reporte.",
+  status_invalid: "Elegí si el reporte se resuelve o se descarta.",
 };

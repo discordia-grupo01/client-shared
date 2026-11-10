@@ -13,6 +13,7 @@ import {
   BAN_REASONS,
   CHANNEL_OVERRIDE_REASONS,
   CHANNEL_REASONS,
+  REPORT_REASONS,
   SERVER_REASONS,
   TRANSFER_REASONS,
 } from "./reasons";
@@ -77,6 +78,7 @@ function todosLosMensajes(): [string, string][] {
     CHANNEL_OVERRIDE_REASONS,
     TRANSFER_REASONS,
     BAN_REASONS,
+    REPORT_REASONS,
   };
 
   const entradas: [string, string][] = [];

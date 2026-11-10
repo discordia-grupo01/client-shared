@@ -52,6 +52,8 @@ export const NO_PERMISSION_ROLE_MEMBERS = noPermissionFor(
 export const NO_PERMISSION_WORD_FILTER = noPermissionFor(
   "editar las palabras prohibidas",
 );
+/** Ver y cerrar reportes exige ser moderador: los tres permisos juntos. */
+export const NO_PERMISSION_REPORTS = noPermissionFor("revisar los reportes");
 
 export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 
