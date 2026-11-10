@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import { BILLING_ERROR_CODES, type PaymentOutcome } from "../domain/billing";
+import { BILLING_SECTIONS } from "../constants/billing";
 import {
+  BILLING_COPY,
   BILLING_ERROR_MESSAGES,
+  BILLING_SECTION_LABELS,
   billingErrorMessage,
   paymentOutcomeCopy,
   paymentRejectionReason,
   PAYMENT_REJECTED_DEFAULT,
+  premiumActionLabels,
   premiumStatusCopy,
 } from "./billing";
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
@@ -108,5 +112,50 @@ describe("paymentOutcomeCopy", () => {
       paymentOutcomeCopy("points_pending", { abandoned: true }).title,
     ).toBe("Pago sin terminar");
     expect(paymentOutcomeCopy("points_pending").title).toBe("Pago pendiente");
+  });
+});
+
+describe("premiumActionLabels", () => {
+  it("con Premium vencido ofrece volver a suscribirse", () => {
+    expect(premiumActionLabels({ state: "expired" }).subscribe).toBe(
+      BILLING_COPY.resubscribe,
+    );
+    expect(premiumActionLabels({ state: "none" }).subscribe).toBe(
+      BILLING_COPY.subscribeCta,
+    );
+  });
+
+  it("solo con Premium activo se cancela la renovación", () => {
+    expect(premiumActionLabels({ state: "active" }).cancel).toBe(
+      BILLING_COPY.cancelRenewal,
+    );
+    for (const state of [
+      "active_canceled",
+      "processing_first_payment",
+      "expired",
+      "none",
+    ] as const) {
+      expect(premiumActionLabels({ state }).cancel).toBe(
+        BILLING_COPY.cancelSubscription,
+      );
+    }
+  });
+});
+
+describe("BILLING_SECTION_LABELS", () => {
+  it("tiene label y descripción para cada solapa", () => {
+    for (const section of BILLING_SECTIONS) {
+      expect(BILLING_SECTION_LABELS[section].label).not.toBe("");
+      expect(BILLING_SECTION_LABELS[section].description).not.toBe("");
+    }
+  });
+});
+
+describe("BILLING_COPY", () => {
+  it("arma los textos con fecha y cantidad", () => {
+    expect(BILLING_COPY.activeUntil("5 de diciembre de 2026")).toBe(
+      "Activo hasta el 5 de diciembre de 2026",
+    );
+    expect(BILLING_COPY.buyPackage("550 puntos")).toBe("Comprar 550 puntos");
   });
 });

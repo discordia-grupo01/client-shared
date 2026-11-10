@@ -1,3 +1,5 @@
+import type { PaymentKind } from "../domain/billing";
+
 /**
  * Límites y valores de billing que el front necesita conocer. Replicados de
  * `billing/internal/service/` porque el back no los expone por API.
@@ -29,3 +31,26 @@ export const PAYMENT_RETURN_PATH = "/billing/return";
 
 /** Deep link con el que la app recibe la vuelta del pago. */
 export const APP_PAYMENT_RETURN_URL = "discordia://billing/return";
+
+/** Solapas del grupo "Facturación" de la configuración, en el orden del menú. */
+export const BILLING_SECTIONS = [
+  "premium",
+  "subscriptions",
+  "points",
+  "transactions",
+] as const;
+
+export type BillingSection = (typeof BILLING_SECTIONS)[number];
+
+export function isBillingSection(value: string): value is BillingSection {
+  return (BILLING_SECTIONS as readonly string[]).includes(value);
+}
+
+/** Filas por página en "Compras con dinero" y "Movimientos de puntos". */
+export const BILLING_HISTORY_PAGE_SIZE = 10;
+
+/** Solapa que se abre al volver de Mercado Pago, según lo que se pagó. */
+export const PAYMENT_RETURN_SECTION = {
+  premium: "subscriptions",
+  points: "transactions",
+} as const satisfies Record<PaymentKind, BillingSection>;
