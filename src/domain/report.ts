@@ -29,6 +29,8 @@ export interface Report {
   created_at: string;
   resolved_at: string | null;
   resolved_by: string | null;
+  /** Que sancion anoto el moderador al resolver; `null` si no anoto ninguna. */
+  resolution_action: ReportResolutionAction | null;
   reporter_profile: MemberProfile | null;
   reported_profile: MemberProfile | null;
 }
@@ -114,6 +116,29 @@ export function canReportUser(
 }
 
 export type ReportSanction = "delete" | "mute" | "kick" | "ban";
+
+/**
+ * Como guarda el back la sancion al cerrar un reporte (`action` en el PATCH,
+ * `resolution_action` en la respuesta). `delete_message` solo vale para
+ * reportes de mensaje.
+ */
+export type ReportResolutionAction = "delete_message" | "mute" | "kick" | "ban";
+
+const RESOLUTION_ACTION_BY_SANCTION: Record<
+  ReportSanction,
+  ReportResolutionAction
+> = {
+  delete: "delete_message",
+  mute: "mute",
+  kick: "kick",
+  ban: "ban",
+};
+
+export function resolutionActionFor(
+  sanction: ReportSanction,
+): ReportResolutionAction {
+  return RESOLUTION_ACTION_BY_SANCTION[sanction];
+}
 
 /**
  * A quien se puede sancionar desde un reporte: el reportado, o el autor del

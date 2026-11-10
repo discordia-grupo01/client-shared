@@ -7,7 +7,6 @@ export type ReportCategoryId =
   | "harassment"
   | "hate"
   | "violence"
-  | "sexual"
   | "private_info"
   | "profile"
   | "impersonation"
@@ -22,8 +21,7 @@ export const REPORT_MESSAGE_CATEGORIES: readonly ReportCategory[] = [
   { id: "spam", label: "Spam" },
   { id: "harassment", label: "Acoso o insultos" },
   { id: "hate", label: "Discurso de odio" },
-  { id: "violence", label: "Contenido violento o perturbador" },
-  { id: "sexual", label: "Contenido sexual o inapropiado" },
+  { id: "violence", label: "Contenido violento" },
   { id: "private_info", label: "Datos personales expuestos" },
   { id: "other", label: "Otro" },
 ];

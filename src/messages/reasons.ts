@@ -179,4 +179,7 @@ export const REPORT_REASONS: ReasonCatalog = {
   report_not_found: REPORT_NOT_FOUND,
   report_not_pending: "Otro moderador ya cerró este reporte.",
   status_invalid: "Elegí si el reporte se resuelve o se descarta.",
+  action_invalid: "Esa sanción no se puede anotar en este reporte.",
+  action_not_for_kind:
+    "Solo se puede eliminar el mensaje en un reporte de mensaje.",
 };

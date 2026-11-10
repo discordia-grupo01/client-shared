@@ -12,7 +12,7 @@
  * pantalla, eso se queda en cada app y no se fuerza aca.
  */
 
-import type { ReportSanction } from "../domain/report";
+import type { ReportResolutionAction, ReportSanction } from "../domain/report";
 import type { VoiceParticipant } from "../domain/voice";
 import { isScreenShareIdentity } from "../domain/voice-screen-share";
 
@@ -580,6 +580,20 @@ export const RESOLVE_REPORT_ACTION = "Resolver";
 export const DISMISS_REPORT_ACTION = "Descartar";
 export const REPORT_RESOLVED_BADGE = "Resuelto";
 export const REPORT_DISMISSED_BADGE = "Descartado";
+const RESOLUTION_ACTION_LABELS: Record<ReportResolutionAction, string> = {
+  delete_message: "Mensaje eliminado",
+  mute: "Silenciado",
+  kick: "Expulsado",
+  ban: "Baneado",
+};
+/** "Resuelto · Silenciado", o solo "Resuelto" si se cerro sin sancionar. */
+export function reportResolvedLabel(
+  action: ReportResolutionAction | null,
+): string {
+  return action
+    ? `${REPORT_RESOLVED_BADGE} · ${RESOLUTION_ACTION_LABELS[action]}`
+    : REPORT_RESOLVED_BADGE;
+}
 export const GO_TO_REPORTED_MESSAGE_ACTION = "Ir al mensaje";
 export const REPORTED_MESSAGE_GONE = "El mensaje ya no existe.";
 export const REPORTED_MESSAGE_UNKNOWN_CHANNEL =
@@ -591,6 +605,8 @@ export function reportedByLabel(name: string): string {
   return `Reportado por ${name}`;
 }
 export const REPORT_SANCTION_MENU_LABEL = "Sancionar";
+export const REPORTS_PENDING_HINT =
+  "Sancionar aplica la medida y resuelve el reporte. Resolver lo cierra si ya actuaste por otro lado; Descartar, si no había nada que hacer.";
 export function reportSanctionNotice(
   sanction: ReportSanction,
   name: string,
