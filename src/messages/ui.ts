@@ -12,6 +12,7 @@
  * pantalla, eso se queda en cada app y no se fuerza aca.
  */
 
+import type { ReportSanction } from "../domain/report";
 import type { VoiceParticipant } from "../domain/voice";
 import { isScreenShareIdentity } from "../domain/voice-screen-share";
 
@@ -588,6 +589,22 @@ export function reportedMessageIn(channelName: string): string {
 }
 export function reportedByLabel(name: string): string {
   return `Reportado por ${name}`;
+}
+export const REPORT_SANCTION_MENU_LABEL = "Sancionar";
+export function reportSanctionNotice(
+  sanction: ReportSanction,
+  name: string,
+): string {
+  switch (sanction) {
+    case "delete":
+      return "Se eliminó el mensaje y el reporte quedó resuelto.";
+    case "mute":
+      return `${name} quedó silenciado y el reporte, resuelto.`;
+    case "kick":
+      return `${name} fue expulsado y el reporte, resuelto.`;
+    case "ban":
+      return `${name} fue baneado y el reporte, resuelto.`;
+  }
 }
 export function pendingReportsLabel(count: number, serverName: string): string {
   return count === 1
