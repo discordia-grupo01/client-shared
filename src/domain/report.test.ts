@@ -10,6 +10,7 @@ import {
   PENDING_REPORTS_COUNT_QUERY,
   pendingReportsTotalFrom,
   type ReportListResponse,
+  reportSanctionTarget,
   reportsQuery,
 } from "./report";
 
@@ -138,5 +139,31 @@ describe("pendingReportsTotalFrom", () => {
   it("cualquier otro fallo conserva el valor anterior", () => {
     expect(pendingReportsTotalFrom(failure(500))).toBeNull();
     expect(pendingReportsTotalFrom(failure(0))).toBeNull();
+  });
+});
+
+describe("reportSanctionTarget", () => {
+  const viewer = { currentUserId: "carla", ownerId: "duena" };
+
+  it("en un reporte de usuario es el reportado", () => {
+    expect(
+      reportSanctionTarget(
+        { kind: "user", reported_user_id: "beto" },
+        null,
+        viewer,
+      ),
+    ).toBe("beto");
+  });
+
+  it("en un reporte de mensaje es el autor, si se conoce", () => {
+    const report = { kind: "message", reported_user_id: null } as const;
+    expect(reportSanctionTarget(report, "beto", viewer)).toBe("beto");
+    expect(reportSanctionTarget(report, null, viewer)).toBeNull();
+  });
+
+  it("nunca el dueño ni uno mismo", () => {
+    const report = { kind: "message", reported_user_id: null } as const;
+    expect(reportSanctionTarget(report, "duena", viewer)).toBeNull();
+    expect(reportSanctionTarget(report, "carla", viewer)).toBeNull();
   });
 });
