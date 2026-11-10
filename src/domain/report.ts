@@ -113,6 +113,25 @@ export function canReportUser(
   return currentUserId !== null && targetUserId !== currentUserId;
 }
 
+export type ReportSanction = "delete" | "mute" | "kick" | "ban";
+
+/**
+ * A quien se puede sancionar desde un reporte: el reportado, o el autor del
+ * mensaje (que el reporte no trae; sale de `GET /v1/messages?ids=`). Nunca el
+ * dueño ni uno mismo, igual que desde el perfil. `null` si no hay a quien.
+ */
+export function reportSanctionTarget(
+  report: Pick<Report, "kind" | "reported_user_id">,
+  messageAuthorId: string | null,
+  viewer: { currentUserId: string | null; ownerId: string },
+): string | null {
+  const target =
+    report.kind === "user" ? report.reported_user_id : messageAuthorId;
+  if (!target) return null;
+  if (target === viewer.ownerId || target === viewer.currentUserId) return null;
+  return target;
+}
+
 export function reportsQuery({
   status,
   limit,
