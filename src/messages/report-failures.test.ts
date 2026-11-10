@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { ApiFailure } from "../domain/api-result";
 
 import { SESSION_EXPIRED_MESSAGE } from "./errors";
+import { reportResolvedLabel } from "./ui";
 import { NOT_A_MEMBER, REPORT_TARGET_NOT_FOUND } from "./not-found";
 import { NO_PERMISSION_REPORTS } from "./permissions";
 import {
@@ -88,5 +89,25 @@ describe("isReportGone", () => {
   it("un 404 sin reason es el servidor, no el reporte", () => {
     expect(isReportGone(failure(404))).toBe(false);
     expect(isReportGone(failure(500))).toBe(false);
+  });
+});
+
+describe("reportResolvedLabel", () => {
+  it("suma la sancion al estado si la hubo", () => {
+    expect(reportResolvedLabel("mute")).toBe("Resuelto · Silenciado");
+    expect(reportResolvedLabel("delete_message")).toBe(
+      "Resuelto · Mensaje eliminado",
+    );
+    expect(reportResolvedLabel(null)).toBe("Resuelto");
+  });
+});
+
+describe("motivos de la accion al cerrar", () => {
+  it("delete_message en un reporte de usuario tiene su propio texto", () => {
+    expect(
+      closeReportFailureMessage(
+        failure(400, { field: "action", reason: "action_not_for_kind" }),
+      ),
+    ).toMatch(/reporte de mensaje/);
   });
 });

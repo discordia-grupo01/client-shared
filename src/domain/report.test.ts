@@ -12,6 +12,7 @@ import {
   type ReportListResponse,
   reportSanctionTarget,
   reportsQuery,
+  resolutionActionFor,
 } from "./report";
 
 describe("isModerator", () => {
@@ -165,5 +166,14 @@ describe("reportSanctionTarget", () => {
     const report = { kind: "message", reported_user_id: null } as const;
     expect(reportSanctionTarget(report, "duena", viewer)).toBeNull();
     expect(reportSanctionTarget(report, "carla", viewer)).toBeNull();
+  });
+});
+
+describe("resolutionActionFor", () => {
+  it("traduce la sancion al valor que guarda el back", () => {
+    expect(resolutionActionFor("delete")).toBe("delete_message");
+    expect(resolutionActionFor("mute")).toBe("mute");
+    expect(resolutionActionFor("kick")).toBe("kick");
+    expect(resolutionActionFor("ban")).toBe("ban");
   });
 });
