@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { PAYMENT_RETURN_TIMEOUT_MS } from "../constants/billing";
 import {
+  type BillingResult,
+  isBillingErrorCode,
   isLiveSubscription,
   parsePaymentReturn,
   type PointPurchase,
@@ -9,7 +11,9 @@ import {
   premiumActions,
   premiumPaymentProgress,
   type PurchaseStatus,
+  type PremiumView,
   reversedPoints,
+  toBillingOverview,
 } from "./billing";
 
 function purchase(
@@ -212,5 +216,59 @@ describe("premiumPaymentProgress", () => {
       outcome: "premium_not_activated",
       done: true,
     });
+  });
+});
+
+describe("isBillingErrorCode", () => {
+  it("reconoce los códigos de billing, incluidos los de idempotencia", () => {
+    expect(isBillingErrorCode("ALREADY_SUBSCRIBED")).toBe(true);
+    expect(isBillingErrorCode("CHECKOUT_IN_PROGRESS")).toBe(true);
+    expect(isBillingErrorCode("IDEMPOTENCY_KEY_REUSED")).toBe(true);
+  });
+
+  it("rechaza códigos ajenos y numéricos", () => {
+    expect(isBillingErrorCode("NETWORK_ERROR")).toBe(false);
+    expect(isBillingErrorCode(409)).toBe(false);
+  });
+});
+
+describe("toBillingOverview", () => {
+  const premiumView: PremiumView = {
+    state: "none",
+    active: false,
+    premium_until: null,
+    renews: false,
+    mp_status: "",
+  };
+  const ok = <T>(data: T): BillingResult<T> => ({ ok: true, data });
+  const fail = (message: string): BillingResult<never> => ({
+    ok: false,
+    code: "INTERNAL_ERROR",
+    message,
+  });
+  const points = { balance: 10, ledger: [], purchases: [] };
+  const pack = { id: "points_550", points: 550, price_cents: 1, title: "550" };
+
+  it("con las tres respuestas bien queda lista", () => {
+    expect(
+      toBillingOverview(ok(premiumView), ok(points), ok({ packages: [pack] })),
+    ).toEqual({
+      status: "ready",
+      premium: premiumView,
+      points,
+      packages: [pack],
+    });
+  });
+
+  it("muestra el error de la primera que falló: Premium, puntos, paquetes", () => {
+    expect(
+      toBillingOverview(fail("premium"), fail("puntos"), fail("paquetes")),
+    ).toEqual({ status: "error", message: "premium" });
+    expect(
+      toBillingOverview(ok(premiumView), fail("puntos"), fail("paquetes")),
+    ).toEqual({ status: "error", message: "puntos" });
+    expect(
+      toBillingOverview(ok(premiumView), ok(points), fail("paquetes")),
+    ).toEqual({ status: "error", message: "paquetes" });
   });
 });

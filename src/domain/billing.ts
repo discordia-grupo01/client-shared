@@ -76,10 +76,21 @@ export const BILLING_ERROR_CODES = [
   "ALREADY_SUBSCRIBED",
   "NO_LIVE_SUBSCRIPTION",
   "PURCHASE_NOT_FOUND",
+  "CHECKOUT_IN_PROGRESS",
+  "IDEMPOTENCY_KEY_REUSED",
   "INTERNAL_ERROR",
 ] as const;
 
 export type BillingErrorCode = (typeof BILLING_ERROR_CODES)[number];
+
+export function isBillingErrorCode(
+  code: string | number,
+): code is BillingErrorCode {
+  return (BILLING_ERROR_CODES as readonly (string | number)[]).includes(code);
+}
+
+export type BillingResult<T> =
+  { ok: true; data: T } | { ok: false; code: string; message: string };
 
 export type PaymentKind = "points" | "premium";
 
@@ -191,4 +202,68 @@ export function premiumPaymentProgress(
     return { outcome: "premium_not_activated", done: true };
   }
   return untilTimeout(elapsedMs, "verifying", "premium_not_activated");
+}
+
+export type BillingTone = "success" | "warning" | "danger" | "info" | "muted";
+
+export const PREMIUM_STATE_TONE: Readonly<Record<PremiumState, BillingTone>> = {
+  none: "muted",
+  processing_first_payment: "warning",
+  active: "success",
+  active_canceled: "warning",
+  expired: "danger",
+};
+
+export const PURCHASE_STATUS_TONE: Readonly<
+  Record<PurchaseStatus, BillingTone>
+> = {
+  pending: "warning",
+  paid: "success",
+  failed: "danger",
+  expired: "muted",
+  refunded: "info",
+  charged_back: "danger",
+};
+
+export type PaymentOutcomeTone = "progress" | "success" | "warning" | "danger";
+
+export const PAYMENT_OUTCOME_TONE: Readonly<
+  Record<PaymentOutcome, PaymentOutcomeTone>
+> = {
+  verifying: "progress",
+  points_accredited: "success",
+  premium_active: "success",
+  points_pending: "warning",
+  premium_processing: "warning",
+  points_rejected: "danger",
+  points_expired: "danger",
+  points_reversed: "danger",
+  points_not_found: "danger",
+  premium_not_activated: "danger",
+};
+
+export type BillingOverviewState =
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | {
+      status: "ready";
+      premium: PremiumView;
+      points: PointsOverview;
+      packages: PointsPackage[];
+    };
+
+export function toBillingOverview(
+  premium: BillingResult<PremiumView>,
+  points: BillingResult<PointsOverview>,
+  packages: BillingResult<PointsPackagesResponse>,
+): BillingOverviewState {
+  if (!premium.ok) return { status: "error", message: premium.message };
+  if (!points.ok) return { status: "error", message: points.message };
+  if (!packages.ok) return { status: "error", message: packages.message };
+  return {
+    status: "ready",
+    premium: premium.data,
+    points: points.data,
+    packages: packages.data.packages,
+  };
 }
