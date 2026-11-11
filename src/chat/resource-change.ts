@@ -1,6 +1,5 @@
 import {
   CHANGE_COALESCE_MS,
-  CHANGE_POLL_INTERVAL_MS,
   CHANGE_RESOURCES,
   type ChangeFilter,
   type ResourceChangedPayload,
@@ -157,7 +156,7 @@ export function watchChanges({
   isActive,
   onActivate,
   delayMs = CHANGE_COALESCE_MS,
-  pollMs = CHANGE_POLL_INTERVAL_MS,
+  pollMs = null,
 }: ChangeWatcherOptions): () => void {
   const coalescer = createRefreshCoalescer(refresh, delayMs);
   const unsubscribe = bus.subscribe(filter, coalescer.trigger);
