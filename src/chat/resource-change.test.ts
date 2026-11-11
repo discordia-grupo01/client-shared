@@ -106,6 +106,19 @@ describe("createChangeBus", () => {
   });
 });
 
+describe("createChangeBus.refreshAll", () => {
+  it("avisa a todos los suscriptos, sin mirar el filtro", () => {
+    const bus = createChangeBus();
+    const members = vi.fn();
+    const points = vi.fn();
+    bus.subscribe({ resources: ["members"], serverId: "s1" }, members);
+    bus.subscribe({ resources: ["points"] }, points);
+    bus.refreshAll();
+    expect(members).toHaveBeenCalledTimes(1);
+    expect(points).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("createRefreshCoalescer", () => {
   beforeEach(() => {
     vi.useFakeTimers();

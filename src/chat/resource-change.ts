@@ -46,6 +46,7 @@ export interface ChangeBus {
     filter: ChangeFilter,
     listener: (payload: ResourceChangedPayload) => void,
   ) => () => void;
+  refreshAll: () => void;
 }
 
 export function createChangeBus(): ChangeBus {
@@ -59,6 +60,12 @@ export function createChangeBus(): ChangeBus {
         if (matchesChange(payload, subscriber.filter)) {
           subscriber.listener(payload);
         }
+      }
+    },
+    refreshAll: () => {
+      for (const subscriber of [...subscribers]) {
+        const resource = subscriber.filter.resources[0];
+        subscriber.listener(resource ? { resource } : { resource: "servers" });
       }
     },
     subscribe: (filter, listener) => {
