@@ -366,6 +366,7 @@ export const BANNER_PRESETS_LABEL = "O elegí un fondo";
 export const ADD_BANNER_LABEL = "Agregar banner";
 export const CHANGE_BANNER_LABEL = "Cambiar banner";
 export const REMOVE_BANNER_LABEL = "Quitar banner";
+export const BOOST_SERVER_LABEL = "Boostear servidor";
 export const CHANGE_SERVER_ICON_LABEL = "Cambiar ícono";
 
 /**
