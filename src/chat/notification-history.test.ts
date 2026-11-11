@@ -504,6 +504,15 @@ describe("notificationPreview", () => {
     );
   });
 
+  it("muestra el texto sin los simbolos de formato", () => {
+    expect(
+      notificationPreview(
+        { content: "# Aviso\n**hola** <@ana>\n- ~~uno~~" },
+        nameOf,
+      ),
+    ).toBe("Aviso hola @Ana uno");
+  });
+
   it("reemplaza la mencion por el nombre cuando se conoce", () => {
     expect(
       notificationPreview({ content: "hola <@ana> mirá esto" }, nameOf),

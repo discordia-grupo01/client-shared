@@ -13,6 +13,7 @@ import {
   USER_TOKEN_SOURCE,
   type MentionKind,
 } from "../format/mention-tokens";
+import { stripMessageMarkdown } from "../format/message-markdown";
 import {
   NOTIFICATIONS_ATTACHMENT_PREVIEW,
   NOTIFICATIONS_UNKNOWN_ROLE_MENTION,
@@ -184,7 +185,10 @@ export function notificationPreview(
 ): string | null {
   if (!message) return null;
 
-  const { text } = decodeMentions(message.content, nameOf);
+  const { text } = decodeMentions(
+    stripMessageMarkdown(message.content),
+    nameOf,
+  );
   const readable = text
     .replace(
       new RegExp(ROLE_TOKEN_SOURCE, "g"),
