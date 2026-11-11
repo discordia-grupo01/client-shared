@@ -6,6 +6,8 @@ import {
   createRefreshCoalescer,
   isResourceChangedPayload,
   matchesChange,
+  watchChanges,
+  watchProfileChanges,
 } from "./resource-change";
 
 const change = (
@@ -178,5 +180,151 @@ describe("createRefreshCoalescer", () => {
     coalescer.cancel();
     await vi.advanceTimersByTimeAsync(500);
     expect(run).not.toHaveBeenCalled();
+  });
+});
+
+describe("watchChanges", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function setup(options: { pollMs?: number | null; active?: boolean } = {}) {
+    const bus = createChangeBus();
+    const refresh = vi.fn();
+    let active = options.active ?? true;
+    let activate: () => void = () => {};
+    const stopActivation = vi.fn();
+    const stop = watchChanges({
+      bus,
+      filter: { resources: ["members"], serverId: "s1" },
+      refresh,
+      delayMs: 100,
+      pollMs: options.pollMs === undefined ? 1000 : options.pollMs,
+      isActive: () => active,
+      onActivate: (listener) => {
+        activate = listener;
+        return stopActivation;
+      },
+    });
+    return {
+      bus,
+      refresh,
+      stop,
+      stopActivation,
+      activate: () => activate(),
+      setActive: (value: boolean) => {
+        active = value;
+      },
+    };
+  }
+
+  it("recarga una vez por ráfaga de avisos del recurso y servidor pedidos", async () => {
+    const { bus, refresh } = setup({ pollMs: null });
+    bus.publish({ resource: "members", server_id: "s2" });
+    bus.publish({ resource: "roles", server_id: "s1" });
+    await vi.advanceTimersByTimeAsync(300);
+    expect(refresh).not.toHaveBeenCalled();
+
+    bus.publish({ resource: "members", server_id: "s1" });
+    bus.publish({ resource: "members", server_id: "s1" });
+    await vi.advanceTimersByTimeAsync(300);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("recarga cada tanto mientras está activo y calla cuando no", async () => {
+    const { refresh, setActive } = setup();
+    await vi.advanceTimersByTimeAsync(1200);
+    expect(refresh).toHaveBeenCalledTimes(1);
+
+    setActive(false);
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("recarga al volver a estar activo", async () => {
+    const { refresh, activate } = setup({ pollMs: null });
+    activate();
+    await vi.advanceTimersByTimeAsync(300);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("sin pollMs no recarga solo", async () => {
+    const { refresh } = setup({ pollMs: null });
+    await vi.advanceTimersByTimeAsync(120_000);
+    expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it("al frenar deja de escuchar todo", async () => {
+    const { bus, refresh, stop, stopActivation } = setup();
+    stop();
+    bus.publish({ resource: "members", server_id: "s1" });
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(refresh).not.toHaveBeenCalled();
+    expect(stopActivation).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("watchProfileChanges", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("vuelve a pedir y aplica el perfil de quien está en la caché", async () => {
+    const bus = createChangeBus();
+    const fetchProfile = vi.fn().mockResolvedValue({ id: "u1", name: "Nuevo" });
+    const apply = vi.fn();
+    watchProfileChanges({
+      bus,
+      isTracked: (id) => id === "u1",
+      fetchProfile,
+      apply,
+    });
+
+    bus.publish({ resource: "profile", user_id: "u1", server_id: "s1" });
+    bus.publish({ resource: "profile", user_id: "u1", server_id: "s2" });
+    bus.publish({ resource: "profile", user_id: "u2" });
+    bus.publish({ resource: "profile" });
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(fetchProfile).toHaveBeenCalledTimes(1);
+    expect(fetchProfile).toHaveBeenCalledWith("u1");
+    expect(apply).toHaveBeenCalledWith({ id: "u1", name: "Nuevo" });
+  });
+
+  it("no aplica nada si el perfil no se pudo traer", async () => {
+    const bus = createChangeBus();
+    const apply = vi.fn();
+    watchProfileChanges({
+      bus,
+      isTracked: () => true,
+      fetchProfile: async () => null,
+      apply,
+    });
+    bus.publish({ resource: "profile", user_id: "u1" });
+    await vi.advanceTimersByTimeAsync(500);
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("al frenar descarta lo pendiente", async () => {
+    const bus = createChangeBus();
+    const fetchProfile = vi.fn();
+    const stop = watchProfileChanges({
+      bus,
+      isTracked: () => true,
+      fetchProfile,
+      apply: vi.fn(),
+    });
+    bus.publish({ resource: "profile", user_id: "u1" });
+    stop();
+    await vi.advanceTimersByTimeAsync(500);
+    expect(fetchProfile).not.toHaveBeenCalled();
   });
 });
