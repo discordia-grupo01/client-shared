@@ -7,6 +7,8 @@ import {
 
 declare function setTimeout(callback: () => void, ms: number): unknown;
 declare function clearTimeout(id: unknown): void;
+declare function setInterval(callback: () => void, ms: number): unknown;
+declare function clearInterval(id: unknown): void;
 
 export function isResourceChangedPayload(
   value: unknown,
@@ -84,7 +86,7 @@ export interface RefreshCoalescer {
 }
 
 export function createRefreshCoalescer(
-  run: () => void | Promise<void>,
+  run: () => void | Promise<unknown>,
   delayMs: number = CHANGE_COALESCE_MS,
 ): RefreshCoalescer {
   let timer: unknown = null;
@@ -134,5 +136,78 @@ export function createRefreshCoalescer(
         timer = null;
       }
     },
+  };
+}
+
+export interface ChangeWatcherOptions {
+  bus: ChangeBus;
+  filter: ChangeFilter;
+  refresh: () => void | Promise<unknown>;
+  isActive: () => boolean;
+  onActivate: (listener: () => void) => () => void;
+  delayMs?: number;
+  pollMs?: number | null;
+}
+
+export function watchChanges({
+  bus,
+  filter,
+  refresh,
+  isActive,
+  onActivate,
+  delayMs = CHANGE_COALESCE_MS,
+  pollMs = null,
+}: ChangeWatcherOptions): () => void {
+  const coalescer = createRefreshCoalescer(refresh, delayMs);
+  const unsubscribe = bus.subscribe(filter, coalescer.trigger);
+  const refreshIfActive = () => {
+    if (isActive()) coalescer.trigger();
+  };
+  const interval =
+    pollMs === null ? null : setInterval(refreshIfActive, pollMs);
+  const stopActivation = onActivate(refreshIfActive);
+  return () => {
+    unsubscribe();
+    coalescer.cancel();
+    if (interval !== null) clearInterval(interval);
+    stopActivation();
+  };
+}
+
+export interface ProfileWatcherOptions<User> {
+  bus: ChangeBus;
+  isTracked: (userId: string) => boolean;
+  fetchProfile: (userId: string) => Promise<User | null>;
+  apply: (user: User) => void;
+  delayMs?: number;
+}
+
+export function watchProfileChanges<User>({
+  bus,
+  isTracked,
+  fetchProfile,
+  apply,
+  delayMs = CHANGE_COALESCE_MS,
+}: ProfileWatcherOptions<User>): () => void {
+  const coalescers = new Map<string, RefreshCoalescer>();
+  const unsubscribe = bus.subscribe(
+    { resources: ["profile"] },
+    ({ user_id: userId }) => {
+      if (!userId || !isTracked(userId)) return;
+      let coalescer = coalescers.get(userId);
+      if (!coalescer) {
+        coalescer = createRefreshCoalescer(async () => {
+          const user = await fetchProfile(userId);
+          if (user) apply(user);
+        }, delayMs);
+        coalescers.set(userId, coalescer);
+      }
+      coalescer.trigger();
+    },
+  );
+  return () => {
+    unsubscribe();
+    coalescers.forEach((coalescer) => coalescer.cancel());
+    coalescers.clear();
   };
 }
