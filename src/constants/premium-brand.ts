@@ -184,6 +184,47 @@ export function premiumBadgeOutlineWidth(size: number): number {
 }
 
 /** El `viewBox` como lo espera el atributo SVG. */
+/**
+ * Íconos de boosts del prototipo de Figma. El de nivel son tres barras que se
+ * llenan de abajo hacia arriba con los colores del logo; las que faltan van
+ * punteadas. El de acción es la columna con el módulo amarillo que se suma.
+ */
+export const BOOST_LEVEL_ICON = {
+  viewBox: { x: 0, y: 0, width: 24, height: 24 },
+  bars: [
+    { x: 6, y: 16, width: 12, height: 5.5, rx: 1, fill: "deep" },
+    { x: 6, y: 9, width: 12, height: 5.5, rx: 1, fill: "petrol" },
+    { x: 6, y: 2, width: 12, height: 5.5, rx: 1, fill: "sky" },
+  ],
+  strokeWidth: 1.2,
+  filledStroke: "paper",
+  filledStrokeOpacity: 0.35,
+  emptyStroke: "sky",
+  emptyDash: "2 2",
+} as const satisfies {
+  viewBox: BrandViewBox;
+  bars: readonly BrandRect[];
+  strokeWidth: number;
+  filledStroke: PremiumBrandColor;
+  filledStrokeOpacity: number;
+  emptyStroke: PremiumBrandColor;
+  emptyDash: string;
+};
+
+export const BOOST_ACTION_ICON = {
+  viewBox: { x: 0, y: 0, width: 24, height: 24 },
+  blocks: [
+    { x: 4, y: 15, width: 8, height: 6, rx: 1, fill: "petrol" },
+    { x: 4, y: 8, width: 8, height: 6, rx: 1, fill: "sky" },
+    { x: 13, y: 3, width: 8, height: 6, rx: 1, fill: "yellow" },
+  ],
+  connector: { d: "M12 8h1", stroke: "deep", strokeWidth: 1.5 },
+} as const satisfies {
+  viewBox: BrandViewBox;
+  blocks: readonly BrandRect[];
+  connector: BrandStroke;
+};
+
 export function brandViewBox({ x, y, width, height }: BrandViewBox): string {
   return `${x} ${y} ${width} ${height}`;
 }

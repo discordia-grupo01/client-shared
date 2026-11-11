@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BOOST_ACTION_ICON,
+  BOOST_LEVEL_ICON,
   brandViewBox,
   POINT_ICON,
   PREMIUM_BADGE,
@@ -28,7 +30,9 @@ describe("PREMIUM_BRAND_COLORS", () => {
       POINT_ICON,
       PREMIUM_MARK,
       PREMIUM_BADGE,
-    ]).matchAll(/"(?:fill|stroke)":"(\w+)"/g);
+      BOOST_LEVEL_ICON,
+      BOOST_ACTION_ICON,
+    ]).matchAll(/"(?:fill|stroke|filledStroke|emptyStroke)":"(\w+)"/g);
     for (const [, name] of used) {
       expect(Object.keys(PREMIUM_BRAND_COLORS)).toContain(name);
     }
