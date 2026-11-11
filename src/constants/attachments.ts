@@ -6,6 +6,10 @@
  */
 export const MAX_ATTACHMENT_MB = 10;
 export const MAX_ATTACHMENT_BYTES = MAX_ATTACHMENT_MB * 1024 * 1024;
+/** En canales de un servidor con nivel 2 de boosts, para todos los miembros. */
+export const BOOSTED_MAX_ATTACHMENT_MB = 25;
+export const BOOSTED_MAX_ATTACHMENT_BYTES =
+  BOOSTED_MAX_ATTACHMENT_MB * 1024 * 1024;
 export const PREMIUM_MAX_ATTACHMENT_MB = 50;
 export const PREMIUM_MAX_ATTACHMENT_BYTES =
   PREMIUM_MAX_ATTACHMENT_MB * 1024 * 1024;

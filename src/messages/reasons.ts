@@ -36,6 +36,8 @@ export const SERVER_REASONS: ReasonCatalog = {
   banner_too_large: `El archivo no puede pesar más de ${MAX_ICON_FILE_MB} MB.`,
   banner_unsupported_type: `La imagen debe ser ${formatImageTypes(ALLOWED_SERVER_ICON_TYPES)}.`,
   banner_unreadable: "No pudimos leer esa imagen. Probá con otra.",
+  boost_level_required:
+    "Este servidor todavía no tiene el nivel de boosts necesario para eso.",
 };
 
 export const CHANNEL_REASONS: ReasonCatalog = {
