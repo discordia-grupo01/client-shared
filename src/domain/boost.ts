@@ -52,6 +52,22 @@ export function boostLevelFor(boostCount: number): BoostLevel {
   return toBoostLevel(reached);
 }
 
+export function nextBoostLevel(
+  level: BoostLevel,
+): Exclude<BoostLevel, 0> | undefined {
+  if (level === 0) return 1;
+  if (level === 1) return 2;
+  if (level === 2) return 3;
+  return undefined;
+}
+
+export function boostsMissingFor(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+): number {
+  return Math.max(0, BOOST_LEVEL_THRESHOLDS[level - 1] - boostCount);
+}
+
 export function hasBoostPerk(level: BoostLevel, perk: BoostPerk): boolean {
   return level >= BOOST_PERK_LEVEL[perk];
 }

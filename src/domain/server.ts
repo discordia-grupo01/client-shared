@@ -30,6 +30,12 @@ export interface ServerSummary {
   vanity_code?: string | null;
 }
 
+export function serverBoostCount(
+  server: Pick<ServerSummary, "boost_count">,
+): number {
+  return server.boost_count ?? 0;
+}
+
 /**
  * Nivel de boost del servidor. Con nivel bajo, `icon_url` y `banner_url` ya
  * vienen en `null` si eran un GIF o un banner que ese nivel no desbloquea.
