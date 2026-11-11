@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import * as actions from "./actions";
 import * as auth from "./auth";
 import * as billing from "./billing";
+import * as boost from "./boost";
 import * as errors from "./errors";
 import * as notFound from "./not-found";
 import * as permissions from "./permissions";
@@ -66,6 +67,7 @@ function todosLosMensajes(): [string, string][] {
     actions,
     auth,
     billing,
+    boost,
     errors,
     notFound,
     permissions,
