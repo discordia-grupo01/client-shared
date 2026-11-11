@@ -61,3 +61,16 @@ export function serverOptionsLabel(serverName: string): string {
 }
 
 export const SERVER_OPTIONS_CANCEL = "Cancelar";
+
+export const NOTIFICATIONS_TRANSFER_TITLE = "Transferencia de propiedad";
+
+export const NOTIFICATIONS_TRANSFER_ACCEPT_LABEL = "Aceptar";
+
+export const NOTIFICATIONS_TRANSFER_REJECT_LABEL = "Rechazar";
+
+export const NOTIFICATIONS_TRANSFER_RESPOND_FAILED =
+  "No pudimos responder la transferencia. Probá de nuevo.";
+
+export const NOTIFICATIONS_UNKNOWN_SERVER = "un servidor";
+
+export const NOTIFICATIONS_UNKNOWN_PERSON = "Alguien";
