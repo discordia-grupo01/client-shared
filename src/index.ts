@@ -26,6 +26,7 @@ export * from "./domain/category";
 export * from "./domain/channel";
 export * from "./domain/channel-permissions";
 export * from "./domain/server";
+export * from "./domain/boost";
 export * from "./domain/server-suspension";
 export * from "./domain/invite";
 export * from "./domain/ownership-transfer";
@@ -118,6 +119,7 @@ export * from "./messages/platform-status";
 export * from "./messages/voice";
 export * from "./messages/private-call";
 export * from "./messages/billing";
+export * from "./messages/boost";
 
 // --- Formatters ---
 export * from "./format/call-duration";

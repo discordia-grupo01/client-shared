@@ -42,7 +42,7 @@ describe("catalogos de reason", () => {
 
   it("el rechazo de formato dice lo mismo que la validacion del front", () => {
     expect(SERVER_REASONS.icon_unsupported_type).toBe(
-      validateServerIcon({ mimeType: "image/gif", sizeBytes: 1000 }),
+      validateServerIcon({ mimeType: "image/bmp", sizeBytes: 1000 }),
     );
   });
 

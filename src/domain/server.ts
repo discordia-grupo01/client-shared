@@ -1,3 +1,4 @@
+import { type BoostLevel, toBoostLevel } from "./boost";
 import type { Category } from "./category";
 import type { Channel } from "./channel";
 
@@ -16,6 +17,27 @@ export interface ServerSummary {
    * sigue listando, pero sin canales ni categorías, y todo lo demás da 403.
    */
   suspended?: boolean;
+  /**
+   * Boosts activos y el nivel que dan. Opcionales porque un `servers` anterior
+   * a los boosts no los manda; leer el nivel con `serverBoostLevel`.
+   */
+  boost_count?: number;
+  boost_level?: number;
+  /**
+   * URL personalizada. `null` si no tiene o si el servidor bajó del nivel 3:
+   * `servers` la guarda, pero no la muestra ni la acepta para entrar.
+   */
+  vanity_code?: string | null;
+}
+
+/**
+ * Nivel de boost del servidor. Con nivel bajo, `icon_url` y `banner_url` ya
+ * vienen en `null` si eran un GIF o un banner que ese nivel no desbloquea.
+ */
+export function serverBoostLevel(
+  server: Pick<ServerSummary, "boost_level">,
+): BoostLevel {
+  return toBoostLevel(server.boost_level);
 }
 
 export interface CreateServerFieldErrors {

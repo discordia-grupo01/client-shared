@@ -144,12 +144,12 @@ describe("validacion de imagenes", () => {
     }
   });
 
-  it("el icono de servidor acepta webp pero no gif", () => {
+  it("el icono de servidor acepta webp y rechaza un formato no soportado", () => {
     expect(
       validateServerIcon({ mimeType: "image/webp", sizeBytes: mb(1) }),
     ).toBeUndefined();
     expect(
-      validateServerIcon({ mimeType: "image/gif", sizeBytes: mb(1) }),
+      validateServerIcon({ mimeType: "image/bmp", sizeBytes: mb(1) }),
     ).toBe("La imagen debe ser PNG, JPEG o WEBP.");
   });
 

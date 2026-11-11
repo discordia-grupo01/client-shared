@@ -82,9 +82,10 @@ export const BANNED_WORDS_MAX = 100;
 export const BAN_PAGE_LIMIT = 100;
 
 /**
- * Los dos backends aceptan los mismos formatos (la consigna no admite GIF):
+ * Los dos backends aceptan los mismos formatos:
  *   identify-service (avatar) -> jpeg, png, webp (profileimage/storage.go)
- *   servers (icono/banner)    -> png, jpeg, webp  (iconstore/iconstore.go:12)
+ *   servers (icono/banner)    -> png, jpeg, webp  (iconstore/iconstore.go)
+ * La excepcion es el icono GIF de un servidor con boosts (ver abajo).
  */
 export const ALLOWED_AVATAR_TYPES = [
   "image/jpeg",
@@ -96,6 +97,11 @@ export const ALLOWED_SERVER_ICON_TYPES = [
   "image/png",
   "image/jpeg",
   "image/webp",
+] as const;
+
+export const ANIMATED_SERVER_ICON_TYPES = [
+  ...ALLOWED_SERVER_ICON_TYPES,
+  "image/gif",
 ] as const;
 
 /**
