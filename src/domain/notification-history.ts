@@ -1,4 +1,9 @@
-export type NotificationKind = "mention" | "direct_message";
+import type { OwnershipTransferStatus } from "./ownership-transfer";
+
+export type NotificationKind =
+  "mention" | "direct_message" | "ownership_transfer";
+
+export type NotificationTransferStatus = OwnershipTransferStatus | "expired";
 
 export type NotificationTab = "unread" | "all" | "mentions" | "direct_messages";
 
@@ -22,6 +27,8 @@ export interface NotificationHistoryItem {
   server_id: string | null;
   channel_id: string | null;
   conversation_id: string | null;
+  to_user_id?: string | null;
+  transfer_status?: NotificationTransferStatus | null;
 }
 
 export interface NotificationHistoryResponse {
