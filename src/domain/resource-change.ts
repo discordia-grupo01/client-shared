@@ -50,3 +50,4 @@ export interface ChangeFilter {
 
 export const CHANGE_POLL_INTERVAL_MS = 30_000;
 export const CHANGE_COALESCE_MS = 250;
+export const PROFILE_REPLICATION_DELAY_MS = 2_000;
