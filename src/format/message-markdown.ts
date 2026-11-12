@@ -3,29 +3,68 @@ import { ROLE_TOKEN_SOURCE, USER_TOKEN_SOURCE } from "./mention-tokens";
 
 export type MessageInline =
   | MessageToken
-  | { kind: "bold" | "italic" | "strike"; children: MessageInline[] }
+  | {
+      kind: "bold" | "italic" | "underline" | "strike" | "spoiler";
+      children: MessageInline[];
+    }
+  | { kind: "link"; url: string; children: MessageInline[] }
   | { kind: "code"; value: string };
+
+export interface MessageListItem {
+  children: MessageInline[];
+  lists: MessageList[];
+}
+
+export interface MessageList {
+  kind: "list";
+  ordered: boolean;
+  start: number;
+  items: MessageListItem[];
+}
 
 export type MessageBlock =
   | { kind: "paragraph"; children: MessageInline[] }
   | { kind: "heading"; level: 1 | 2 | 3; children: MessageInline[] }
-  | { kind: "list"; items: MessageInline[][] }
+  | { kind: "subtext"; children: MessageInline[] }
+  | MessageList
   | { kind: "quote"; children: MessageInline[] }
   | { kind: "code-block"; language: string | null; value: string };
 
+export const SPOILER_PREVIEW_TEXT = "(spoiler)";
+
 const HEADING = /^(#{1,3}) +(\S.*)$/;
-const LIST_ITEM = /^[ \t]*[-*] +(\S.*)$/;
+const SUBTEXT = /^-# +(\S.*)$/;
+const LIST_ITEM = /^([ \t]*)(?:[-*]|(\d{1,9})\.) +(\S.*)$/;
 const QUOTE = /^>(?: (.*))?$/;
+const QUOTE_REST = /^>>>(?: (.*))?$/;
 const FENCE = "```";
 const CODE_LANGUAGE = /^[\w+#.-]+$/;
 
-const ESCAPABLE = "\\*_~`#>-";
+const ESCAPABLE = "\\*_~`#>-|[].";
 const WORD_CHAR = /[A-Za-z0-9À-ſ]/;
 const WHITESPACE = /\s/;
 const MENTION_AT = new RegExp(`${ROLE_TOKEN_SOURCE}|${USER_TOKEN_SOURCE}`, "y");
+const URL_AT = /https?:\/\/[^\s<>]+/y;
+const MASKED_URL_AT = /\((https?:\/\/[^\s<>()]+)\)/y;
+const URL_TRAILING = ".,:;!?'\"*_~|";
 
-type Delimiter = "***" | "**" | "~~" | "*" | "_";
-const DELIMITERS: readonly Delimiter[] = ["***", "**", "~~", "*", "_"];
+type Delimiter = "***" | "___" | "**" | "__" | "~~" | "||" | "*" | "_";
+const DELIMITERS: readonly Delimiter[] = [
+  "***",
+  "___",
+  "**",
+  "__",
+  "~~",
+  "||",
+  "*",
+  "_",
+];
+
+interface ListEntry {
+  indent: number;
+  number: number | null;
+  text: string;
+}
 
 export function parseMessageMarkdown(content: string): MessageBlock[] {
   const lines = content.replace(/\r\n?/g, "\n").split("\n");
@@ -33,20 +72,9 @@ export function parseMessageMarkdown(content: string): MessageBlock[] {
   let paragraph: string[] = [];
 
   const flushParagraph = () => {
-    while (paragraph.length > 0 && paragraph[0].trim() === "") {
-      paragraph.shift();
-    }
-    while (
-      paragraph.length > 0 &&
-      paragraph[paragraph.length - 1].trim() === ""
-    ) {
-      paragraph.pop();
-    }
-    if (paragraph.length > 0) {
-      blocks.push({
-        kind: "paragraph",
-        children: parseMessageInline(paragraph.join("\n")),
-      });
+    const text = trimBlankLines(paragraph);
+    if (text !== "") {
+      blocks.push({ kind: "paragraph", children: parseMessageInline(text) });
     }
     paragraph = [];
   };
@@ -75,16 +103,41 @@ export function parseMessageMarkdown(content: string): MessageBlock[] {
       continue;
     }
 
+    const subtext = SUBTEXT.exec(line);
+    if (subtext) {
+      flushParagraph();
+      blocks.push({
+        kind: "subtext",
+        children: parseMessageInline(subtext[1]),
+      });
+      i++;
+      continue;
+    }
+
     if (LIST_ITEM.test(line)) {
       flushParagraph();
-      const items: MessageInline[][] = [];
+      const entries: ListEntry[] = [];
       let item: RegExpExecArray | null;
       while (i < lines.length && (item = LIST_ITEM.exec(lines[i]))) {
-        items.push(parseMessageInline(item[1]));
+        entries.push({
+          indent: item[1].length,
+          number: item[2] === undefined ? null : Number(item[2]),
+          text: item[3],
+        });
         i++;
       }
-      blocks.push({ kind: "list", items });
+      blocks.push(...buildLists(entries));
       continue;
+    }
+
+    const rest = QUOTE_REST.exec(line);
+    if (rest) {
+      flushParagraph();
+      const quoted = trimBlankLines([rest[1] ?? "", ...lines.slice(i + 1)]);
+      if (quoted !== "") {
+        blocks.push({ kind: "quote", children: parseMessageInline(quoted) });
+      }
+      break;
     }
 
     if (QUOTE.test(line)) {
@@ -107,6 +160,47 @@ export function parseMessageMarkdown(content: string): MessageBlock[] {
   }
   flushParagraph();
   return blocks;
+}
+
+function trimBlankLines(lines: readonly string[]): string {
+  let start = 0;
+  let end = lines.length;
+  while (start < end && lines[start].trim() === "") start++;
+  while (end > start && lines[end - 1].trim() === "") end--;
+  return lines.slice(start, end).join("\n");
+}
+
+/**
+ * Arma las listas a partir de renglones seguidos de viñetas o numeros. Un
+ * renglon con mas sangria que el anterior queda anidado debajo de ese item.
+ */
+function buildLists(entries: readonly ListEntry[]): MessageList[] {
+  let i = 0;
+
+  const level = (parentIndent: number): MessageList[] => {
+    const lists: MessageList[] = [];
+    while (i < entries.length && entries[i].indent > parentIndent) {
+      const entry = entries[i];
+      const ordered = entry.number !== null;
+      let list = lists[lists.length - 1];
+      if (!list || list.ordered !== ordered) {
+        list = { kind: "list", ordered, start: entry.number ?? 1, items: [] };
+        lists.push(list);
+      }
+      i++;
+      const nested =
+        i < entries.length && entries[i].indent > entry.indent
+          ? level(entry.indent)
+          : [];
+      list.items.push({
+        children: parseMessageInline(entry.text),
+        lists: nested,
+      });
+    }
+    return lists;
+  };
+
+  return level(-1);
 }
 
 function readCodeBlock(
@@ -138,6 +232,11 @@ function readCodeBlock(
 }
 
 export function parseMessageInline(text: string): MessageInline[] {
+  return parseInline(text, true);
+}
+
+/** `allowLinks` es falso dentro del texto de un link: no se anidan links. */
+function parseInline(text: string, allowLinks: boolean): MessageInline[] {
   const nodes: MessageInline[] = [];
   const unclosed = new Set<Delimiter>();
   let buffer = "";
@@ -165,6 +264,20 @@ export function parseMessageInline(text: string): MessageInline[] {
       continue;
     }
 
+    const link = allowLinks ? readLink(text, i) : null;
+    if (link) {
+      flush();
+      nodes.push({
+        kind: "link",
+        url: link.url,
+        children: link.label
+          ? parseInline(text.slice(link.label.start, link.label.end), false)
+          : [{ kind: "text", value: link.url }],
+      });
+      i = link.end;
+      continue;
+    }
+
     if (char === "`") {
       const span = readCodeSpan(text, i);
       if (span) {
@@ -183,7 +296,9 @@ export function parseMessageInline(text: string): MessageInline[] {
     if (styled) {
       flush();
       const { delimiter, from, closer } = styled;
-      nodes.push(wrap(delimiter, parseMessageInline(text.slice(from, closer))));
+      nodes.push(
+        wrap(delimiter, parseInline(text.slice(from, closer), allowLinks)),
+      );
       i = closer + delimiter.length;
       continue;
     }
@@ -193,6 +308,64 @@ export function parseMessageInline(text: string): MessageInline[] {
   }
   flush();
   return mergeText(nodes);
+}
+
+interface LinkMatch {
+  url: string;
+  /** Donde esta el texto visible de un `[texto](url)`; null en un link suelto. */
+  label: { start: number; end: number } | null;
+  end: number;
+}
+
+function readLink(text: string, start: number): LinkMatch | null {
+  return text[start] === "["
+    ? readMaskedLink(text, start)
+    : readUrl(text, start);
+}
+
+function readUrl(text: string, start: number): LinkMatch | null {
+  if (text[start] !== "h" || WORD_CHAR.test(text[start - 1] ?? "")) {
+    return null;
+  }
+  URL_AT.lastIndex = start;
+  const match = URL_AT.exec(text);
+  if (!match) return null;
+
+  let url = match[0];
+  for (;;) {
+    const last = url[url.length - 1];
+    if (URL_TRAILING.includes(last)) {
+      url = url.slice(0, -1);
+    } else if (last === ")" && count(url, "(") < count(url, ")")) {
+      url = url.slice(0, -1);
+    } else {
+      break;
+    }
+  }
+  if (!/^https?:\/\/[^/]/.test(url)) return null;
+  return { url, label: null, end: start + url.length };
+}
+
+function readMaskedLink(text: string, start: number): LinkMatch | null {
+  let j = start + 1;
+  while (j < text.length && text[j] !== "]") {
+    if (text[j] === "\n" || text[j] === "[") return null;
+    j += text[j] === "\\" && ESCAPABLE.includes(text[j + 1] ?? "") ? 2 : 1;
+  }
+  if (j >= text.length || text.slice(start + 1, j).trim() === "") return null;
+
+  MASKED_URL_AT.lastIndex = j + 1;
+  const match = MASKED_URL_AT.exec(text);
+  if (!match) return null;
+  return {
+    url: match[1],
+    label: { start: start + 1, end: j },
+    end: j + 1 + match[0].length,
+  };
+}
+
+function count(text: string, char: string): number {
+  return text.split(char).length - 1;
 }
 
 function readStyled(
@@ -221,11 +394,13 @@ function opens(text: string, start: number, delimiter: Delimiter): boolean {
   const next = text[start + delimiter.length];
   if (next === undefined || WHITESPACE.test(next)) return false;
   if (delimiter === "*" && next === "*") return false;
-  if (delimiter === "_") return !WORD_CHAR.test(text[start - 1] ?? "");
+  if (delimiter === "_" && next === "_") return false;
+  if (delimiter[0] === "_") return !WORD_CHAR.test(text[start - 1] ?? "");
   return true;
 }
 
 function findCloser(text: string, from: number, delimiter: Delimiter): number {
+  const family = delimiter[0];
   let j = from;
   while (j < text.length) {
     const char = text[j];
@@ -239,6 +414,11 @@ function findCloser(text: string, from: number, delimiter: Delimiter): number {
       j += mention.length;
       continue;
     }
+    const link = readLink(text, j);
+    if (link) {
+      j = link.end;
+      continue;
+    }
     if (char === "`") {
       const span = readCodeSpan(text, j);
       j = span ? span.end : j + runLength(text, j, "`");
@@ -247,18 +427,15 @@ function findCloser(text: string, from: number, delimiter: Delimiter): number {
 
     const afterText = j > from && !WHITESPACE.test(text[j - 1]);
 
-    if (
-      char === "*" &&
-      (delimiter === "*" || delimiter === "**" || delimiter === "***")
-    ) {
-      const run = runLength(text, j, "*");
-      if (afterText && run >= delimiter.length) {
-        if (!(delimiter === "*" && run === 2)) {
-          return j + run - delimiter.length;
-        }
+    if ((family === "*" || family === "_") && char === family) {
+      const run = runLength(text, j, char);
+      const single = delimiter.length === 1;
+      if (afterText && run >= delimiter.length && !(single && run === 2)) {
+        const atWordEnd = !WORD_CHAR.test(text[j + run] ?? "");
+        if (family === "*" || atWordEnd) return j + run - delimiter.length;
       }
-      if (delimiter === "*" && run === 2) {
-        const inner = findCloser(text, j + 2, "**");
+      if (single && run === 2) {
+        const inner = findCloser(text, j + 2, `${char}${char}` as Delimiter);
         j = inner === -1 ? j + 2 : inner + 2;
         continue;
       }
@@ -266,15 +443,10 @@ function findCloser(text: string, from: number, delimiter: Delimiter): number {
       continue;
     }
 
-    if (delimiter === "~~" && text.startsWith("~~", j) && afterText) {
-      return j;
-    }
-
     if (
-      delimiter === "_" &&
-      char === "_" &&
-      afterText &&
-      !WORD_CHAR.test(text[j + 1] ?? "")
+      (delimiter === "~~" || delimiter === "||") &&
+      text.startsWith(delimiter, j) &&
+      afterText
     ) {
       return j;
     }
@@ -288,10 +460,16 @@ function wrap(delimiter: Delimiter, children: MessageInline[]): MessageInline {
   switch (delimiter) {
     case "***":
       return { kind: "bold", children: [{ kind: "italic", children }] };
+    case "___":
+      return { kind: "underline", children: [{ kind: "italic", children }] };
     case "**":
       return { kind: "bold", children };
+    case "__":
+      return { kind: "underline", children };
     case "~~":
       return { kind: "strike", children };
+    case "||":
+      return { kind: "spoiler", children };
     default:
       return { kind: "italic", children };
   }
@@ -355,38 +533,54 @@ function mergeText(nodes: MessageInline[]): MessageInline[] {
   return merged;
 }
 
+/**
+ * Texto plano del mensaje, sin simbolos de formato. Los spoilers se reemplazan
+ * por `SPOILER_PREVIEW_TEXT` para no revelar su contenido.
+ */
 export function stripMessageMarkdown(content: string): string {
   return parseMessageMarkdown(content)
-    .map((block) => {
+    .flatMap((block) => {
       switch (block.kind) {
         case "code-block":
-          return block.value;
+          return [block.value];
         case "list":
-          return block.items.map(inlineText).join("\n");
+          return listText(block);
         default:
-          return inlineText(block.children);
+          return [inlineText(block.children)];
       }
     })
     .join("\n");
 }
 
+function listText(list: MessageList): string[] {
+  return list.items.flatMap((item) => [
+    inlineText(item.children),
+    ...item.lists.flatMap(listText),
+  ]);
+}
+
 function inlineText(nodes: readonly MessageInline[]): string {
   return nodes
-    .map((node) =>
-      "children" in node ? inlineText(node.children) : node.value,
-    )
+    .map((node) => {
+      if (node.kind === "spoiler") return SPOILER_PREVIEW_TEXT;
+      return "children" in node ? inlineText(node.children) : node.value;
+    })
     .join("");
 }
 
 export type MarkdownStyle =
   | "bold"
   | "italic"
+  | "underline"
   | "strike"
+  | "spoiler"
+  | "link"
   | "code"
   | "marker"
   | "heading-1"
   | "heading-2"
   | "heading-3"
+  | "subtext"
   | "quote"
   | "code-block";
 
@@ -399,8 +593,11 @@ export interface MarkdownRange {
 
 const DELIMITER_STYLES: Record<Delimiter, MarkdownStyle[]> = {
   "***": ["bold", "italic"],
+  ___: ["underline", "italic"],
   "**": ["bold"],
+  __: ["underline"],
   "~~": ["strike"],
+  "||": ["spoiler"],
   "*": ["italic"],
   _: ["italic"],
 };
@@ -424,6 +621,7 @@ export function messageMarkdownRanges(content: string): MarkdownRange[] {
       inlineRanges(
         content.slice(paragraph.start, paragraph.end),
         paragraph.start,
+        true,
         ranges,
       );
     }
@@ -462,24 +660,31 @@ export function messageMarkdownRanges(content: string): MarkdownRange[] {
     }
 
     const heading = HEADING.exec(line);
-    if (heading) {
+    const subtext = heading ? null : SUBTEXT.exec(line);
+    const item = heading || subtext ? null : LIST_ITEM.exec(line);
+    const prefixed = heading ?? subtext ?? item;
+    if (prefixed) {
       flushParagraph();
-      const prefix = line.length - heading[2].length;
-      add(start, end, `heading-${heading[1].length}` as MarkdownStyle);
+      const text = prefixed[prefixed.length - 1];
+      const prefix = line.length - text.length;
+      if (heading)
+        add(start, end, `heading-${heading[1].length}` as MarkdownStyle);
+      if (subtext) add(start, end, "subtext");
       add(start, start + prefix, "marker");
-      inlineRanges(heading[2], start + prefix, ranges);
+      inlineRanges(text, start + prefix, true, ranges);
       i++;
       continue;
     }
 
-    const item = LIST_ITEM.exec(line);
-    if (item) {
+    if (QUOTE_REST.test(line)) {
       flushParagraph();
-      const prefix = line.length - item[1].length;
+      const prefix = Math.min(4, line.length);
+      for (let j = i; j < lines.length; j++) {
+        add(starts[j], starts[j] + lines[j].length, "quote");
+      }
       add(start, start + prefix, "marker");
-      inlineRanges(item[1], start + prefix, ranges);
-      i++;
-      continue;
+      inlineRanges(content.slice(start + prefix), start + prefix, true, ranges);
+      break;
     }
 
     const quote = QUOTE.exec(line);
@@ -488,7 +693,7 @@ export function messageMarkdownRanges(content: string): MarkdownRange[] {
       const prefix = Math.min(2, line.length);
       add(start, end, "quote");
       add(start, start + prefix, "marker");
-      inlineRanges(quote[1] ?? "", start + prefix, ranges);
+      inlineRanges(quote[1] ?? "", start + prefix, true, ranges);
       i++;
       continue;
     }
@@ -501,7 +706,12 @@ export function messageMarkdownRanges(content: string): MarkdownRange[] {
   return ranges;
 }
 
-function inlineRanges(text: string, base: number, out: MarkdownRange[]) {
+function inlineRanges(
+  text: string,
+  base: number,
+  allowLinks: boolean,
+  out: MarkdownRange[],
+) {
   const unclosed = new Set<Delimiter>();
   const add = (start: number, end: number, style: MarkdownStyle) => {
     if (end > start) out.push({ start: base + start, end: base + end, style });
@@ -520,6 +730,21 @@ function inlineRanges(text: string, base: number, out: MarkdownRange[]) {
     const mention = mentionAt(text, i);
     if (mention) {
       i += mention.length;
+      continue;
+    }
+
+    const link = allowLinks ? readLink(text, i) : null;
+    if (link) {
+      if (link.label) {
+        const { start, end } = link.label;
+        add(i, start, "marker");
+        add(start, end, "link");
+        inlineRanges(text.slice(start, end), base + start, false, out);
+        add(end, link.end, "marker");
+      } else {
+        add(i, link.end, "link");
+      }
+      i = link.end;
       continue;
     }
 
@@ -543,7 +768,7 @@ function inlineRanges(text: string, base: number, out: MarkdownRange[]) {
       add(i, from, "marker");
       for (const style of DELIMITER_STYLES[delimiter]) add(from, closer, style);
       add(closer, closer + delimiter.length, "marker");
-      inlineRanges(text.slice(from, closer), base + from, out);
+      inlineRanges(text.slice(from, closer), base + from, allowLinks, out);
       i = closer + delimiter.length;
       continue;
     }

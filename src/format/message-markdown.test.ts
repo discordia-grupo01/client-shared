@@ -5,11 +5,22 @@ import {
   messageMarkdownRanges,
   parseMessageInline,
   parseMessageMarkdown,
+  SPOILER_PREVIEW_TEXT,
   stripMessageMarkdown,
 } from "./message-markdown";
 
 const ROLE_ID = "3b1c2d4e-1111-4222-8333-444455556666";
 const text = (value: string) => ({ kind: "text", value });
+const item = (children: unknown[], lists: unknown[] = []) => ({
+  children,
+  lists,
+});
+const bullets = (...items: unknown[]) => ({
+  kind: "list",
+  ordered: false,
+  start: 1,
+  items,
+});
 
 describe("parseMessageInline", () => {
   it("texto sin formato queda igual", () => {
@@ -130,6 +141,147 @@ describe("parseMessageInline", () => {
       { kind: "channel", value: "#general" },
     ]);
   });
+
+  it("subrayado y spoiler", () => {
+    expect(parseMessageInline("__a__ ||b||")).toEqual([
+      { kind: "underline", children: [text("a")] },
+      text(" "),
+      { kind: "spoiler", children: [text("b")] },
+    ]);
+  });
+
+  it("___ es subrayado y cursiva a la vez", () => {
+    expect(parseMessageInline("___hola___")).toEqual([
+      {
+        kind: "underline",
+        children: [{ kind: "italic", children: [text("hola")] }],
+      },
+    ]);
+  });
+
+  it("el doble guion bajo dentro de una palabra no subraya", () => {
+    expect(parseMessageInline("mi__var__larga")).toEqual([
+      text("mi__var__larga"),
+    ]);
+  });
+
+  it("spoiler con formato adentro", () => {
+    expect(parseMessageInline("||el **final**||")).toEqual([
+      {
+        kind: "spoiler",
+        children: [text("el "), { kind: "bold", children: [text("final")] }],
+      },
+    ]);
+  });
+
+  it("un link suelto se vuelve link", () => {
+    expect(parseMessageInline("mira https://ejemplo.com/a_b_c ya")).toEqual([
+      text("mira "),
+      {
+        kind: "link",
+        url: "https://ejemplo.com/a_b_c",
+        children: [text("https://ejemplo.com/a_b_c")],
+      },
+      text(" ya"),
+    ]);
+  });
+
+  it("la puntuacion del final no es parte del link", () => {
+    expect(parseMessageInline("(ver https://a.com/x).")).toEqual([
+      text("(ver "),
+      {
+        kind: "link",
+        url: "https://a.com/x",
+        children: [text("https://a.com/x")],
+      },
+      text(")."),
+    ]);
+  });
+
+  it("los parentesis balanceados quedan en el link", () => {
+    const url = "https://es.wikipedia.org/wiki/Mate_(bebida)";
+    expect(parseMessageInline(url)).toEqual([
+      { kind: "link", url, children: [text(url)] },
+    ]);
+  });
+
+  it("un link adentro de un formato", () => {
+    expect(parseMessageInline("**https://a.com**")).toEqual([
+      {
+        kind: "bold",
+        children: [
+          {
+            kind: "link",
+            url: "https://a.com",
+            children: [text("https://a.com")],
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("los simbolos de una url no abren formato", () => {
+    expect(parseMessageInline("_ver https://a.com/x_y_")).toEqual([
+      {
+        kind: "italic",
+        children: [
+          text("ver "),
+          {
+            kind: "link",
+            url: "https://a.com/x_y",
+            children: [text("https://a.com/x_y")],
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("sin http no es link", () => {
+    expect(parseMessageInline("ejemplo.com y ftp://a.com")).toEqual([
+      text("ejemplo.com y ftp://a.com"),
+    ]);
+  });
+
+  it("link con texto", () => {
+    expect(
+      parseMessageInline("lee [la **guia**](https://a.com/g) hoy"),
+    ).toEqual([
+      text("lee "),
+      {
+        kind: "link",
+        url: "https://a.com/g",
+        children: [text("la "), { kind: "bold", children: [text("guia")] }],
+      },
+      text(" hoy"),
+    ]);
+  });
+
+  it("el texto de un link no puede tener otro link", () => {
+    expect(parseMessageInline("[https://b.com](https://a.com)")).toEqual([
+      {
+        kind: "link",
+        url: "https://a.com",
+        children: [text("https://b.com")],
+      },
+    ]);
+  });
+
+  it("un link con texto sin url valida queda como texto", () => {
+    expect(parseMessageInline("[hola](javascript:alert(1))")).toEqual([
+      text("[hola](javascript:alert(1))"),
+    ]);
+    expect(parseMessageInline("[](https://a.com)")).toEqual([
+      text("[]("),
+      { kind: "link", url: "https://a.com", children: [text("https://a.com")] },
+      text(")"),
+    ]);
+  });
+
+  it("se escapan barras, corchetes y puntos", () => {
+    expect(parseMessageInline("\\|\\|no\\|\\| \\[a\\] 1\\.")).toEqual([
+      text("||no|| [a] 1."),
+    ]);
+  });
 });
 
 describe("parseMessageMarkdown", () => {
@@ -162,10 +314,10 @@ describe("parseMessageMarkdown", () => {
   it("viñetas con - o * se agrupan en una lista", () => {
     expect(parseMessageMarkdown("Compras:\n- pan\n* **leche**\nfin")).toEqual([
       { kind: "paragraph", children: [text("Compras:")] },
-      {
-        kind: "list",
-        items: [[text("pan")], [{ kind: "bold", children: [text("leche")] }]],
-      },
+      bullets(
+        item([text("pan")]),
+        item([{ kind: "bold", children: [text("leche")] }]),
+      ),
       { kind: "paragraph", children: [text("fin")] },
     ]);
   });
@@ -235,7 +387,7 @@ describe("parseMessageMarkdown", () => {
     expect(parseMessageMarkdown("# Titulo\n\ntexto\n\n- a")).toEqual([
       { kind: "heading", level: 1, children: [text("Titulo")] },
       { kind: "paragraph", children: [text("texto")] },
-      { kind: "list", items: [[text("a")]] },
+      bullets(item([text("a")])),
     ]);
   });
 
@@ -243,6 +395,102 @@ describe("parseMessageMarkdown", () => {
     expect(parseMessageMarkdown("# a\r\nb")).toEqual([
       { kind: "heading", level: 1, children: [text("a")] },
       { kind: "paragraph", children: [text("b")] },
+    ]);
+  });
+
+  it("listas numeradas empiezan en el primer numero", () => {
+    expect(parseMessageMarkdown("3. tres\n4. cuatro")).toEqual([
+      {
+        kind: "list",
+        ordered: true,
+        start: 3,
+        items: [item([text("tres")]), item([text("cuatro")])],
+      },
+    ]);
+  });
+
+  it("un numero sin punto y espacio no es lista", () => {
+    expect(parseMessageMarkdown("2024 fue un año\n1.5 kilos")).toEqual([
+      { kind: "paragraph", children: [text("2024 fue un año\n1.5 kilos")] },
+    ]);
+  });
+
+  it("la sangria anida viñetas", () => {
+    expect(
+      parseMessageMarkdown(
+        "- frutas\n  - manzana\n    - roja\n  - pera\n- verduras",
+      ),
+    ).toEqual([
+      bullets(
+        item(
+          [text("frutas")],
+          [
+            bullets(
+              item([text("manzana")], [bullets(item([text("roja")]))]),
+              item([text("pera")]),
+            ),
+          ],
+        ),
+        item([text("verduras")]),
+      ),
+    ]);
+  });
+
+  it("una lista numerada dentro de una de viñetas", () => {
+    expect(parseMessageMarkdown("- pasos\n  1. abrir\n  2. cerrar")).toEqual([
+      bullets(
+        item(
+          [text("pasos")],
+          [
+            {
+              kind: "list",
+              ordered: true,
+              start: 1,
+              items: [item([text("abrir")]), item([text("cerrar")])],
+            },
+          ],
+        ),
+      ),
+    ]);
+  });
+
+  it("viñetas y numeros seguidos al mismo nivel son dos listas", () => {
+    expect(parseMessageMarkdown("- a\n1. b")).toEqual([
+      bullets(item([text("a")])),
+      { kind: "list", ordered: true, start: 1, items: [item([text("b")])] },
+    ]);
+  });
+
+  it("texto chico con -#", () => {
+    expect(parseMessageMarkdown("hola\n-# editado a mano")).toEqual([
+      { kind: "paragraph", children: [text("hola")] },
+      { kind: "subtext", children: [text("editado a mano")] },
+    ]);
+  });
+
+  it("-# sin espacio no es texto chico", () => {
+    expect(parseMessageMarkdown("-#hola")).toEqual([
+      { kind: "paragraph", children: [text("-#hola")] },
+    ]);
+  });
+
+  it(">>> cita todo lo que sigue", () => {
+    expect(parseMessageMarkdown("antes\n>>> uno\n\n**dos**\n- tres")).toEqual([
+      { kind: "paragraph", children: [text("antes")] },
+      {
+        kind: "quote",
+        children: [
+          text("uno\n\n"),
+          { kind: "bold", children: [text("dos")] },
+          text("\n- tres"),
+        ],
+      },
+    ]);
+  });
+
+  it(">>> solo en su renglon cita los renglones de abajo", () => {
+    expect(parseMessageMarkdown(">>>\nhola")).toEqual([
+      { kind: "quote", children: [text("hola")] },
     ]);
   });
 });
@@ -258,6 +506,14 @@ describe("stripMessageMarkdown", () => {
 
   it("un mensaje sin formato queda igual", () => {
     expect(stripMessageMarkdown("hola, ¿todo bien?")).toBe("hola, ¿todo bien?");
+  });
+
+  it("aplana las listas anidadas y tapa los spoilers", () => {
+    expect(
+      stripMessageMarkdown(
+        "- a\n  1. b\nel final: ||muere||\n[guia](https://a.com)",
+      ),
+    ).toBe(`a\nb\nel final: ${SPOILER_PREVIEW_TEXT}\nguia`);
   });
 });
 
@@ -326,6 +582,33 @@ describe("messageMarkdownRanges", () => {
     const content = "uno\ndos **tres**";
     const [, bold] = messageMarkdownRanges(content);
     expect(bold).toEqual({ start: 10, end: 14, style: "bold" });
+  });
+
+  it("subrayado, spoiler y links", () => {
+    expect(styled("__a__ ||b|| https://c.com [d](https://e.com)")).toEqual([
+      "marker:__",
+      "underline:a",
+      "marker:__",
+      "marker:||",
+      "spoiler:b",
+      "marker:||",
+      "link:https://c.com",
+      "marker:[",
+      "link:d",
+      "marker:](https://e.com)",
+    ]);
+  });
+
+  it("listas numeradas, anidadas, texto chico y >>>", () => {
+    expect(styled("1. a\n  - b\n-# c\n>>> d\ne")).toEqual([
+      "marker:1. ",
+      "marker:  - ",
+      "subtext:-# c",
+      "marker:-# ",
+      "quote:>>> d",
+      "quote:e",
+      "marker:>>> ",
+    ]);
   });
 
   it("sin formato no hay tramos", () => {
