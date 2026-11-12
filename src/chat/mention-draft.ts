@@ -1,4 +1,5 @@
 import { encodeMentions, type PickedMention } from "../format/mention-tokens";
+import { messageCodeRanges } from "../format/message-markdown";
 import {
   activeMentionQuery,
   type AppliedMention,
@@ -8,20 +9,11 @@ import {
   suggestMentions,
 } from "./mention-suggestions";
 
-/**
- * Estado del borrador de un mensaje con menciones. La persona escribe
- * `@Beto` (texto visible); cada mencion elegida del selector se recuerda en
- * `picked` con su id y recien al enviar se convierte en `<@id>`. Es el mismo
- * estado para web y mobile: cada app lo maneja con un `useReducer`.
- */
 export interface MentionDraftState {
   text: string;
-  /** Posicion del cursor dentro de `text`. */
   cursor: number;
   picked: PickedMention[];
-  /** Candidato resaltado en el selector. */
   selectedIndex: number;
-  /** Se cerro el selector con Esc: queda cerrado hasta que cambie el texto. */
   isDismissed: boolean;
 }
 
@@ -124,6 +116,10 @@ export function mentionDraftView(
     active,
     candidates,
     isOpen: candidates.length > 0 && !state.isDismissed,
-    encoded: encodeMentions(state.text, state.picked),
+    encoded: encodeMentions(
+      state.text,
+      state.picked,
+      messageCodeRanges(state.text),
+    ),
   };
 }

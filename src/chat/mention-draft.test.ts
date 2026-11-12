@@ -95,6 +95,17 @@ describe("mentionDraftReducer", () => {
 });
 
 describe("mentionDraftView", () => {
+  it("una mencion elegida dentro de codigo se envia como texto", () => {
+    const beto = { kind: "user" as const, id: "u_beto", label: "Beto" };
+    const state = createMentionDraft("usa `@Beto` y avisale a @Beto", [
+      beto,
+      beto,
+    ]);
+    expect(mentionDraftView(state, sources).encoded).toBe(
+      "usa `@Beto` y avisale a <@u_beto>",
+    );
+  });
+
   it("al escribir @ el selector se abre con candidatos", () => {
     const state = run({ type: "change", text: "@", cursor: 1 });
     const view = mentionDraftView(state, sources);

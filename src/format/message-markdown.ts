@@ -551,3 +551,9 @@ function inlineRanges(text: string, base: number, out: MarkdownRange[]) {
     i++;
   }
 }
+
+export function messageCodeRanges(content: string): MarkdownRange[] {
+  return messageMarkdownRanges(content).filter(
+    (range) => range.style === "code" || range.style === "code-block",
+  );
+}
