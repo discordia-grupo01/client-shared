@@ -9,6 +9,12 @@ const picked = [
 ];
 
 describe("draftSegments", () => {
+  it("dentro de codigo no se marcan menciones", () => {
+    expect(
+      draftSegments("```\n@Beto @everyone\n``` `@Beto`", picked, true),
+    ).toEqual([{ kind: "text", value: "```\n@Beto @everyone\n``` `@Beto`" }]);
+  });
+
   it("sin menciones es un solo tramo de texto", () => {
     expect(draftSegments("hola", [], true)).toEqual([
       { kind: "text", value: "hola" },

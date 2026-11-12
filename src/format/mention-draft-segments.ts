@@ -4,8 +4,10 @@ import {
   EVERYONE_MENTION,
   matchPickedMentions,
   type MentionKind,
+  overlapsAny,
   type PickedMention,
 } from "./mention-tokens";
+import { messageCodeRanges } from "./message-markdown";
 
 /** Un tramo del borrador, para dibujarlo: texto comun o una mencion elegida. */
 export type DraftSegment =
@@ -29,14 +31,16 @@ interface Marked {
  * Parte el borrador visible en tramos para resaltar las menciones mientras se
  * escribe. Solo se marca lo que va a funcionar al enviar: las menciones elegidas
  * del selector y, si tiene permiso, `@everyone`. Lo escrito a mano o sin
- * permiso queda como texto comun, igual que lo trata el back.
+ * permiso queda como texto comun, igual que lo trata el back. Dentro de codigo
+ * tampoco se marca nada: ahi una mencion se envia como texto.
  */
 export function draftSegments(
   draft: string,
   picked: readonly PickedMention[],
   canMentionEveryone: boolean,
 ): DraftSegment[] {
-  const marked: Marked[] = matchPickedMentions(draft, picked).map(
+  const code = messageCodeRanges(draft);
+  const marked: Marked[] = matchPickedMentions(draft, picked, code).map(
     ({ start, end, mention }) => ({
       start,
       end,
@@ -51,6 +55,7 @@ export function draftSegments(
   if (canMentionEveryone) {
     for (const match of draft.matchAll(EVERYONE_PATTERN)) {
       const start = (match.index ?? 0) + match[1].length;
+      if (overlapsAny(start, start + EVERYONE_MENTION.length, code)) continue;
       marked.push({
         start,
         end: start + EVERYONE_MENTION.length,
