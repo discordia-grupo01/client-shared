@@ -508,6 +508,12 @@ describe("notificationPreview", () => {
     );
   });
 
+  it("deja los simbolos de formato tal cual", () => {
+    expect(
+      notificationPreview({ content: "**hola** <@ana> ~~chau~~" }, nameOf),
+    ).toBe("**hola** @Ana ~~chau~~");
+  });
+
   it("reemplaza la mencion por el nombre cuando se conoce", () => {
     expect(
       notificationPreview({ content: "hola <@ana> mirá esto" }, nameOf),

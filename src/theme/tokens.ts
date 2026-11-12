@@ -55,6 +55,15 @@ export interface ThemeColors {
   borderStrong: string;
   borderOnAccent: string;
   borderOnAccentStrong: string;
+
+  /** Colores del resaltado de sintaxis en los bloques de codigo. */
+  syntaxKeyword: string;
+  syntaxString: string;
+  syntaxNumber: string;
+  syntaxComment: string;
+  syntaxFunction: string;
+  syntaxType: string;
+  syntaxAttribute: string;
 }
 
 const dark: ThemeColors = {
@@ -99,6 +108,14 @@ const dark: ThemeColors = {
   borderStrong: "rgba(168, 198, 223, 0.18)",
   borderOnAccent: "rgba(168, 198, 223, 0.25)",
   borderOnAccentStrong: "#a8c6df",
+
+  syntaxKeyword: "#e7a3c9",
+  syntaxString: "#a9d8a0",
+  syntaxNumber: "#f5b971",
+  syntaxComment: "rgba(168, 198, 223, 0.6)",
+  syntaxFunction: "#8cc8ee",
+  syntaxType: "#7fd6c2",
+  syntaxAttribute: "#fce3a4",
 };
 
 const light: ThemeColors = {
@@ -143,6 +160,14 @@ const light: ThemeColors = {
   borderStrong: "rgba(36, 92, 107, 0.22)",
   borderOnAccent: "rgba(168, 198, 223, 0.25)",
   borderOnAccentStrong: "#a8c6df",
+
+  syntaxKeyword: "#a0306f",
+  syntaxString: "#2e7531",
+  syntaxNumber: "#a85400",
+  syntaxComment: "rgba(36, 92, 107, 0.65)",
+  syntaxFunction: "#1d5c87",
+  syntaxType: "#17705f",
+  syntaxAttribute: "#7f5500",
 };
 
 export const THEMES: Record<ThemeName, ThemeColors> = { dark, light };
@@ -191,6 +216,14 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   borderStrong: "--border-strong",
   borderOnAccent: "--border-on-accent",
   borderOnAccentStrong: "--border-on-accent-strong",
+
+  syntaxKeyword: "--syntax-keyword",
+  syntaxString: "--syntax-string",
+  syntaxNumber: "--syntax-number",
+  syntaxComment: "--syntax-comment",
+  syntaxFunction: "--syntax-function",
+  syntaxType: "--syntax-type",
+  syntaxAttribute: "--syntax-attribute",
 };
 
 /**

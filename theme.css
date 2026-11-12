@@ -51,4 +51,12 @@
   --color-line-strong: var(--border-strong);
   --color-line-on-accent: var(--border-on-accent);
   --color-line-on-accent-strong: var(--border-on-accent-strong);
+
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-function: var(--syntax-function);
+  --color-syntax-type: var(--syntax-type);
+  --color-syntax-attribute: var(--syntax-attribute);
 }

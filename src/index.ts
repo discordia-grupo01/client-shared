@@ -137,6 +137,7 @@ export * from "./format/profile";
 export * from "./format/user-list";
 export * from "./format/ban-list";
 export * from "./format/message-content";
+export * from "./format/message-markdown";
 export * from "./format/message-time";
 export * from "./format/message-author";
 export * from "./format/message-mentions";

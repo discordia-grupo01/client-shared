@@ -24,6 +24,11 @@ export function mentionToken(kind: MentionKind, id: string): string {
   return kind === "role" ? `<@&${id.toLowerCase()}>` : `<@${id}>`;
 }
 
+export interface TextSpan {
+  start: number;
+  end: number;
+}
+
 /** Un tramo del borrador que corresponde a una mencion elegida del selector. */
 export interface PickedRange {
   start: number;
@@ -40,6 +45,8 @@ export interface PickedRange {
 export function matchPickedMentions(
   draft: string,
   picked: readonly PickedMention[],
+  /** Tramos donde una mencion no cuenta (por ejemplo, codigo): queda como texto. */
+  ignored: readonly TextSpan[] = [],
 ): PickedRange[] {
   const labels = [...new Set(picked.map((mention) => mention.label))]
     .filter((label) => label !== "")
@@ -60,7 +67,9 @@ export function matchPickedMentions(
     if (index === -1) continue;
     const [mention] = pending.splice(index, 1);
     const start = (match.index ?? 0) + before.length;
-    ranges.push({ start, end: start + whole.length - before.length, mention });
+    const end = start + whole.length - before.length;
+    if (overlapsAny(start, end, ignored)) continue;
+    ranges.push({ start, end, mention });
   }
   return ranges;
 }
@@ -73,15 +82,28 @@ export function matchPickedMentions(
 export function encodeMentions(
   draft: string,
   picked: readonly PickedMention[],
+  ignored: readonly TextSpan[] = [],
 ): string {
   let result = "";
   let cursor = 0;
-  for (const { start, end, mention } of matchPickedMentions(draft, picked)) {
+  for (const { start, end, mention } of matchPickedMentions(
+    draft,
+    picked,
+    ignored,
+  )) {
     result +=
       draft.slice(cursor, start) + mentionToken(mention.kind, mention.id);
     cursor = end;
   }
   return result + draft.slice(cursor);
+}
+
+export function overlapsAny(
+  start: number,
+  end: number,
+  spans: readonly TextSpan[],
+): boolean {
+  return spans.some((span) => start < span.end && end > span.start);
 }
 
 const TOKEN_PATTERN = new RegExp(
