@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   BOOST_PERKS,
   boostLevelFor,
+  boostsMissingFor,
+  nextBoostLevel,
   boostPerksForLevel,
   canSetServerBanner,
   canSetVanityUrl,
@@ -12,7 +14,7 @@ import {
   requiredBoostLevelOf,
   toBoostLevel,
 } from "./boost";
-import { serverBoostLevel } from "./server";
+import { serverBoostCount, serverBoostLevel } from "./server";
 
 describe("boostLevelFor", () => {
   it.each([
@@ -127,5 +129,32 @@ describe("requiredBoostLevelOf", () => {
         required_level: 0,
       }),
     ).toBeUndefined();
+  });
+});
+
+describe("boostsMissingFor", () => {
+  it("cuenta lo que falta para el umbral del nivel", () => {
+    expect(boostsMissingFor(1, 3)).toBe(2);
+    expect(boostsMissingFor(2, 3)).toBe(12);
+    expect(boostsMissingFor(3, 29)).toBe(1);
+  });
+
+  it("no da negativo si ya llegó", () => {
+    expect(boostsMissingFor(2, 20)).toBe(0);
+  });
+});
+
+describe("serverBoostCount", () => {
+  it("toma 0 si servers todavía no manda el contador", () => {
+    expect(serverBoostCount({})).toBe(0);
+    expect(serverBoostCount({ boost_count: 7 })).toBe(7);
+  });
+});
+
+describe("nextBoostLevel", () => {
+  it("da el nivel siguiente y nada en el máximo", () => {
+    expect(nextBoostLevel(0)).toBe(1);
+    expect(nextBoostLevel(2)).toBe(3);
+    expect(nextBoostLevel(3)).toBeUndefined();
   });
 });

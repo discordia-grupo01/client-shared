@@ -4,9 +4,12 @@ import { BOOST_PERKS } from "../domain/boost";
 
 import {
   BOOST_PERK_LABELS,
+  boostCountLabel,
   boostLevelLabel,
   boostLevelRequiredMessageFor,
   boostPerkAvailableFrom,
+  boostPerkLevelLabel,
+  boostPerkUnlockProgress,
 } from "./boost";
 
 describe("textos de boosts", () => {
@@ -48,5 +51,27 @@ describe("textos de boosts", () => {
     expect(
       boostLevelRequiredMessageFor({ reason: "forbidden" }),
     ).toBeUndefined();
+  });
+
+  it("dice cuánto falta para desbloquear un beneficio", () => {
+    expect(boostPerkUnlockProgress("custom_banner", 3)).toBe(
+      "Faltan 12 boosts para el nivel 2",
+    );
+    expect(boostPerkUnlockProgress("animated_icon", 4)).toBe(
+      "Falta 1 boost para el nivel 1",
+    );
+    expect(boostPerkUnlockProgress("custom_banner", 15)).toBe(
+      "Se desbloquea en el nivel 2",
+    );
+  });
+
+  it("nombra el nivel al que pertenece un beneficio", () => {
+    expect(boostPerkLevelLabel("animated_icon")).toBe("Beneficio del nivel 1");
+    expect(boostPerkLevelLabel("custom_banner")).toBe("Beneficio del nivel 2");
+  });
+
+  it("cuenta boosts en singular y plural", () => {
+    expect(boostCountLabel(1)).toBe("1 boost");
+    expect(boostCountLabel(3)).toBe("3 boosts");
   });
 });

@@ -15,7 +15,9 @@ import {
 } from "../format/mention-tokens";
 import {
   NOTIFICATIONS_ATTACHMENT_PREVIEW,
+  NOTIFICATIONS_UNKNOWN_PERSON,
   NOTIFICATIONS_UNKNOWN_ROLE_MENTION,
+  NOTIFICATIONS_UNKNOWN_SERVER,
   NOTIFICATIONS_UNKNOWN_USER_MENTION,
 } from "../messages/notifications";
 
@@ -67,6 +69,69 @@ export function describeNotification(item: NotificationHistoryItem): string {
   return item.kind === "direct_message" ? "te envió un mensaje" : "te mencionó";
 }
 
+export function isTransferNotification(item: NotificationHistoryItem): boolean {
+  return item.kind === "ownership_transfer";
+}
+
+export function canRespondToTransfer(
+  item: NotificationHistoryItem,
+  meId: string | null | undefined,
+): boolean {
+  return (
+    isTransferNotification(item) &&
+    item.transfer_status === "pending" &&
+    meId != null &&
+    item.to_user_id === meId
+  );
+}
+
+export function notificationUserIds(item: NotificationHistoryItem): string[] {
+  const ids = [item.author_id];
+  if (isTransferNotification(item) && item.to_user_id)
+    ids.push(item.to_user_id);
+  return [...new Set(ids)];
+}
+
+export function describeTransferNotification(
+  item: NotificationHistoryItem,
+  meId: string | null | undefined,
+  nameOf: (userId: string) => string | null,
+  serverName: string | null,
+): string {
+  const server = serverName ?? NOTIFICATIONS_UNKNOWN_SERVER;
+  const owner = nameOf(item.author_id) ?? NOTIFICATIONS_UNKNOWN_PERSON;
+  const receiverId = item.to_user_id ?? null;
+  const receiver =
+    (receiverId !== null ? nameOf(receiverId) : null) ??
+    NOTIFICATIONS_UNKNOWN_PERSON;
+
+  if (receiverId !== null && receiverId === meId) {
+    switch (item.transfer_status) {
+      case "accepted":
+        return `Aceptaste ser el nuevo dueño de ${server}`;
+      case "rejected":
+        return `Rechazaste ser el nuevo dueño de ${server}`;
+      case "cancelled":
+        return `${owner} canceló el ofrecimiento de ${server}`;
+      case "expired":
+        return `El ofrecimiento de ${server} venció`;
+      default:
+        return `${owner} te ofreció la propiedad de ${server}`;
+    }
+  }
+
+  switch (item.transfer_status) {
+    case "accepted":
+      return `${receiver} aceptó ser el nuevo dueño de ${server}`;
+    case "rejected":
+      return `${receiver} rechazó ser el nuevo dueño de ${server}`;
+    case "expired":
+      return `${receiver} no respondió: el ofrecimiento de ${server} venció`;
+    default:
+      return `Ofreciste la propiedad de ${server} a ${receiver}`;
+  }
+}
+
 export type NotificationUnreadCheck = (
   item: NotificationHistoryItem,
 ) => boolean;
@@ -100,6 +165,7 @@ export function filterNotificationHistory(
 }
 
 export function notificationGroupKey(item: NotificationHistoryItem): string {
+  if (item.kind === "ownership_transfer") return `transfer:${item.message_id}`;
   return item.kind === "direct_message"
     ? `dm:${item.conversation_id ?? item.author_id}`
     : `channel:${item.channel_id ?? "unknown"}`;

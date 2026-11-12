@@ -3,13 +3,16 @@ import { describe, expect, it } from "vitest";
 import type { NotificationHistoryItem } from "../domain/notification-history";
 import {
   appendNotificationHistory,
+  canRespondToTransfer,
   chunkNotificationIds,
   countUnreadNotifications,
   describeNotification,
+  describeTransferNotification,
   filterNotificationHistory,
   groupNotificationHistory,
   isNotificationUnread,
   isNotificationVisible,
+  isTransferNotification,
   markAllNotificationsRead,
   markNotificationGroupRead,
   NOTIFICATION_ALL_READ_KEY,
@@ -17,6 +20,7 @@ import {
   notificationGroupKey,
   notificationPlace,
   notificationPreview,
+  notificationUserIds,
 } from "./notification-history";
 
 const item = (
@@ -598,5 +602,179 @@ describe("chunkNotificationIds", () => {
 
   it("sin ids no hay tandas", () => {
     expect(chunkNotificationIds([])).toEqual([]);
+  });
+});
+
+const transfer = (
+  transferId: string,
+  overrides: Partial<NotificationHistoryItem> = {},
+): NotificationHistoryItem =>
+  item(transferId, {
+    kind: "ownership_transfer",
+    author_id: "owner",
+    to_user_id: "member",
+    transfer_status: "pending",
+    channel_id: null,
+    ...overrides,
+  });
+
+const nameOf = (id: string): string | null =>
+  ({ owner: "Ana", member: "Beto" })[id] ?? null;
+
+describe("transferencia de propiedad", () => {
+  it("se reconoce por su tipo", () => {
+    expect(isTransferNotification(transfer("t1"))).toBe(true);
+    expect(isTransferNotification(item("m1"))).toBe(false);
+    expect(isTransferNotification(directMessage("m1"))).toBe(false);
+  });
+
+  it("cada transferencia es su propio grupo y no se mezcla con un canal", () => {
+    expect(notificationGroupKey(transfer("t1"))).toBe("transfer:t1");
+    expect(notificationGroupKey(transfer("t2"))).toBe("transfer:t2");
+
+    const groups = groupNotificationHistory([
+      transfer("t1"),
+      item("m1", { channel_id: "t1" }),
+    ]);
+
+    expect(groups.map((group) => group.key)).toEqual([
+      "transfer:t1",
+      "channel:t1",
+    ]);
+    expect(groups[0]).toMatchObject({
+      kind: "ownership_transfer",
+      channelId: null,
+      conversationId: null,
+      partnerId: null,
+    });
+  });
+
+  it("aparece en no leidas y en todas, pero no en menciones ni en directos", () => {
+    const items = [transfer("t1"), item("m1"), directMessage("m2")];
+
+    expect(
+      filterNotificationHistory(items, "all").map((entry) => entry.message_id),
+    ).toEqual(["t1", "m1", "m2"]);
+    expect(
+      filterNotificationHistory(items, "unread").map(
+        (entry) => entry.message_id,
+      ),
+    ).toEqual(["t1", "m1", "m2"]);
+    expect(
+      filterNotificationHistory(items, "mentions").map(
+        (entry) => entry.message_id,
+      ),
+    ).toEqual(["m1"]);
+    expect(
+      filterNotificationHistory(items, "direct_messages").map(
+        (entry) => entry.message_id,
+      ),
+    ).toEqual(["m2"]);
+  });
+
+  it("se lee con una marca propia y no con la de un canal", () => {
+    const entry = transfer("t1");
+
+    expect(isNotificationUnread(entry, {})).toBe(true);
+    expect(
+      isNotificationUnread(entry, { "channel:t1": "2026-11-03T00:00:00Z" }),
+    ).toBe(true);
+    expect(
+      isNotificationUnread(entry, { "transfer:t1": "2026-11-03T00:00:00Z" }),
+    ).toBe(false);
+  });
+
+  it("pide los nombres del dueño y del receptor, sin repetir", () => {
+    expect(notificationUserIds(transfer("t1"))).toEqual(["owner", "member"]);
+    expect(notificationUserIds(item("m1"))).toEqual(["author"]);
+    expect(
+      notificationUserIds(transfer("t1", { to_user_id: "owner" })),
+    ).toEqual(["owner"]);
+  });
+
+  describe("canRespondToTransfer", () => {
+    it("solo el receptor puede responder y solo mientras esta pendiente", () => {
+      expect(canRespondToTransfer(transfer("t1"), "member")).toBe(true);
+      expect(canRespondToTransfer(transfer("t1"), "owner")).toBe(false);
+      expect(canRespondToTransfer(transfer("t1"), null)).toBe(false);
+      expect(canRespondToTransfer(transfer("t1"), undefined)).toBe(false);
+
+      for (const status of [
+        "accepted",
+        "rejected",
+        "cancelled",
+        "expired",
+      ] as const) {
+        expect(
+          canRespondToTransfer(
+            transfer("t1", { transfer_status: status }),
+            "member",
+          ),
+        ).toBe(false);
+      }
+    });
+
+    it("una mencion o un directo nunca se responden", () => {
+      expect(canRespondToTransfer(item("m1"), "member")).toBe(false);
+      expect(canRespondToTransfer(directMessage("m1"), "member")).toBe(false);
+    });
+  });
+
+  describe("describeTransferNotification", () => {
+    const text = (
+      status: NotificationHistoryItem["transfer_status"],
+      meId: string,
+      server: string | null = "Grupo 1",
+    ) =>
+      describeTransferNotification(
+        transfer("t1", { transfer_status: status }),
+        meId,
+        nameOf,
+        server,
+      );
+
+    it("al receptor le dice que le ofrecieron la propiedad", () => {
+      expect(text("pending", "member")).toBe(
+        "Ana te ofreció la propiedad de Grupo 1",
+      );
+    });
+
+    it("al receptor le deja dicho como terminó", () => {
+      expect(text("accepted", "member")).toBe(
+        "Aceptaste ser el nuevo dueño de Grupo 1",
+      );
+      expect(text("rejected", "member")).toBe(
+        "Rechazaste ser el nuevo dueño de Grupo 1",
+      );
+      expect(text("cancelled", "member")).toBe(
+        "Ana canceló el ofrecimiento de Grupo 1",
+      );
+      expect(text("expired", "member")).toBe(
+        "El ofrecimiento de Grupo 1 venció",
+      );
+    });
+
+    it("al dueño le cuenta la respuesta", () => {
+      expect(text("accepted", "owner")).toBe(
+        "Beto aceptó ser el nuevo dueño de Grupo 1",
+      );
+      expect(text("rejected", "owner")).toBe(
+        "Beto rechazó ser el nuevo dueño de Grupo 1",
+      );
+      expect(text("expired", "owner")).toBe(
+        "Beto no respondió: el ofrecimiento de Grupo 1 venció",
+      );
+    });
+
+    it("sin nombres no inventa ninguno", () => {
+      expect(
+        describeTransferNotification(
+          transfer("t1"),
+          "member",
+          () => null,
+          null,
+        ),
+      ).toBe("Alguien te ofreció la propiedad de un servidor");
+    });
   });
 });
