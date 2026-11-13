@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import { hasErrors } from "./auth";
 import {
+  accountRecoveryMessageLength,
   isRecoveryCode,
   isTotpCode,
   normalizeRecoveryCode,
   normalizeTotpCode,
+  validateAccountRecovery,
   validateTwoFactorActivationCode,
   validateTwoFactorCode,
   validateTwoFactorPassword,
@@ -116,5 +118,39 @@ describe("validateTwoFactorPassword", () => {
     expect(validateTwoFactorPassword({ password: "" }).password).toBe(
       "Ingresá tu contraseña",
     );
+  });
+});
+
+describe("accountRecoveryMessageLength", () => {
+  it("cuenta un emoji como un solo caracter, igual que el back", () => {
+    expect(accountRecoveryMessageLength("hola 😀")).toBe(6);
+  });
+
+  it("no cuenta los espacios de los bordes", () => {
+    expect(accountRecoveryMessageLength("  hola  ")).toBe(4);
+  });
+});
+
+describe("validateAccountRecovery", () => {
+  it("acepta el mensaje vacío porque es opcional", () => {
+    expect(hasErrors(validateAccountRecovery({ message: "" }))).toBe(false);
+  });
+
+  it("acepta justo 500 caracteres", () => {
+    expect(
+      hasErrors(validateAccountRecovery({ message: "a".repeat(500) })),
+    ).toBe(false);
+  });
+
+  it("rechaza más de 500 caracteres", () => {
+    expect(validateAccountRecovery({ message: "a".repeat(501) })).toEqual({
+      message: "El mensaje no puede superar los 500 caracteres",
+    });
+  });
+
+  it("acepta 500 emojis aunque en UTF-16 ocupen el doble", () => {
+    expect(
+      hasErrors(validateAccountRecovery({ message: "😀".repeat(500) })),
+    ).toBe(false);
   });
 });
