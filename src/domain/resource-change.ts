@@ -30,6 +30,7 @@ export const BACKOFFICE_CHANGE_KINDS = [
   "staff",
   "dossier",
   "metrics",
+  "recovery_requests",
 ] as const;
 
 export type BackofficeChangeKind = (typeof BACKOFFICE_CHANGE_KINDS)[number];
