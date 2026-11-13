@@ -28,6 +28,7 @@ import type {
   SetPasswordValues,
 } from "../domain/auth";
 import type {
+  AccountRecoveryErrors,
   TwoFactorCodeErrors,
   TwoFactorPasswordErrors,
 } from "../domain/two-factor";
@@ -200,7 +201,8 @@ export function hasErrors(
     | PinSetupErrors
     | PinLoginErrors
     | TwoFactorCodeErrors
-    | TwoFactorPasswordErrors,
+    | TwoFactorPasswordErrors
+    | AccountRecoveryErrors,
 ): boolean {
   return Object.values(errors).some((value) => value !== undefined);
 }

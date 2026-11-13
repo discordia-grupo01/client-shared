@@ -6,11 +6,14 @@
  * autoridad; aca solo se evita mandar requests obviamente invalidos.
  */
 import {
+  ACCOUNT_RECOVERY_MESSAGE_MAX_LENGTH,
   RECOVERY_CODE_ALPHABET,
   RECOVERY_CODE_LENGTH,
   TOTP_CODE_LENGTH,
 } from "../constants/limits";
 import type {
+  AccountRecoveryErrors,
+  AccountRecoveryValues,
   TwoFactorCodeErrors,
   TwoFactorCodeValues,
   TwoFactorPasswordErrors,
@@ -79,5 +82,23 @@ export function validateTwoFactorPassword(
   values: TwoFactorPasswordValues,
 ): TwoFactorPasswordErrors {
   if (values.password === "") return { password: "Ingresá tu contraseña" };
+  return {};
+}
+
+export function accountRecoveryMessageLength(message: string): number {
+  return [...message.trim()].length;
+}
+
+export function validateAccountRecovery(
+  values: AccountRecoveryValues,
+): AccountRecoveryErrors {
+  if (
+    accountRecoveryMessageLength(values.message) >
+    ACCOUNT_RECOVERY_MESSAGE_MAX_LENGTH
+  ) {
+    return {
+      message: `El mensaje no puede superar los ${ACCOUNT_RECOVERY_MESSAGE_MAX_LENGTH} caracteres`,
+    };
+  }
   return {};
 }

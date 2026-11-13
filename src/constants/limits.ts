@@ -135,6 +135,12 @@ export const RECOVERY_CODES_LOW_THRESHOLD = 3;
 export const RECOVERY_CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
 /**
+ * Mensaje de la solicitud de recuperación de cuenta, en runas y sin los
+ * espacios de los bordes, igual que lo cuenta identify-service.
+ */
+export const ACCOUNT_RECOVERY_MESSAGE_MAX_LENGTH = 500;
+
+/**
  * Contenido de un mensaje, en runas.
  *
  * TODO: el servicio de mensajes todavia no existe; 2000 es el valor de

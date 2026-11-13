@@ -33,6 +33,10 @@ export function formatLoginRateLimit(secondsLeft: number): string {
 export const EMAIL_NOT_VERIFIED =
   "Tu cuenta ya está registrada, pero debes confirmar tu correo electrónico antes de iniciar sesión.";
 
+/** Debajo de las pantallas que avisan que se mandó un mail. */
+export const CHECK_SPAM_HINT =
+  "Recordá revisar tu carpeta de spam por si acaso.";
+
 /** 400 en `POST /v1/password-recovery`. */
 export const INVALID_EMAIL_MESSAGE = "Ingresá un correo electrónico válido.";
 
