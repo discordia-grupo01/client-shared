@@ -5,12 +5,14 @@ import type { ApiFailure } from "../domain/api-result";
 import { SESSION_EXPIRED_MESSAGE } from "./errors";
 import {
   kickFailureMessage,
+  listModerationAuditFailureMessage,
   listRoleMembersFailureMessage,
   muteFailureMessage,
   unmuteFailureMessage,
 } from "./moderation-failures";
 import {
   NO_PERMISSION_KICK,
+  NO_PERMISSION_MODERATION_AUDIT,
   NO_PERMISSION_MUTE,
   NO_PERMISSION_ROLE_MEMBERS,
 } from "./permissions";
@@ -76,5 +78,17 @@ describe("silencio en pantalla", () => {
 
   it("el chat explica que no puede escribir porque esta silenciado", () => {
     expect(messageErrorFor("MEMBER_MUTED")).toMatch(/silenciado/);
+  });
+
+  it("registro de auditoria: 403 es falta de permiso y el resto, no se pudo cargar", () => {
+    expect(listModerationAuditFailureMessage(failure(403))).toBe(
+      NO_PERMISSION_MODERATION_AUDIT,
+    );
+    expect(listModerationAuditFailureMessage(failure(401))).toBe(
+      SESSION_EXPIRED_MESSAGE,
+    );
+    expect(listModerationAuditFailureMessage(failure(500))).toMatch(
+      /registro de auditoría/,
+    );
   });
 });

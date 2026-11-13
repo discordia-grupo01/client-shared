@@ -54,6 +54,10 @@ export const NO_PERMISSION_WORD_FILTER = noPermissionFor(
 );
 /** Ver y cerrar reportes exige ser moderador: los tres permisos juntos. */
 export const NO_PERMISSION_REPORTS = noPermissionFor("revisar los reportes");
+/** El registro de auditoria exige lo mismo que los reportes. */
+export const NO_PERMISSION_MODERATION_AUDIT = noPermissionFor(
+  "ver el registro de auditoría",
+);
 
 export const OWNER_ONLY_TRANSFER = `Solo el propietario puede transferir este servidor.`;
 
