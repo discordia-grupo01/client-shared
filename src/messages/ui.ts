@@ -12,6 +12,7 @@
  * pantalla, eso se queda en cada app y no se fuerza aca.
  */
 
+import type { ModerationAuditAction } from "../domain/moderation-audit";
 import type { ReportResolutionAction, ReportSanction } from "../domain/report";
 import type { VoiceParticipant } from "../domain/voice";
 import { isScreenShareIdentity } from "../domain/voice-screen-share";
@@ -577,6 +578,25 @@ export const REPORTS_DISMISSED_FILTER = "Descartados";
 export const REPORTS_PENDING_EMPTY = "No hay reportes pendientes.";
 export const REPORTS_RESOLVED_EMPTY = "Todavía no se resolvió ningún reporte.";
 export const REPORTS_DISMISSED_EMPTY = "Todavía no se descartó ningún reporte.";
+
+// --- Registro de auditoria (configuracion del servidor, solo moderadores) ---
+export const MODERATION_AUDIT_TITLE = "Registro de auditoría";
+export const MODERATION_AUDIT_DESCRIPTION =
+  "Acciones de moderación realizadas en el servidor";
+export const MODERATION_AUDIT_EMPTY =
+  "Todavía no hay acciones de moderación registradas.";
+
+/** `verb` va entre los dos nombres: "Ana expulsó a Beto". */
+export const MODERATION_AUDIT_ACTIONS: Record<
+  ModerationAuditAction,
+  { verb: string; label: string }
+> = {
+  ban: { verb: "baneó a", label: "Ban" },
+  unban: { verb: "quitó el ban a", label: "Quitar ban" },
+  kick: { verb: "expulsó a", label: "Expulsión" },
+  mute: { verb: "silenció a", label: "Silencio" },
+  unmute: { verb: "quitó el silencio a", label: "Quitar silencio" },
+};
 export const RESOLVE_REPORT_ACTION = "Resolver";
 export const DISMISS_REPORT_ACTION = "Descartar";
 export const REPORT_RESOLVED_BADGE = "Resuelto";
