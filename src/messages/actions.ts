@@ -124,6 +124,9 @@ export const BANNED_WORDS_SAVE_FAILED = failedTo(
 export const REPORT_CREATE_FAILED = failedTo("enviar el reporte");
 export const REPORTS_LOAD_FAILED = failedTo("cargar los reportes");
 export const REPORT_CLOSE_FAILED = failedTo("cerrar el reporte");
+export const MODERATION_AUDIT_LOAD_FAILED = failedTo(
+  "cargar el registro de auditoría",
+);
 /** La sancion salio bien pero el `PATCH` no: el reporte sigue pendiente. */
 export const REPORT_AUTO_RESOLVE_PENDING =
   "La sanción se aplicó, pero no pudimos marcar el reporte como resuelto. Tocá Resolver para reintentar.";

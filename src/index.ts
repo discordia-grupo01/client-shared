@@ -47,6 +47,7 @@ export * from "./domain/resource-change";
 export * from "./domain/block";
 export * from "./domain/word-filter";
 export * from "./domain/moderation";
+export * from "./domain/moderation-audit";
 export * from "./domain/report";
 export * from "./domain/report-categories";
 export * from "./domain/voice";
