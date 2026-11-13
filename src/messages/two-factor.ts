@@ -82,6 +82,31 @@ export const TWO_FACTOR_RECOVERY_CODES_WARNING = `Guardá estos ${RECOVERY_CODE_
 export const TWO_FACTOR_RECOVERY_CODE_USED =
   "Entraste con un código de recuperación y ese código ya no sirve más.";
 
+export const ACCOUNT_RECOVERY_LINK = "¿Tenés problemas para iniciar sesión?";
+
+export const ACCOUNT_RECOVERY_DESCRIPTION =
+  "Si perdiste el acceso a tu app autenticadora y a tus códigos de recuperación, podés pedirle al equipo de Discordia que revise tu cuenta. Si aprueban la solicitud, se va a desactivar la verificación en dos pasos y vas a poder entrar sin el código de seguridad, como lo hacías antes con tu contraseña o con Google.";
+
+export const ACCOUNT_RECOVERY_DELAY_WARNING =
+  "Te vamos a avisar por email cuando revisemos tu solicitud. Por seguridad, este proceso puede demorar.";
+
+export const ACCOUNT_RECOVERY_MESSAGE_PLACEHOLDER =
+  "Ej.: cambié de celular y no guardé los códigos";
+
+/** Cada app le agrega el email enmascarado en negrita y el punto final. */
+export const ACCOUNT_RECOVERY_SENT_DESCRIPTION =
+  "El equipo de Discordia va a revisar tu caso y te va a avisar por email a";
+
+export const ACCOUNT_RECOVERY_PENDING_DESCRIPTION =
+  "Ya tenés una solicitud de recuperación pendiente. Te vamos a avisar por email cuando la revisemos.";
+
+/** 401 con `TWO_FACTOR_CHALLENGE_EXPIRED` al enviar la solicitud. */
+export const ACCOUNT_RECOVERY_CHALLENGE_EXPIRED =
+  "La verificación venció. Volvé a iniciar sesión para enviar la solicitud.";
+
+export const ACCOUNT_RECOVERY_UNAVAILABLE =
+  "No pudimos enviar la solicitud. Intentá de nuevo.";
+
 export function formatTwoFactorChallengeCountdown(secondsLeft: number): string {
   const clamped = Math.max(0, Math.round(secondsLeft));
   const minutes = Math.floor(clamped / 60);

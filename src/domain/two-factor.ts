@@ -113,6 +113,32 @@ export interface TwoFactorCodeErrors {
   code?: string;
 }
 
+/** `201` de `POST /v1/login/2fa/recovery-request`. */
+export interface AccountRecoveryCreatePayload {
+  request_id: string;
+  status: "pending";
+  /** El back lo manda ya enmascarado: `a***a@gmail.com`. */
+  email_hint: string;
+}
+
+/**
+ * `alreadyPending` es el 409 `ACCOUNT_RECOVERY_ALREADY_PENDING`: no es un
+ * error para la pantalla, que muestra que la solicitud anterior sigue en
+ * revisión.
+ */
+export type AccountRecoveryResult =
+  | { ok: true; emailHint: string }
+  | { ok: true; alreadyPending: true }
+  | { ok: false; message: string; expired?: boolean };
+
+export interface AccountRecoveryValues {
+  message: string;
+}
+
+export interface AccountRecoveryErrors {
+  message?: string;
+}
+
 export interface TwoFactorPasswordValues {
   password: string;
 }
