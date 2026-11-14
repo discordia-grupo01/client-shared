@@ -39,6 +39,16 @@ export interface ThemeColors {
   boostYellow: string;
   boostPaper: string;
   boostInk: string;
+  boostBand: string;
+  boostOnBand: string;
+  boostOnBandMuted: string;
+  boostBandHighlight: string;
+  boostBandTile: string;
+  boostBandLine: string;
+  boostTrack: string;
+  boostColumn: string;
+  boostLevelOutline: string;
+  boostLevelEmpty: string;
 
   bgServers: string;
   bgChannels: string;
@@ -95,6 +105,16 @@ const dark: ThemeColors = {
   boostYellow: "#e8c66a",
   boostPaper: "#f5f2eb",
   boostInk: "#1c293b",
+  boostBand: "#245c6b",
+  boostOnBand: "#f5f2eb",
+  boostOnBandMuted: "rgba(245, 242, 235, 0.8)",
+  boostBandHighlight: "#e8c66a",
+  boostBandTile: "rgba(28, 41, 59, 0.5)",
+  boostBandLine: "rgba(245, 242, 235, 0.15)",
+  boostTrack: "#1c293b",
+  boostColumn: "rgba(107, 149, 189, 0.12)",
+  boostLevelOutline: "rgba(245, 242, 235, 0.35)",
+  boostLevelEmpty: "#a8c6df",
 
   bgServers: "#0f1922",
   bgChannels: "#1c293b",
@@ -150,6 +170,20 @@ const light: ThemeColors = {
   boostYellow: "#d4a93e",
   boostPaper: "#f5f2eb",
   boostInk: "#1c293b",
+  // En claro la franja es un tinte cálido con texto oscuro: el petrol lleno
+  // pesa demasiado sobre el fondo crema.
+  boostBand: "rgba(120, 80, 20, 0.05)",
+  boostOnBand: "#1c293b",
+  boostOnBandMuted: "#245c6b",
+  boostBandHighlight: "#8f6a12",
+  boostBandTile: "#fbf7f0",
+  boostBandLine: "rgba(36, 92, 107, 0.18)",
+  boostTrack: "rgba(120, 80, 20, 0.12)",
+  boostColumn: "rgba(107, 149, 189, 0.16)",
+  // El celeste del punteado casi no se ve sobre el crema: se usa el azul de
+  // los módulos, y las barras llenas llevan un borde oscuro.
+  boostLevelOutline: "rgba(28, 41, 59, 0.18)",
+  boostLevelEmpty: "#6b95bd",
 
   bgServers: "#245c6b",
   bgChannels: "#eae5d9",
@@ -209,6 +243,16 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   boostYellow: "--boost-yellow",
   boostPaper: "--boost-paper",
   boostInk: "--boost-ink",
+  boostBand: "--boost-band",
+  boostOnBand: "--boost-on-band",
+  boostOnBandMuted: "--boost-on-band-muted",
+  boostBandHighlight: "--boost-band-highlight",
+  boostBandTile: "--boost-band-tile",
+  boostBandLine: "--boost-band-line",
+  boostTrack: "--boost-track",
+  boostColumn: "--boost-column",
+  boostLevelOutline: "--boost-level-outline",
+  boostLevelEmpty: "--boost-level-empty",
 
   bgServers: "--bg-servers",
   bgChannels: "--bg-channels",
