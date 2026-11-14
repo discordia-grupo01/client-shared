@@ -648,3 +648,14 @@ export function pendingReportsLabel(count: number, serverName: string): string {
     ? `1 reporte pendiente en ${serverName}`
     : `${count} reportes pendientes en ${serverName}`;
 }
+
+export const BOOSTS_SECTION_TITLE = "Boosts del servidor";
+export const BOOSTS_SECTION_SUBTITLE = "Nivel y beneficios";
+export const BOOST_NEXT_LEVEL_LABEL = "Próximo";
+export const BOOST_MAX_LEVEL_TITLE = "Alcanzó el nivel máximo";
+export const BOOST_TABLE_TITLE = "Ventajas por nivel";
+export const BOOST_TABLE_PERK_HEADER = "Ventaja";
+export const BOOST_TABLE_INCLUDED = "Incluido";
+export const BOOST_TABLE_NOT_INCLUDED = "No incluido";
+export const BOOST_SHOWCASE_TITLE = "Cómo se ven las ventajas";
+export const BOOST_UNLOCKED_LABEL = "Desbloqueado";
