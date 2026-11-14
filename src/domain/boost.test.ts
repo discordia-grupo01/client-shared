@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
   BOOST_PERKS,
   boostLevelFor,
+  boostPerksAddedAt,
+  boostProgress,
+  boostsRequiredFor,
+  toServerBoostSummary,
   boostsMissingFor,
   nextBoostLevel,
   boostPerksForLevel,
@@ -156,5 +160,84 @@ describe("nextBoostLevel", () => {
     expect(nextBoostLevel(0)).toBe(1);
     expect(nextBoostLevel(2)).toBe(3);
     expect(nextBoostLevel(3)).toBeUndefined();
+  });
+});
+
+describe("boostsRequiredFor", () => {
+  it("da el umbral de cada nivel", () => {
+    expect(
+      [0, 1, 2, 3].map((level) => boostsRequiredFor(toBoostLevel(level))),
+    ).toEqual([0, 5, 15, 30]);
+  });
+});
+
+describe("boostPerksAddedAt", () => {
+  it("da solo los beneficios que suma ese nivel", () => {
+    expect(boostPerksAddedAt(2)).toEqual([
+      "custom_banner",
+      "larger_attachments",
+    ]);
+    expect(boostPerksAddedAt(0)).toEqual([]);
+  });
+});
+
+describe("toServerBoostSummary", () => {
+  it("lee la respuesta de servers", () => {
+    expect(
+      toServerBoostSummary({
+        boost_count: 7,
+        level: 1,
+        perks_unlocked: ["extra_emoji_slots", "animated_icon", "otro"],
+        next_level: { level: 2, boosts_required: 15, boosts_missing: 8 },
+      }),
+    ).toEqual({
+      boost_count: 7,
+      level: 1,
+      perks_unlocked: ["extra_emoji_slots", "animated_icon"],
+      next_level: { level: 2, boosts_required: 15, boosts_missing: 8 },
+    });
+  });
+
+  it("en el nivel 3 no hay próximo nivel", () => {
+    expect(
+      toServerBoostSummary({ boost_count: 31, level: 3 }).next_level,
+    ).toBeNull();
+  });
+
+  it("calcula lo que falta si la respuesta viene incompleta", () => {
+    expect(toServerBoostSummary({ boost_count: 16 })).toEqual({
+      boost_count: 16,
+      level: 2,
+      perks_unlocked: [
+        "extra_emoji_slots",
+        "animated_icon",
+        "custom_banner",
+        "larger_attachments",
+      ],
+      next_level: { level: 3, boosts_required: 30, boosts_missing: 14 },
+    });
+    expect(toServerBoostSummary(null).level).toBe(0);
+  });
+});
+
+describe("boostProgress", () => {
+  it("mide el camino hacia el próximo nivel desde cero boosts", () => {
+    expect(boostProgress({ boost_count: 7, level: 1 })).toEqual({
+      level: 1,
+      boostCount: 7,
+      nextLevel: 2,
+      target: 15,
+      missing: 8,
+      ratio: 7 / 15,
+    });
+  });
+
+  it("queda completo en el nivel máximo", () => {
+    expect(boostProgress({ boost_count: 40, level: 3 })).toMatchObject({
+      nextLevel: undefined,
+      target: undefined,
+      missing: 0,
+      ratio: 1,
+    });
   });
 });

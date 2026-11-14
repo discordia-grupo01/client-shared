@@ -76,6 +76,7 @@ export * from "./constants/voice";
 export * from "./constants/platform-services";
 export * from "./constants/billing";
 export * from "./constants/premium-brand";
+export * from "./constants/boost";
 
 // --- Validacion ---
 export * from "./validation/auth";

@@ -36,6 +36,9 @@ export interface ThemeColors {
   railSurfaceHover: string;
   railActiveBg: string;
   railActiveText: string;
+  boostYellow: string;
+  boostPaper: string;
+  boostInk: string;
 
   bgServers: string;
   bgChannels: string;
@@ -89,6 +92,9 @@ const dark: ThemeColors = {
   railSurfaceHover: "rgba(36, 92, 107, 0.3)",
   railActiveBg: "#245c6b",
   railActiveText: "#ffffff",
+  boostYellow: "#e8c66a",
+  boostPaper: "#f5f2eb",
+  boostInk: "#1c293b",
 
   bgServers: "#0f1922",
   bgChannels: "#1c293b",
@@ -141,6 +147,9 @@ const light: ThemeColors = {
   railSurfaceHover: "rgba(168, 198, 223, 0.3)",
   railActiveBg: "#fce3a4",
   railActiveText: "#18181b",
+  boostYellow: "#d4a93e",
+  boostPaper: "#f5f2eb",
+  boostInk: "#1c293b",
 
   bgServers: "#245c6b",
   bgChannels: "#eae5d9",
@@ -197,6 +206,9 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   railSurfaceHover: "--rail-surface-hover",
   railActiveBg: "--rail-active-bg",
   railActiveText: "--rail-active-text",
+  boostYellow: "--boost-yellow",
+  boostPaper: "--boost-paper",
+  boostInk: "--boost-ink",
 
   bgServers: "--bg-servers",
   bgChannels: "--bg-channels",

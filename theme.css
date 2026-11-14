@@ -27,6 +27,9 @@
   --color-rail-surface-hover: var(--rail-surface-hover);
   --color-rail-active-bg: var(--rail-active-bg);
   --color-rail-active-text: var(--rail-active-text);
+  --color-boost-yellow: var(--boost-yellow);
+  --color-boost-paper: var(--boost-paper);
+  --color-boost-ink: var(--boost-ink);
   --color-on-accent: var(--on-accent);
   --color-on-accent-muted: var(--on-accent-muted);
   --color-on-accent-subtle: var(--on-accent-subtle);

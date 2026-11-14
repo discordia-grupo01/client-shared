@@ -1,10 +1,16 @@
-import { BOOSTED_MAX_ATTACHMENT_MB } from "../constants/attachments";
+import {
+  BOOSTED_MAX_ATTACHMENT_MB,
+  PREMIUM_MAX_ATTACHMENT_MB,
+} from "../constants/attachments";
 import type { ApiErrorDetails } from "../domain/errors";
 import {
   BOOST_PERK_LEVEL,
   type BoostLevel,
   type BoostPerk,
+  boostPerksAddedAt,
+  boostPerksForLevel,
   boostsMissingFor,
+  boostsRequiredFor,
   requiredBoostLevelOf,
 } from "../domain/boost";
 
@@ -66,4 +72,153 @@ export function boostLevelRequiredMessageFor(
 ): string | undefined {
   const level = requiredBoostLevelOf(details);
   return level === undefined ? undefined : boostLevelRequiredMessage(level);
+}
+
+export const BOOSTS_SECTION_DESCRIPTION =
+  "Cada boost suma al servidor y desbloquea beneficios para todos los miembros.";
+export const BOOSTS_LOAD_ERROR = "No pudimos cargar los boosts del servidor.";
+
+export const BOOST_PERK_SHORT_LABELS: Readonly<Record<BoostPerk, string>> = {
+  extra_emoji_slots: "más emojis",
+  animated_icon: "ícono animado",
+  custom_banner: "banner del servidor",
+  larger_attachments: `adjuntos de ${BOOSTED_MAX_ATTACHMENT_MB} MB`,
+  vanity_url: "URL personalizada",
+  boosted_badge: "insignia «Servidor Boosteado»",
+};
+
+function joinWithAnd(items: readonly string[]): string {
+  if (items.length <= 1) return items.join("");
+  const last = items[items.length - 1];
+  const conjunction = /^(i|í|hi(?![aeo]))/i.test(last) ? "e" : "y";
+  return `${items.slice(0, -1).join(", ")} ${conjunction} ${last}`;
+}
+
+export function boostActivePerksLabel(level: BoostLevel): string {
+  if (level === 0) return "Todavía no tiene beneficios de boosts.";
+  if (level === 3) return "Activos: todos los beneficios de boosts.";
+  const perks = boostPerksForLevel(level).map(
+    (perk) => BOOST_PERK_SHORT_LABELS[perk],
+  );
+  return `Activos: ${joinWithAnd(perks)}.`;
+}
+
+export const BOOST_MAX_LEVEL_DETAIL =
+  "Este servidor tiene todos los beneficios de boosts.";
+
+export function boostsToNextLevelParts(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+): { lead: string; amount: string; tail: string } {
+  const missing = boostsMissingFor(level, boostCount);
+  return {
+    lead: missing === 1 ? "Falta" : "Faltan",
+    amount: boostCountLabel(missing),
+    tail: `para llegar al nivel ${level}`,
+  };
+}
+
+/** "7 / 15" */
+export function boostProgressCountLabel(
+  boostCount: number,
+  target: number,
+): string {
+  return `${boostCount} / ${target}`;
+}
+
+export function boostProgressAriaLabel(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+): string {
+  return `${boostCount} de ${boostsRequiredFor(level)} boosts para el nivel ${level}`;
+}
+
+export function boostLevelUnlocks(level: Exclude<BoostLevel, 0>): {
+  lead: string;
+  perks: string;
+} {
+  return {
+    lead: `Destraba en el nivel ${level}:`,
+    perks: boostPerksAddedAt(level)
+      .map((perk) => BOOST_PERK_SHORT_LABELS[perk])
+      .join(" · "),
+  };
+}
+
+export const BOOST_TABLE_HINT =
+  "La columna resaltada es el nivel actual del servidor.";
+
+export const BOOST_TABLE_ROW_LABELS: Readonly<
+  Record<BoostPerk, { label: string; shortLabel: string }>
+> = {
+  extra_emoji_slots: { label: "Lugares para emojis", shortLabel: "Emojis" },
+  animated_icon: { label: "Ícono animado (GIF)", shortLabel: "Ícono animado" },
+  custom_banner: { label: "Banner del servidor", shortLabel: "Banner" },
+  larger_attachments: {
+    label: "Adjuntos en canales",
+    shortLabel: "Adjuntos",
+  },
+  vanity_url: {
+    label: "URL de invitación personalizada",
+    shortLabel: "URL propia",
+  },
+  boosted_badge: {
+    label: "Insignia «Servidor Boosteado»",
+    shortLabel: "Insignia",
+  },
+};
+
+export function boostLevelShortLabel(level: BoostLevel): string {
+  return `Nv. ${level}`;
+}
+
+export function boostLevelColumnDetail(
+  level: BoostLevel,
+  isCurrent: boolean,
+): string {
+  const base =
+    level === 0 ? "Sin boosts" : boostCountLabel(boostsRequiredFor(level));
+  return isCurrent ? `${base} · actual` : base;
+}
+
+export const BOOST_TABLE_NOTE = `Los ${BOOSTED_MAX_ATTACHMENT_MB} MB valen en los canales del servidor. Si un miembro tiene Premium, se aplica siempre el límite mayor: ${PREMIUM_MAX_ATTACHMENT_MB} MB.`;
+export const BOOST_TABLE_NOTE_SHORT = `Con Premium, cada miembro tiene siempre ${PREMIUM_MAX_ATTACHMENT_MB} MB de adjuntos.`;
+
+export const BOOST_SHOWCASE_COPY: Readonly<
+  Record<BoostPerk, { title: string; detail: string }>
+> = {
+  extra_emoji_slots: {
+    title: "20 lugares más para emojis",
+    detail: "La capacidad pasa de 50 a 70 emojis personalizados.",
+  },
+  animated_icon: {
+    title: "Ícono del servidor animado",
+    detail: "El ícono se mueve en la lista de servidores.",
+  },
+  custom_banner: {
+    title: "Banner personalizado",
+    detail: "Una imagen propia arriba de la lista de canales.",
+  },
+  larger_attachments: {
+    title: `Adjuntos de hasta ${BOOSTED_MAX_ATTACHMENT_MB} MB`,
+    detail: "Para todos los miembros, en los canales del servidor.",
+  },
+  vanity_url: {
+    title: "URL de invitación personalizada",
+    detail: "Un link corto y fácil de recordar para invitar.",
+  },
+  boosted_badge: {
+    title: "Insignia «Servidor Boosteado»",
+    detail: "Distingue al servidor junto a su nombre.",
+  },
+};
+
+export function boostLockedChipLabel(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+  short = false,
+): string {
+  const missing = boostsMissingFor(level, boostCount);
+  if (short) return `${missing === 1 ? "Falta" : "Faltan"} ${missing}`;
+  return `Nivel ${level} · ${missing === 1 ? "falta" : "faltan"} ${missing}`;
 }
