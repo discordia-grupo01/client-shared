@@ -6,8 +6,8 @@ import {
   serverAttachmentMbFor,
 } from "./boost";
 
-describe("lugares y adjuntos por nivel", () => {
-  it("el nivel 1 suma 20 lugares de emojis", () => {
+describe("emojis y adjuntos por nivel", () => {
+  it("el nivel 1 suma 20 emojis personalizados", () => {
     expect(emojiSlotsFor(0)).toBe(50);
     expect(emojiSlotsFor(1)).toBe(70);
     expect(emojiSlotsFor(3)).toBe(70);
