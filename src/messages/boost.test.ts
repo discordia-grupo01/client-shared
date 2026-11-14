@@ -21,6 +21,7 @@ import {
   boostPerkAvailableFrom,
   boostPerkLevelLabel,
   boostPerkUnlockProgress,
+  boostPerksSentence,
 } from "./boost";
 
 describe("textos de boosts", () => {
@@ -143,6 +144,19 @@ describe("textos de la sección Boosts", () => {
     expect(BOOST_SHOWCASE_ART_COPY.extraEmojiSlots).toBe("+20");
     expect(BOOST_SHOWCASE_ART_COPY.attachmentLimit).toBe("25 MB");
     expect(BOOST_SHOWCASE_ART_COPY.invitePath).toBe("/invite/");
+  });
+
+  it("la insignia describe la marca en el perfil", () => {
+    expect(BOOST_SHOWCASE_COPY.boosted_badge.detail).toBe(
+      "Una marca permanente distingue al servidor en su perfil.",
+    );
+  });
+
+  it("une los beneficios en una frase", () => {
+    expect(boostPerksSentence(["custom_banner", "larger_attachments"])).toBe(
+      "banner del servidor y adjuntos de 25 MB",
+    );
+    expect(boostPerksSentence(["animated_icon"])).toBe("ícono animado");
   });
 
   it("arma el chip de un beneficio bloqueado", () => {

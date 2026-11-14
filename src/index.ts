@@ -60,6 +60,8 @@ export * from "./domain/private-call-state";
 export * from "./domain/billing";
 export * from "./domain/billing-checkout";
 export * from "./domain/billing-payment-status";
+export * from "./domain/billing-boost";
+export * from "./domain/billing-boost-status";
 
 // --- Constantes ---
 export * from "./constants/app";
@@ -123,6 +125,7 @@ export * from "./messages/voice";
 export * from "./messages/private-call";
 export * from "./messages/billing";
 export * from "./messages/boost";
+export * from "./messages/billing-boost";
 
 // --- Formatters ---
 export * from "./format/call-duration";

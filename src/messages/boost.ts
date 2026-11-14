@@ -96,13 +96,14 @@ function joinWithAnd(items: readonly string[]): string {
   return `${items.slice(0, -1).join(", ")} ${conjunction} ${last}`;
 }
 
+export function boostPerksSentence(perks: readonly BoostPerk[]): string {
+  return joinWithAnd(perks.map((perk) => BOOST_PERK_SHORT_LABELS[perk]));
+}
+
 export function boostActivePerksLabel(level: BoostLevel): string {
   if (level === 0) return "Todavía no tiene beneficios de boosts.";
   if (level === 3) return "Activos: todos los beneficios de boosts.";
-  const perks = boostPerksForLevel(level).map(
-    (perk) => BOOST_PERK_SHORT_LABELS[perk],
-  );
-  return `Activos: ${joinWithAnd(perks)}.`;
+  return `Activos: ${boostPerksSentence(boostPerksForLevel(level))}.`;
 }
 
 export const BOOST_MAX_LEVEL_DETAIL =
@@ -146,9 +147,6 @@ export function boostLevelUnlocks(level: Exclude<BoostLevel, 0>): {
       .join(" · "),
   };
 }
-
-export const BOOST_TABLE_HINT =
-  "La columna resaltada es el nivel actual del servidor.";
 
 export const BOOST_TABLE_ROW_LABELS: Readonly<
   Record<BoostPerk, { label: string; shortLabel: string }>
@@ -211,7 +209,7 @@ export const BOOST_SHOWCASE_COPY: Readonly<
   },
   boosted_badge: {
     title: "Insignia Servidor Boosteado",
-    detail: "Distingue al servidor junto a su nombre.",
+    detail: "Una marca permanente distingue al servidor en su perfil.",
   },
 };
 
