@@ -15,12 +15,12 @@ import {
 } from "../domain/boost";
 
 export const BOOST_PERK_LABELS: Readonly<Record<BoostPerk, string>> = {
-  extra_emoji_slots: "20 lugares más para emojis",
+  extra_emoji_slots: "20 emojis personalizados más",
   animated_icon: "Ícono animado",
   custom_banner: "Banner del servidor",
   larger_attachments: `Adjuntos de hasta ${BOOSTED_MAX_ATTACHMENT_MB} MB`,
   vanity_url: "URL de invitación personalizada",
-  boosted_badge: "Insignia «Servidor Boosteado»",
+  boosted_badge: "Insignia Servidor Boosteado",
 };
 
 export function boostLevelLabel(level: BoostLevel): string {
@@ -84,7 +84,7 @@ export const BOOST_PERK_SHORT_LABELS: Readonly<Record<BoostPerk, string>> = {
   custom_banner: "banner del servidor",
   larger_attachments: `adjuntos de ${BOOSTED_MAX_ATTACHMENT_MB} MB`,
   vanity_url: "URL personalizada",
-  boosted_badge: "insignia «Servidor Boosteado»",
+  boosted_badge: "insignia Servidor Boosteado",
 };
 
 function joinWithAnd(items: readonly string[]): string {
@@ -151,7 +151,7 @@ export const BOOST_TABLE_HINT =
 export const BOOST_TABLE_ROW_LABELS: Readonly<
   Record<BoostPerk, { label: string; shortLabel: string }>
 > = {
-  extra_emoji_slots: { label: "Lugares para emojis", shortLabel: "Emojis" },
+  extra_emoji_slots: { label: "Emojis personalizados", shortLabel: "Emojis" },
   animated_icon: { label: "Ícono animado (GIF)", shortLabel: "Ícono animado" },
   custom_banner: { label: "Banner del servidor", shortLabel: "Banner" },
   larger_attachments: {
@@ -163,7 +163,7 @@ export const BOOST_TABLE_ROW_LABELS: Readonly<
     shortLabel: "URL propia",
   },
   boosted_badge: {
-    label: "Insignia «Servidor Boosteado»",
+    label: "Insignia Servidor Boosteado",
     shortLabel: "Insignia",
   },
 };
@@ -188,8 +188,8 @@ export const BOOST_SHOWCASE_COPY: Readonly<
   Record<BoostPerk, { title: string; detail: string }>
 > = {
   extra_emoji_slots: {
-    title: "20 lugares más para emojis",
-    detail: "La capacidad pasa de 50 a 70 emojis personalizados.",
+    title: "20 emojis personalizados más",
+    detail: "El servidor puede tener hasta 70 emojis propios en vez de 50.",
   },
   animated_icon: {
     title: "Ícono del servidor animado",
@@ -208,7 +208,7 @@ export const BOOST_SHOWCASE_COPY: Readonly<
     detail: "Un link corto y fácil de recordar para invitar.",
   },
   boosted_badge: {
-    title: "Insignia «Servidor Boosteado»",
+    title: "Insignia Servidor Boosteado",
     detail: "Distingue al servidor junto a su nombre.",
   },
 };

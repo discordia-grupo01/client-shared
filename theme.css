@@ -30,6 +30,16 @@
   --color-boost-yellow: var(--boost-yellow);
   --color-boost-paper: var(--boost-paper);
   --color-boost-ink: var(--boost-ink);
+  --color-boost-band: var(--boost-band);
+  --color-boost-on-band: var(--boost-on-band);
+  --color-boost-on-band-muted: var(--boost-on-band-muted);
+  --color-boost-band-highlight: var(--boost-band-highlight);
+  --color-boost-band-tile: var(--boost-band-tile);
+  --color-boost-band-line: var(--boost-band-line);
+  --color-boost-track: var(--boost-track);
+  --color-boost-column: var(--boost-column);
+  --color-boost-level-outline: var(--boost-level-outline);
+  --color-boost-level-empty: var(--boost-level-empty);
   --color-on-accent: var(--on-accent);
   --color-on-accent-muted: var(--on-accent-muted);
   --color-on-accent-subtle: var(--on-accent-subtle);

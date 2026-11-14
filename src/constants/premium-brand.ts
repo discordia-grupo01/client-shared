@@ -197,6 +197,7 @@ export const BOOST_LEVEL_ICON = {
     { x: 6, y: 2, width: 12, height: 5.5, rx: 1, fill: "sky" },
   ],
   strokeWidth: 1.2,
+  filledStrokeWidth: 0.6,
   filledStroke: "paper",
   filledStrokeOpacity: 0.35,
   emptyStroke: "sky",
@@ -205,6 +206,7 @@ export const BOOST_LEVEL_ICON = {
   viewBox: BrandViewBox;
   bars: readonly BrandRect[];
   strokeWidth: number;
+  filledStrokeWidth: number;
   filledStroke: PremiumBrandColor;
   filledStrokeOpacity: number;
   emptyStroke: PremiumBrandColor;

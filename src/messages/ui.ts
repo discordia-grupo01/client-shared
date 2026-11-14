@@ -581,8 +581,7 @@ export const REPORTS_DISMISSED_EMPTY = "Todavía no se descartó ningún reporte
 
 // --- Registro de auditoria (configuracion del servidor, solo moderadores) ---
 export const MODERATION_AUDIT_TITLE = "Registro de auditoría";
-export const MODERATION_AUDIT_DESCRIPTION =
-  "Acciones de moderación realizadas en el servidor";
+export const MODERATION_AUDIT_DESCRIPTION = "Acciones de moderación";
 export const MODERATION_AUDIT_EMPTY =
   "Todavía no hay acciones de moderación registradas.";
 
