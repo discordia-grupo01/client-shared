@@ -4,6 +4,7 @@ import { BOOST_PERKS } from "../domain/boost";
 
 import {
   BOOST_PERK_LABELS,
+  BOOST_SHOWCASE_ART_COPY,
   BOOST_SHOWCASE_COPY,
   BOOST_TABLE_NOTE,
   BOOST_TABLE_ROW_LABELS,
@@ -136,6 +137,12 @@ describe("textos de la sección Boosts", () => {
       expect(BOOST_SHOWCASE_COPY[perk].title).not.toBe("");
     }
     expect(BOOST_TABLE_NOTE).toContain("50 MB");
+  });
+
+  it("los dibujos de las tarjetas usan los límites reales", () => {
+    expect(BOOST_SHOWCASE_ART_COPY.extraEmojiSlots).toBe("+20");
+    expect(BOOST_SHOWCASE_ART_COPY.attachmentLimit).toBe("25 MB");
+    expect(BOOST_SHOWCASE_ART_COPY.invitePath).toBe("/invite/");
   });
 
   it("arma el chip de un beneficio bloqueado", () => {

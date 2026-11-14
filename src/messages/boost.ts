@@ -2,7 +2,9 @@ import {
   BOOSTED_MAX_ATTACHMENT_MB,
   PREMIUM_MAX_ATTACHMENT_MB,
 } from "../constants/attachments";
+import { BASE_EMOJI_SLOTS, BOOSTED_EMOJI_SLOTS } from "../constants/boost";
 import type { ApiErrorDetails } from "../domain/errors";
+import { INVITE_PATH } from "../format/invite-link";
 import {
   BOOST_PERK_LEVEL,
   type BoostLevel,
@@ -212,6 +214,19 @@ export const BOOST_SHOWCASE_COPY: Readonly<
     detail: "Distingue al servidor junto a su nombre.",
   },
 };
+
+export const BOOST_SHOWCASE_ART_COPY = {
+  extraEmojiSlots: `+${BOOSTED_EMOJI_SLOTS - BASE_EMOJI_SLOTS}`,
+  serverList: "Lista de servidores",
+  animatedIconHint: "El ícono puede ser un GIF",
+  attachmentKind: "PDF",
+  attachmentName: "apuntes.pdf",
+  attachmentUsed: "20 MB de",
+  attachmentLimit: `${BOOSTED_MAX_ATTACHMENT_MB} MB`,
+  invite: "Invitación",
+  invitePath: `${INVITE_PATH}/`,
+  badge: "Servidor Boosteado",
+} as const;
 
 export function boostLockedChipLabel(
   level: Exclude<BoostLevel, 0>,

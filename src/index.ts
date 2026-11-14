@@ -131,6 +131,7 @@ export * from "./format/color";
 export * from "./format/file-size";
 export * from "./format/image";
 export * from "./format/invite-link";
+export * from "./format/vanity-code";
 export * from "./format/list";
 export * from "./format/pagination";
 export * from "./format/search";
