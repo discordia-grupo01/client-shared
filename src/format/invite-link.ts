@@ -31,7 +31,8 @@ export function buildInviteLink(code: string, baseUrl: string | null): string {
  * que rechace: el front no conoce el formato exacto que genera `servers`.
  */
 export function normalizeInviteCode(raw: string): string {
-  const match = raw.trim().match(/([A-Za-z0-9_-]{4,20})$/);
+  // De 3 a 32: el largo de una URL personalizada (las invitaciones tienen 12).
+  const match = raw.trim().match(/(?:^|[^A-Za-z0-9_-])([A-Za-z0-9_-]{3,32})$/);
   return match ? match[1] : raw.trim();
 }
 
