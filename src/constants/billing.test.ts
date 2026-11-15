@@ -7,7 +7,7 @@ import {
 } from "./billing";
 
 describe("isBillingSection", () => {
-  it("reconoce las cuatro solapas de Facturación", () => {
+  it("reconoce las solapas de Facturación", () => {
     for (const section of BILLING_SECTIONS) {
       expect(isBillingSection(section)).toBe(true);
     }
@@ -15,8 +15,20 @@ describe("isBillingSection", () => {
 
   it("rechaza las otras secciones de la configuración", () => {
     expect(isBillingSection("appearance")).toBe(false);
-    expect(isBillingSection("boosts")).toBe(false);
+    expect(isBillingSection("profile")).toBe(false);
     expect(isBillingSection("")).toBe(false);
+  });
+});
+
+describe("BILLING_SECTIONS", () => {
+  it("pone Boosts de servidor entre Puntos e Historial", () => {
+    expect(BILLING_SECTIONS).toEqual([
+      "premium",
+      "subscriptions",
+      "points",
+      "boosts",
+      "transactions",
+    ]);
   });
 });
 

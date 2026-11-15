@@ -2,7 +2,9 @@ import {
   BOOSTED_MAX_ATTACHMENT_MB,
   PREMIUM_MAX_ATTACHMENT_MB,
 } from "../constants/attachments";
+import { BASE_EMOJI_SLOTS, BOOSTED_EMOJI_SLOTS } from "../constants/boost";
 import type { ApiErrorDetails } from "../domain/errors";
+import { INVITE_PATH } from "../format/invite-link";
 import {
   BOOST_PERK_LEVEL,
   type BoostLevel,
@@ -74,6 +76,10 @@ export function boostLevelRequiredMessageFor(
   return level === undefined ? undefined : boostLevelRequiredMessage(level);
 }
 
+export function boostsSectionTitleFor(serverName: string): string {
+  return `Boosts de ${serverName}`;
+}
+
 export const BOOSTS_SECTION_DESCRIPTION =
   "Cada boost suma al servidor y desbloquea beneficios para todos los miembros.";
 export const BOOSTS_LOAD_ERROR = "No pudimos cargar los boosts del servidor.";
@@ -94,13 +100,14 @@ function joinWithAnd(items: readonly string[]): string {
   return `${items.slice(0, -1).join(", ")} ${conjunction} ${last}`;
 }
 
+export function boostPerksSentence(perks: readonly BoostPerk[]): string {
+  return joinWithAnd(perks.map((perk) => BOOST_PERK_SHORT_LABELS[perk]));
+}
+
 export function boostActivePerksLabel(level: BoostLevel): string {
   if (level === 0) return "Todavía no tiene beneficios de boosts.";
   if (level === 3) return "Activos: todos los beneficios de boosts.";
-  const perks = boostPerksForLevel(level).map(
-    (perk) => BOOST_PERK_SHORT_LABELS[perk],
-  );
-  return `Activos: ${joinWithAnd(perks)}.`;
+  return `Activos: ${boostPerksSentence(boostPerksForLevel(level))}.`;
 }
 
 export const BOOST_MAX_LEVEL_DETAIL =
@@ -144,9 +151,6 @@ export function boostLevelUnlocks(level: Exclude<BoostLevel, 0>): {
       .join(" · "),
   };
 }
-
-export const BOOST_TABLE_HINT =
-  "La columna resaltada es el nivel actual del servidor.";
 
 export const BOOST_TABLE_ROW_LABELS: Readonly<
   Record<BoostPerk, { label: string; shortLabel: string }>
@@ -209,9 +213,22 @@ export const BOOST_SHOWCASE_COPY: Readonly<
   },
   boosted_badge: {
     title: "Insignia Servidor Boosteado",
-    detail: "Distingue al servidor junto a su nombre.",
+    detail: "Una marca permanente distingue al servidor en su perfil.",
   },
 };
+
+export const BOOST_SHOWCASE_ART_COPY = {
+  extraEmojiSlots: `+${BOOSTED_EMOJI_SLOTS - BASE_EMOJI_SLOTS}`,
+  serverList: "Lista de servidores",
+  animatedIconHint: "El ícono puede ser un GIF",
+  attachmentKind: "PDF",
+  attachmentName: "apuntes.pdf",
+  attachmentUsed: "20 MB de",
+  attachmentLimit: `${BOOSTED_MAX_ATTACHMENT_MB} MB`,
+  invite: "Invitación",
+  invitePath: `${INVITE_PATH}/`,
+  badge: "Servidor Boosteado",
+} as const;
 
 export function boostLockedChipLabel(
   level: Exclude<BoostLevel, 0>,

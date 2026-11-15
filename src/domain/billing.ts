@@ -26,7 +26,8 @@ export interface PointPurchase {
   updated_at: string;
 }
 
-export type LedgerReason = "purchase" | "refund" | "chargeback";
+export type LedgerReason =
+  "purchase" | "refund" | "chargeback" | "boost" | "boost_refund";
 
 export interface LedgerEntry {
   delta: number;
@@ -78,6 +79,9 @@ export const BILLING_ERROR_CODES = [
   "PURCHASE_NOT_FOUND",
   "CHECKOUT_IN_PROGRESS",
   "IDEMPOTENCY_KEY_REUSED",
+  "INSUFFICIENT_POINTS",
+  "BOOST_NOT_ACTIVE",
+  "BOOST_NOT_FOUND",
   "INTERNAL_ERROR",
 ] as const;
 

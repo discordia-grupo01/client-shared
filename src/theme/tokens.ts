@@ -31,6 +31,7 @@ export interface ThemeColors {
   info: string;
   danger: string;
   dangerBright: string;
+  dangerSoft: string;
   serverPill: string;
   railSurface: string;
   railSurfaceHover: string;
@@ -95,6 +96,7 @@ const dark: ThemeColors = {
   info: "#6b95bd",
   danger: "#e05252",
   dangerBright: "#ff5c5c",
+  dangerSoft: "rgba(224, 82, 82, 0.12)",
   // Igual a `accent`: en dark el riel de servidores (`bgServers`) ya
   // contrasta con accent, no hace falta un color distinto.
   serverPill: "#245c6b",
@@ -160,6 +162,7 @@ const light: ThemeColors = {
   info: "#6b95bd",
   danger: "#c0392b",
   dangerBright: "#e05252",
+  dangerSoft: "rgba(192, 57, 43, 0.1)",
   // Distinto de `accent`: en light `bgServers` toma el mismo color que
   // accent, así que el indicador necesita un tono propio para no perderse.
   serverPill: "#fce3a4",
@@ -235,6 +238,7 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   info: "--info",
   danger: "--danger",
   dangerBright: "--danger-bright",
+  dangerSoft: "--danger-soft",
   serverPill: "--server-pill",
   railSurface: "--rail-surface",
   railSurfaceHover: "--rail-surface-hover",

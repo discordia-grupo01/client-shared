@@ -10,6 +10,7 @@ import {
   type PremiumView,
   type PurchaseStatus,
 } from "../domain/billing";
+import type { ApiErrorDetails } from "../domain/errors";
 import { formatPoints } from "../format/billing";
 import { formatMemberSince } from "../format/date";
 import { INVALID_DATA_MESSAGE, UNEXPECTED_ERROR_MESSAGE } from "./errors";
@@ -89,6 +90,7 @@ export const BILLING_SECTION_LABELS: Readonly<
     description: "Estado y renovación",
   },
   points: { label: BILLING_COPY.pointsTitle, description: "Saldo y paquetes" },
+  boosts: { label: "Boosts de servidor", description: "Niveles y beneficios" },
   transactions: { label: "Historial", description: "Pagos y movimientos" },
 };
 
@@ -177,11 +179,27 @@ export const BILLING_ERROR_MESSAGES: Readonly<
     "Ya estamos preparando este pago. Esperá unos segundos y volvé a intentar.",
   IDEMPOTENCY_KEY_REUSED:
     "No pudimos preparar el pago. Cerrá esta ventana y empezá de nuevo.",
+  INSUFFICIENT_POINTS:
+    "No tenés puntos suficientes para boostear este servidor.",
+  BOOST_NOT_ACTIVE: "Solo se puede retirar un boost activo.",
+  BOOST_NOT_FOUND: "El boost no existe o no es de tu cuenta.",
   INTERNAL_ERROR:
     "No pudimos completar la operación. Probá de nuevo en unos minutos.",
 };
 
-export function billingErrorMessage(code: string | number): string {
+/** `details` solo cambia el texto de `INSUFFICIENT_POINTS`: dice cuánto falta. */
+export function billingErrorMessage(
+  code: string | number,
+  details?: ApiErrorDetails,
+): string {
+  const missing = details?.missing;
+  if (
+    code === "INSUFFICIENT_POINTS" &&
+    typeof missing === "number" &&
+    missing > 0
+  ) {
+    return `Te faltan ${formatPoints(missing)} para boostear este servidor.`;
+  }
   return (
     BILLING_ERROR_MESSAGES[code as BillingErrorCode] ?? UNEXPECTED_ERROR_MESSAGE
   );
@@ -212,6 +230,8 @@ export const LEDGER_REASON_LABELS: Readonly<Record<LedgerReason, string>> = {
   purchase: "Compra de puntos",
   refund: "Reembolso",
   chargeback: "Contracargo",
+  boost: "Boost",
+  boost_refund: "Reembolso de boost",
 };
 
 const REJECTION_REASONS: Readonly<Record<string, string>> = {

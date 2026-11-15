@@ -202,6 +202,7 @@ export const BOOST_LEVEL_ICON = {
   filledStrokeOpacity: 0.35,
   emptyStroke: "sky",
   emptyDash: "2 2",
+  tightViewBox: { x: 5, y: 1, width: 14, height: 21.5 },
 } as const satisfies {
   viewBox: BrandViewBox;
   bars: readonly BrandRect[];
@@ -211,6 +212,7 @@ export const BOOST_LEVEL_ICON = {
   filledStrokeOpacity: number;
   emptyStroke: PremiumBrandColor;
   emptyDash: string;
+  tightViewBox: BrandViewBox;
 };
 
 export const BOOST_ACTION_ICON = {
