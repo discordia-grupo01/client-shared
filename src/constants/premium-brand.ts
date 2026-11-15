@@ -16,6 +16,7 @@ export const PREMIUM_BRAND_COLORS = {
   steel: "#6B95BD",
   yellow: "#F0B232",
   paper: "#F5F2EB",
+  gold: "#E8C66A",
 } as const;
 
 export type PremiumBrandColor = keyof typeof PREMIUM_BRAND_COLORS;
@@ -228,6 +229,52 @@ export const BOOST_ACTION_ICON = {
   blocks: readonly BrandRect[];
   connector: BrandStroke;
 };
+
+/**
+ * Insignia Servidor Boosteado (nivel 3)
+ */
+export const BOOSTED_BADGE = {
+  viewBox: { x: 0, y: 0, width: 24, height: 24 },
+  hexagon: {
+    points: "12,1.8 20.6,6.8 20.6,17.2 12,22.2 3.4,17.2 3.4,6.8",
+    fill: "deep",
+  },
+  bars: [
+    { x: 8, y: 6.8, width: 8, height: 2.6, rx: 0.6, fill: "sky" },
+    { x: 8, y: 10.4, width: 8, height: 2.6, rx: 0.6, fill: "steel" },
+    { x: 8, y: 14, width: 8, height: 2.6, rx: 0.6, fill: "paper" },
+  ],
+  piece: {
+    x: 15.4,
+    y: 15.4,
+    width: 4,
+    height: 4,
+    rx: 0.8,
+    fill: "gold",
+    stroke: "deep",
+    strokeWidth: 0.8,
+  },
+} as const satisfies {
+  viewBox: BrandViewBox;
+  hexagon: { points: string; fill: PremiumBrandColor };
+  bars: readonly BrandRect[];
+  piece: BrandRect & { stroke: PremiumBrandColor; strokeWidth: number };
+};
+
+const BOOSTED_BADGE_STROKES = [
+  { maxSize: 16, strokeWidth: 1.8 },
+  { maxSize: 18, strokeWidth: 1.6 },
+  { maxSize: 26, strokeWidth: 1.4 },
+] as const;
+
+const BOOSTED_BADGE_MIN_STROKE = 1.2;
+
+export function boostedBadgeStrokeWidth(size: number): number {
+  return (
+    BOOSTED_BADGE_STROKES.find((step) => size <= step.maxSize)?.strokeWidth ??
+    BOOSTED_BADGE_MIN_STROKE
+  );
+}
 
 export function brandViewBox({ x, y, width, height }: BrandViewBox): string {
   return `${x} ${y} ${width} ${height}`;

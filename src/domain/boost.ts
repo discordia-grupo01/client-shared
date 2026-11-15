@@ -10,7 +10,9 @@ export const MAX_BOOST_LEVEL: BoostLevel = 3;
 
 export const BOOST_LEVELS: readonly BoostLevel[] = [0, 1, 2, 3];
 
-export const BOOST_LEVEL_THRESHOLDS = [5, 15, 30] as const;
+export const BOOST_MAX_COUNT = 30;
+
+export const BOOST_LEVEL_THRESHOLDS = [5, 15, BOOST_MAX_COUNT] as const;
 
 export const BOOST_PERKS = [
   "extra_emoji_slots",
@@ -68,6 +70,10 @@ export function boostsMissingFor(
   return Math.max(0, BOOST_LEVEL_THRESHOLDS[level - 1] - boostCount);
 }
 
+export function isBoostCapReached(boostCount: number): boolean {
+  return boostCount >= BOOST_MAX_COUNT;
+}
+
 export function boostsRequiredFor(level: BoostLevel): number {
   return level === 0 ? 0 : BOOST_LEVEL_THRESHOLDS[level - 1];
 }
@@ -90,6 +96,10 @@ export function canSetServerBanner(level: BoostLevel): boolean {
 
 export function canSetVanityUrl(level: BoostLevel): boolean {
   return hasBoostPerk(level, "vanity_url");
+}
+
+export function hasBoostedBadge(level: BoostLevel): boolean {
+  return hasBoostPerk(level, "boosted_badge");
 }
 
 export function requiredBoostLevelOf(

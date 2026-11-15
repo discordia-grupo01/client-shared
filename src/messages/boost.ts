@@ -13,6 +13,7 @@ import {
   boostPerksForLevel,
   boostsMissingFor,
   boostsRequiredFor,
+  MAX_BOOST_LEVEL,
   requiredBoostLevelOf,
 } from "../domain/boost";
 
@@ -112,6 +113,18 @@ export function boostActivePerksLabel(level: BoostLevel): string {
 
 export const BOOST_MAX_LEVEL_DETAIL =
   "Este servidor tiene todos los beneficios de boosts.";
+
+export const BOOSTED_BADGE_COPY = {
+  label: "Servidor Boosteado",
+  caption: "Insignia",
+} as const;
+
+/** "Servidor Boosteado · Nivel 3" */
+export function boostedBadgeTooltip(level: BoostLevel): string {
+  return `${BOOSTED_BADGE_COPY.label} · ${boostLevelLabel(level)}`;
+}
+
+export const BOOST_MAX_LEVEL_NOTE = `Si alguien retira un boost, el servidor baja al nivel ${MAX_BOOST_LEVEL - 1} y se puede volver a boostear.`;
 
 export function boostsToNextLevelParts(
   level: Exclude<BoostLevel, 0>,

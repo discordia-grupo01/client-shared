@@ -16,6 +16,10 @@ export const BOOST_STATUS_TIMEOUT_MS = 30_000;
 
 export const BOOSTS_LIST_MAX_LIMIT = 100;
 
+export const BOOSTS_PAGE_SIZE = 10;
+
+export const BOOSTED_SERVERS_PAGE_SIZE = 10;
+
 export const BOOST_SECTION_TABS = ["boost", "benefits"] as const;
 
 export type BoostSectionTab = (typeof BOOST_SECTION_TABS)[number];

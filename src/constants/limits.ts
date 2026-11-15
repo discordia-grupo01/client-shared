@@ -171,3 +171,6 @@ export const MESSAGE_SEARCH_PAGE_SIZE = 25;
  * mitad despues. El back acepta hasta 100.
  */
 export const MESSAGE_JUMP_WINDOW = 50;
+
+export const VANITY_CODE_MIN_LENGTH = 3;
+export const VANITY_CODE_MAX_LENGTH = 32;
