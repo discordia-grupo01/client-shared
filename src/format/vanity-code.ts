@@ -12,6 +12,9 @@ export function vanitySlug(name: string): string {
     .toLowerCase()
     .split(/[^a-z0-9]+/)
     .filter(Boolean);
-  const slug = trimTrailing(words.join("-").slice(0, VANITY_CODE_MAX_LENGTH), "-");
+  const slug = trimTrailing(
+    words.join("-").slice(0, VANITY_CODE_MAX_LENGTH),
+    "-",
+  );
   return slug.length >= VANITY_CODE_MIN_LENGTH ? slug : VANITY_CODE_FALLBACK;
 }
