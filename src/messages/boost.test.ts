@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import { BOOST_PERKS } from "../domain/boost";
 
 import {
+  BOOSTED_BADGE_COPY,
+  boostedBadgeTooltip,
+  BOOST_MAX_LEVEL_NOTE,
   BOOST_PERK_LABELS,
   BOOST_SHOWCASE_ART_COPY,
   BOOST_SHOWCASE_COPY,
@@ -168,5 +171,20 @@ describe("textos de la sección Boosts", () => {
     expect(boostLockedChipLabel(2, 7)).toBe("Nivel 2 · faltan 8");
     expect(boostLockedChipLabel(3, 29)).toBe("Nivel 3 · falta 1");
     expect(boostLockedChipLabel(2, 7, true)).toBe("Faltan 8");
+  });
+});
+
+describe("nivel máximo", () => {
+  it("avisa que retirar un boost vuelve a habilitar boostear", () => {
+    expect(BOOST_MAX_LEVEL_NOTE).toBe(
+      "Si alguien retira un boost, el servidor baja al nivel 2 y se puede volver a boostear.",
+    );
+  });
+});
+
+describe("insignia Servidor Boosteado", () => {
+  it("se nombra igual en el cartel y en el aria-label", () => {
+    expect(BOOSTED_BADGE_COPY.label).toBe("Servidor Boosteado");
+    expect(boostedBadgeTooltip(3)).toBe("Servidor Boosteado · Nivel 3");
   });
 });
