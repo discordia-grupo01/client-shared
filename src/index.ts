@@ -94,6 +94,7 @@ export * from "./validation/attachment";
 export * from "./validation/message";
 export * from "./validation/message-search";
 export * from "./validation/word-filter";
+export * from "./validation/vanity";
 export * from "./validation/report";
 
 // --- Mensajes ---
@@ -126,6 +127,7 @@ export * from "./messages/private-call";
 export * from "./messages/billing";
 export * from "./messages/boost";
 export * from "./messages/billing-boost";
+export * from "./messages/vanity";
 
 // --- Formatters ---
 export * from "./format/call-duration";

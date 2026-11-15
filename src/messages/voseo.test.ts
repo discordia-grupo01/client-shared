@@ -10,6 +10,7 @@ import * as notFound from "./not-found";
 import * as permissions from "./permissions";
 import * as privateCall from "./private-call";
 import * as ui from "./ui";
+import * as vanity from "./vanity";
 import * as voice from "./voice";
 import {
   BAN_REASONS,
@@ -74,6 +75,7 @@ function todosLosMensajes(): [string, string][] {
     notFound,
     permissions,
     privateCall,
+    vanity,
     voice,
   };
   const catalogos = {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { VANITY_CODE_FALLBACK, vanitySlug } from "./vanity-code";
+import {
+  displayInviteLink,
+  VANITY_CODE_FALLBACK,
+  vanityInviteLink,
+  vanitySlug,
+} from "./vanity-code";
 
 const SERVERS_VANITY_RULE = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
 
@@ -27,5 +32,22 @@ describe("vanitySlug", () => {
     for (const name of ["Discordia", "IDS 2 · Grupo 1", "x", "a-b"]) {
       expect(vanitySlug(name)).toMatch(SERVERS_VANITY_RULE);
     }
+  });
+});
+
+describe("vanityInviteLink", () => {
+  it("usa la misma ruta que las invitaciones", () => {
+    expect(vanityInviteLink("club-lectura", "https://discordia.app/")).toBe(
+      "https://discordia.app/invite/club-lectura",
+    );
+  });
+
+  it("se muestra sin el protocolo", () => {
+    expect(displayInviteLink("https://discordia.app/invite/club-lectura")).toBe(
+      "discordia.app/invite/club-lectura",
+    );
+    expect(displayInviteLink("/invite/club-lectura")).toBe(
+      "/invite/club-lectura",
+    );
   });
 });
