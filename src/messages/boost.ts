@@ -76,6 +76,10 @@ export function boostLevelRequiredMessageFor(
   return level === undefined ? undefined : boostLevelRequiredMessage(level);
 }
 
+export function boostsSectionTitleFor(serverName: string): string {
+  return `Boosts de ${serverName}`;
+}
+
 export const BOOSTS_SECTION_DESCRIPTION =
   "Cada boost suma al servidor y desbloquea beneficios para todos los miembros.";
 export const BOOSTS_LOAD_ERROR = "No pudimos cargar los boosts del servidor.";

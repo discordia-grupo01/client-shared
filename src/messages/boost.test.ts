@@ -22,6 +22,7 @@ import {
   boostPerkLevelLabel,
   boostPerkUnlockProgress,
   boostPerksSentence,
+  boostsSectionTitleFor,
 } from "./boost";
 
 describe("textos de boosts", () => {
@@ -150,6 +151,10 @@ describe("textos de la sección Boosts", () => {
     expect(BOOST_SHOWCASE_COPY.boosted_badge.detail).toBe(
       "Una marca permanente distingue al servidor en su perfil.",
     );
+  });
+
+  it("nombra el servidor en el título de la sección", () => {
+    expect(boostsSectionTitleFor("Taller")).toBe("Boosts de Taller");
   });
 
   it("une los beneficios en una frase", () => {
