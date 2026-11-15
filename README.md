@@ -1,129 +1,105 @@
 # client-shared
 
-Tipos, validaciones, constantes y contrato de API compartidos entre
-`web-client` (Next.js) y `app-mobile` (Expo / React Native).
+Paquete compartido entre la web, la app móvil y el backoffice de Discordia.
 
-Existe para que la logica que ambas apps necesitan se escriba una sola vez:
-hoy los tipos de dominio, las validaciones de formularios y los limites del
-backend estan duplicados en los dos repos, y ya empezaron a divergir.
+## Tabla de contenidos
 
-## Setup local
+- [Introducción](#introducción)
+- [Pre-requisitos](#pre-requisitos)
+- [Cómo correr](#cómo-correr)
+- [Variables de entorno](#variables-de-entorno)
+- [Comandos Docker](#comandos-docker)
+- [Tests](#tests)
+- [Más documentación](#más-documentación)
+
+## Introducción
+
+`client-shared` guarda lo que los tres clientes (`web-client`, `app-mobile` y `backoffice`) necesitan escribir una sola vez: los tipos de dominio, las validaciones de formularios, las constantes, los textos, los colores de cada tema, y la lógica de cómo se actualizan las pantallas cuando el servidor avisa que algo cambió.
+
+Es un paquete de TypeScript puro, sin pantallas. No se levanta como un servicio: los clientes lo instalan como una dependencia de GitHub, fijada a un tag (por ejemplo `github:discordia-grupo01/client-shared#v0.13.101`).
+
+La regla que lo define: **este paquete no importa `react`, `react-dom`, `react-native`, `next`, `axios` ni `expo`**. Así funciona igual en Node, en el navegador y en Hermes (el motor de React Native). El `tsconfig.json` lo hace cumplir, porque no incluye las librerías del navegador: usar `window`, `document` o `localStorage` rompe la compilación.
+
+Lo que va acá: tipos, validaciones (funciones puras), constantes, catálogos, helpers, rutas y códigos de error del backend, y los colores de los temas. Lo que no va: componentes de pantalla, estilos, almacenamiento (cookies, `expo-secure-store`) y clientes HTTP. El contrato se comparte, el transporte no.
+
+## Pre-requisitos
+
+- **Node.js 20** y **npm**.
+- **Docker**, solo si preferís correr los tests sin instalar Node.
+
+## Cómo correr
+
+No se corre: se compila y se prueba.
 
 ```bash
 npm install
+npm run build
 ```
 
-No necesita variables de entorno ni backend corriendo: es un paquete de
-TypeScript puro, sin efectos de red.
+`npm run build` compila `src/` a `dist/` (JavaScript más los tipos). No hace falta backend ni variables de entorno.
 
-## Scripts
+### Usarlo desde un cliente
 
-| Script                 | Que hace                                           |
-| ---------------------- | -------------------------------------------------- |
-| `npm run build`        | Compila `src/` a `dist/` (JS + `.d.ts`)            |
-| `npm run typecheck`    | Chequea tipos sin emitir archivos                  |
-| `npm run lint`         | ESLint sobre todo el repo                          |
-| `npm test`             | Tests con Vitest                                   |
-| `npm run format`       | Formatea con Prettier                              |
-| `npm run format:check` | Falla si hay archivos sin formatear (lo usa el CI) |
-
-## Formato automatico
-
-Este repo se autoformatea con Prettier en cada commit. Activalo una vez por
-clone:
-
-```bash
-git config core.hooksPath .githooks
-```
-
-Si usas VS Code con la extension oficial de Prettier, tambien formatea al
-guardar (ya configurado en `.vscode/settings.json`).
-
-El CI corre `npm run format:check` como red de seguridad, por si alguien clono
-sin activar el hook.
-
-## Regla de oro
-
-> Este paquete **no importa** `react`, `react-dom`, `react-native`, `next`,
-> `axios` ni `expo`.
-
-Si un archivo necesita cualquiera de esos, no pertenece a este repo. Eso es lo
-que garantiza que funcione igual en Node, en el navegador y en Hermes (el motor
-de React Native).
-
-El `tsconfig.json` lo hace cumplir: `lib` es `["ES2020"]` **sin `"dom"`**, asi
-que usar `window`, `document` o `localStorage` rompe el build en vez de fallar
-en runtime del lado de mobile.
-
-### Que va y que no va aca
-
-**Va:** tipos de dominio, validaciones de formularios (funciones puras),
-constantes y catalogos, helpers puros, paths y codigos de error del backend,
-design tokens (colores de cada tema, en `src/theme/tokens.ts`) como valores
-planos.
-
-**No va:** componentes de UI (React y React Native no comparten primitivas),
-clases de Tailwind o StyleSheets (cada app aplica los tokens a su manera),
-almacenamiento (`expo-secure-store`, cookies),
-clientes HTTP. El contrato se comparte; el transporte no.
-
-## Como lo consumen las apps
+En el `package.json` del cliente, la dependencia apunta a un tag:
 
 ```json
-"dependencies": {
-  "@discordia/client-shared": "git+ssh://git@github.com/discordia-grupo01/client-shared.git#v0.1.0"
-}
+"@discordia/client-shared": "github:discordia-grupo01/client-shared#v0.13.101"
 ```
 
-El repo es privado. Para trabajar en local no hace falta ningun token: `npm`
-resuelve la dependencia con la misma llave SSH que ya usas para clonar los
-repos del grupo. Las credenciales solo hacen falta en CI y en los deploys.
+Cada cambio que los clientes tengan que ver necesita un tag nuevo. Al llegar a `main`, el CI lo crea solo, y los clientes suben su versión con un commit automático (`chore: bump client-shared`).
 
-### Theme
-
-Los colores de cada tema estan en `src/theme/tokens.ts`. Ademas, `theme.css`
-(en la raiz, fuera de `dist`) define los nombres de clase de Tailwind que usan
-las dos apps (`bg-surface`, `text-content-muted`, `border-line`...):
+Los colores de los temas están en `src/theme/tokens.ts`. El archivo `theme.css` define los nombres de clase de Tailwind que usan los clientes (`bg-surface`, `text-content-muted`, `border-line`) y se importa así:
 
 ```css
 @import "@discordia/client-shared/theme.css";
 ```
 
-Web lo importa en `globals.css` y mobile en `global.css` (NativeWind). Si se
-agrega un token, sumarle su clase en `theme.css`; un test lo verifica.
+Si agregás un color, hay que sumarle su clase en `theme.css`; un test lo verifica.
 
-Cada cambio que las apps tengan que ver necesita un **tag nuevo**:
+## Variables de entorno
+
+No usa ninguna.
+
+## Comandos Docker
+
+No tiene `docker-compose.yml`: no es un servicio. Si querés correr los tests sin instalar Node, usá un contenedor con `node_modules` en un volumen aparte, para no pisar el de tu máquina (si lo instalaras desde el contenedor sobre tu carpeta, los binarios de Linux dejarían a `node_modules` inutilizable en tu Mac):
 
 ```bash
-git tag v0.2.0
-git push origin v0.2.0
+docker run --rm \
+  -v "$PWD":/app \
+  -v client_shared_node_modules:/app/node_modules \
+  -w /app node:20-alpine \
+  sh -c "apk add --no-cache git >/dev/null && npm ci && npm test"
 ```
 
-## Ramas
+Para borrar el volumen después:
 
-Mismo modelo que el resto de los repos del grupo:
-
-- `main` — productiva
-- `develop` — integracion
-- `feature/*`, `fix/*` — se sacan de `develop` y vuelven por PR
-
-## Estructura
-
-```
-client-shared/
-├── .github/
-│   └── workflows/
-│       └── ci.yml               format:check, lint, typecheck, test y build
-├── .githooks/
-│   └── pre-commit               hook de prettier local
-├── src/
-│   └── index.ts                 barrel: unico punto de entrada
-├── eslint.config.mjs
-├── tsconfig.json
-└── package.json
+```bash
+docker volume rm client_shared_node_modules
 ```
 
-A medida que avance la migracion, `src/` se organiza en `domain/`,
-`validation/`, `constants/`, `format/` y `api/`. Todo se exporta desde
-`src/index.ts`: no hay subpaths (`@discordia/client-shared/domain/role`),
-porque el soporte de `exports` maps en Metro es reciente y fragil.
+## Tests
+
+```bash
+npm test
+```
+
+Corre los tests con Vitest. Para revisar el resto del código:
+
+| Qué                | Comando                                                     |
+| ------------------ | ----------------------------------------------------------- |
+| Linter (ESLint)    | `npm run lint`                                              |
+| Tipos (TypeScript) | `npm run typecheck`                                         |
+| Compilar           | `npm run build`                                             |
+| Formato            | `npm run format:check` (y `npm run format` para arreglarlo) |
+
+El CI corre todo eso en cada pull request. El repositorio se formatea con Prettier; activá el hook una vez por clon:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+## Más documentación
+
+- Todo se exporta desde `src/index.ts`: no hay rutas internas del tipo `@discordia/client-shared/domain/role`, porque el soporte de `exports` en Metro (el empaquetador de React Native) es reciente y frágil.
+- Los clientes que lo usan: [`web-client`](https://github.com/discordia-grupo01/web-client), [`app-mobile`](https://github.com/discordia-grupo01/app-mobile) y [`backoffice`](https://github.com/discordia-grupo01/backoffice).
