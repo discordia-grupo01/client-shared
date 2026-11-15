@@ -81,12 +81,13 @@ export function boostLevelUpNotice(boostCount: number): string | undefined {
 
 export const BOOST_CONFIRM_COPY = {
   title: "Confirmar boost",
+  description:
+    "Este boost es una unidad permanente y se suma inmediatamente al servidor.",
   costLabel: "Costo",
   balanceLabel: "Saldo actual",
-  notice:
-    "El boost no vence. Si después lo retirás, no se devuelven los puntos.",
+  remainingLabel: "Saldo restante",
   cancel: "Cancelar",
-  confirm: "Boostear",
+  confirm: "Confirmar boost",
 } as const;
 
 export function boostRemainingBalanceLabel(balance: number): string {
@@ -209,14 +210,29 @@ export const BILLING_BOOSTS_COPY = {
   subtitle: "Tus boosts y cómo funcionan.",
   howTitle: "Cómo funcionan los boosts",
   howDescription: `Cada boost cuesta ${COST}, no vence y suma una unidad al servidor. Al llegar a cada umbral, el servidor sube de nivel y todos sus miembros reciben más beneficios.`,
-  yourBoostsTitle: "Tus boosts",
+  yourBoostsTitle: "Servidores que boosteaste",
   empty: "Todavía no boosteaste ningún servidor.",
-  viewServerBoosts: "Ver boosts del servidor",
+  manage: "Gestionar",
   unknownServer: "Servidor que ya no está en tu lista",
+} as const;
+
+export const BOOST_POINTS_PROMO_COPY = {
+  title: "Usá puntos para boostear servidores",
+  description: `Cada boost cuesta ${COST} y ayuda a desbloquear beneficios.`,
+  cta: "Ver boosts",
 } as const;
 
 export function ownBoostsLabel(count: number): string {
   return count === 1 ? "1 boost tuyo" : `${count} boosts tuyos`;
+}
+
+/** "Nivel 1 · 5 en total · 2 tuyos" */
+export function serverBoostsSummaryLabel(
+  level: BoostLevel,
+  boostCount: number,
+  ownCount: number,
+): string {
+  return `Nivel ${level} · ${boostCount} en total · ${ownCount} ${ownCount === 1 ? "tuyo" : "tuyos"}`;
 }
 
 export const BOOSTS_LIST_LOAD_ERROR = "No pudimos cargar tus boosts.";

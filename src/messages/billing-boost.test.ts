@@ -5,6 +5,7 @@ import type { BoostStatus } from "../domain/billing-boost";
 import {
   activeBoostsLabel,
   BOOST_ACTION_COPY,
+  BOOST_POINTS_PROMO_COPY,
   BOOST_SECTION_TAB_LABELS,
   BOOST_STATUS_LABELS,
   BOOST_TIER_SUMMARIES,
@@ -20,6 +21,7 @@ import {
   boostRemoveNoRefund,
   boostRemoveTitle,
   ownBoostsLabel,
+  serverBoostsSummaryLabel,
 } from "./billing-boost";
 
 const STATUSES: BoostStatus[] = ["pending", "active", "failed", "removed"];
@@ -39,6 +41,12 @@ describe("textos para boostear", () => {
     expect(BOOST_ACTION_COPY.description).toContain("100 puntos");
   });
 
+  it("la tarjeta de Puntos usa el costo real", () => {
+    expect(BOOST_POINTS_PROMO_COPY.description).toBe(
+      "Cada boost cuesta 100 puntos y ayuda a desbloquear beneficios.",
+    );
+  });
+
   it("dice cuánto falta y cuánto queda", () => {
     expect(boostPointsMissingLabel(40)).toBe("Te faltan 60 puntos.");
     expect(boostRemainingBalanceLabel(550)).toBe("Te quedan 450 puntos.");
@@ -49,6 +57,15 @@ describe("textos para boostear", () => {
     expect(activeBoostsLabel(3)).toBe("3 activos");
     expect(ownBoostsLabel(1)).toBe("1 boost tuyo");
     expect(ownBoostsLabel(2)).toBe("2 boosts tuyos");
+  });
+
+  it("resume el servidor con nivel, total y propios", () => {
+    expect(serverBoostsSummaryLabel(1, 5, 1)).toBe(
+      "Nivel 1 · 5 en total · 1 tuyo",
+    );
+    expect(serverBoostsSummaryLabel(2, 16, 3)).toBe(
+      "Nivel 2 · 16 en total · 3 tuyos",
+    );
   });
 
   it("anticipa la subida de nivel solo si el boost cruza un umbral", () => {
