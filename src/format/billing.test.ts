@@ -3,9 +3,21 @@ import { describe, expect, it } from "vitest";
 import {
   formatArsFromCents,
   formatBillingDate,
+  formatDayAndTime,
   formatPoints,
   formatPointsDelta,
+  formatShortDate,
+  formatShortDateTime,
+  formatShortDateTimeRange,
 } from "./billing";
+
+const local = (
+  month: number,
+  day: number,
+  hour = 12,
+  minute = 0,
+  year = 2026,
+) => new Date(year, month - 1, day, hour, minute).toISOString();
 
 describe("formatArsFromCents", () => {
   it("muestra pesos sin decimales cuando no hay centavos", () => {
@@ -50,5 +62,36 @@ describe("formatBillingDate", () => {
 
   it("devuelve vacío con una fecha inválida", () => {
     expect(formatBillingDate("no-es-fecha")).toBe("");
+  });
+});
+
+describe("fechas cortas", () => {
+  it("muestra día, mes abreviado y año", () => {
+    expect(formatShortDate(local(11, 12))).toBe("12 nov 2026");
+    expect(formatShortDate("no-es-fecha")).toBe("");
+  });
+
+  it("suma la hora", () => {
+    expect(formatShortDateTime(local(11, 12, 18, 42))).toBe(
+      "12 nov 2026, 18:42",
+    );
+    expect(formatShortDateTime(local(11, 12, 9, 5))).toBe("12 nov 2026, 9:05");
+  });
+
+  it("arma un rango con hora y el año al final", () => {
+    expect(
+      formatShortDateTimeRange(local(11, 3, 10, 5), local(11, 11, 18, 42)),
+    ).toBe("3 nov, 10:05 al 11 nov 2026, 18:42");
+    expect(
+      formatShortDateTimeRange(local(12, 28, 8, 0, 2025), local(1, 3, 20, 30)),
+    ).toBe("28 dic 2025, 8:00 al 3 ene 2026, 20:30");
+  });
+
+  it("dice Hoy si es el mismo día", () => {
+    const now = new Date(2026, 10, 15, 20, 0);
+    expect(formatDayAndTime(local(11, 15, 18, 42), now)).toBe("Hoy, 18:42");
+    expect(formatDayAndTime(local(11, 13, 9, 5), now)).toBe(
+      "13 nov 2026, 9:05",
+    );
   });
 });

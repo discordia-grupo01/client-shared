@@ -1,5 +1,9 @@
 import { BOOST_COST_POINTS, type BoostSectionTab } from "../constants/boost";
-import type { Boost, BoostStatus } from "../domain/billing-boost";
+import type {
+  Boost,
+  BoostedServer,
+  BoostStatus,
+} from "../domain/billing-boost";
 import {
   balanceAfterBoost,
   levelChangeIfBoosted,
@@ -8,11 +12,19 @@ import {
 } from "../domain/billing-boost";
 import type { BoostOutcome } from "../domain/billing-boost-status";
 import {
+  BOOST_MAX_COUNT,
   type BoostLevel,
   boostPerksAddedAt,
   boostsRequiredFor,
+  MAX_BOOST_LEVEL,
 } from "../domain/boost";
-import { formatPoints, formatPointsDelta } from "../format/billing";
+import {
+  formatDayAndTime,
+  formatPoints,
+  formatPointsDelta,
+  formatShortDateTime,
+  formatShortDateTimeRange,
+} from "../format/billing";
 import { boostCountLabel, boostPerksSentence } from "./boost";
 
 const COST = formatPoints(BOOST_COST_POINTS);
@@ -32,7 +44,12 @@ export const BOOST_ACTION_COPY = {
   cta: `Boostear por ${COST}`,
   moreBoosts: "¿Querés boostear más veces?",
   buyPoints: "Ir a comprar puntos",
+  capCta: "Nivel máximo alcanzado",
 } as const;
+
+export function boostCapNote(serverName: string): string {
+  return `${serverName} ya tiene los ${BOOST_MAX_COUNT} boosts del nivel ${MAX_BOOST_LEVEL}. Vas a poder boostear de nuevo si alguien retira uno.`;
+}
 
 export function boostPointsMissingLabel(balance: number): string {
   return `Te faltan ${formatPoints(pointsMissingForBoost(balance))}.`;
@@ -40,9 +57,11 @@ export function boostPointsMissingLabel(balance: number): string {
 
 export const BOOST_LIST_COPY = {
   title: "Tus boosts en este servidor",
-  footnote: "Los boosts no vencen. Si retirás uno, no se devuelven los puntos.",
+  footnote:
+    "Los boosts no vencen. Si retirás uno, no se devuelven los puntos. Los retirados quedan en esta lista.",
   empty: "Todavía no boosteaste este servidor.",
   remove: "Retirar",
+  paginationNoun: "boosts",
 } as const;
 
 export function activeBoostsLabel(count: number): string {
@@ -67,10 +86,42 @@ const BOOST_REJECTION_REASONS: Readonly<Record<string, string>> = {
   server_suspended: "El servidor está suspendido.",
   server_not_found: "El servidor ya no existe.",
   no_response: "El servidor no respondió a tiempo.",
+  max_level_reached:
+    "El servidor llegó al nivel máximo antes de que se aplicara tu boost.",
 };
 
-export function boostRejectionReason(statusDetail: string): string {
+export function boostRejectionReason(
+  statusDetail: string,
+  serverName?: string,
+): string {
+  if (statusDetail === "max_level_reached" && serverName) {
+    return `${serverName} llegó al nivel máximo antes de que se aplicara tu boost.`;
+  }
   return BOOST_REJECTION_REASONS[statusDetail] ?? BOOST_REJECTED_DEFAULT;
+}
+
+function asClause(sentence: string): string {
+  const trimmed = sentence.replace(/\.$/, "");
+  return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+}
+
+export function boostRowMeta(
+  boost: Pick<
+    Boost,
+    "status" | "status_detail" | "points" | "created_at" | "updated_at"
+  >,
+  now: Date = new Date(),
+): string {
+  switch (boost.status) {
+    case "active":
+      return `Desde el ${formatShortDateTime(boost.created_at)}`;
+    case "removed":
+      return `Del ${formatShortDateTimeRange(boost.created_at, boost.updated_at)} · no se devolvieron los puntos`;
+    case "failed":
+      return `${formatShortDateTime(boost.updated_at)} · ${asClause(boostRejectionReason(boost.status_detail))} · te devolvimos los ${formatPoints(boost.points)}`;
+    case "pending":
+      return `${formatDayAndTime(boost.created_at, now)} · esperando la confirmación del servidor`;
+  }
 }
 
 export function boostLevelUpNotice(boostCount: number): string | undefined {
@@ -135,7 +186,7 @@ export function boostOutcomeCopy(
     case "rejected":
       return {
         title: "No pudimos aplicar el boost",
-        description: `${boostRejectionReason(context.statusDetail ?? "")} Te devolvimos los puntos.`,
+        description: `${boostRejectionReason(context.statusDetail ?? "", context.serverName)} Te devolvimos los puntos.`,
       };
     case "still_pending":
       return {
@@ -189,6 +240,13 @@ export function boostRemoveImpact(boostCount: number): string {
   return `El servidor queda con ${boostCountLabel(Math.max(0, boostCount - 1))} y sigue en el nivel ${change.to}.`;
 }
 
+export function boostRemoveVanityNote(boostCount: number): string | undefined {
+  if (!lostPerksIfRemoved(boostCount).lost.includes("vanity_url")) {
+    return undefined;
+  }
+  return `La URL queda guardada y vuelve a funcionar si llega otra vez a ${BOOST_MAX_COUNT}.`;
+}
+
 export interface BoostTierSummary {
   level: Exclude<BoostLevel, 0>;
   label: string;
@@ -214,7 +272,14 @@ export const BILLING_BOOSTS_COPY = {
   empty: "Todavía no boosteaste ningún servidor.",
   manage: "Gestionar",
   unknownServer: "Servidor que ya no está en tu lista",
+  footnote:
+    "Un servidor aparece mientras tengas algún boost ahí, activo o retirado. Ordenados por tu último boost.",
+  paginationNoun: "servidores",
 } as const;
+
+export function boostedServersCountLabel(total: number): string {
+  return total === 1 ? "1 servidor" : `${total} servidores`;
+}
 
 export const BOOST_POINTS_PROMO_COPY = {
   title: "Usá puntos para boostear servidores",
@@ -233,6 +298,32 @@ export function serverBoostsSummaryLabel(
   ownCount: number,
 ): string {
   return `Nivel ${level} · ${boostCount} en total · ${ownCount} ${ownCount === 1 ? "tuyo" : "tuyos"}`;
+}
+
+export interface BoostedServerStanding {
+  level: BoostLevel;
+  boostCount: number;
+}
+
+export function boostedServerSummaryLabel(
+  server: Pick<BoostedServer, "active" | "removed">,
+  standing: BoostedServerStanding | null,
+): string {
+  const parts =
+    standing === null
+      ? ["Ya no sos miembro"]
+      : [
+          standing.level === MAX_BOOST_LEVEL
+            ? "Nivel máximo"
+            : `Nivel ${standing.level}`,
+          `${standing.boostCount} en total`,
+        ];
+  if (server.active === 0) parts.push("ningún activo");
+  else if (server.active === 1) parts.push("1 tuyo activo");
+  else parts.push(`${server.active} tuyos activos`);
+  if (server.removed === 1) parts.push("1 retirado");
+  else if (server.removed > 1) parts.push(`${server.removed} retirados`);
+  return parts.join(" · ");
 }
 
 export const BOOSTS_LIST_LOAD_ERROR = "No pudimos cargar tus boosts.";

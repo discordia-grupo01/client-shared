@@ -9,6 +9,7 @@ import {
   BOOST_SECTION_TAB_LABELS,
   BOOST_STATUS_LABELS,
   BOOST_TIER_SUMMARIES,
+  boostCapNote,
   boostLevelUpNotice,
   boostOutcomeCopy,
   boostPointsMissingLabel,
@@ -20,6 +21,11 @@ import {
   boostRemoveImpact,
   boostRemoveNoRefund,
   boostRemoveTitle,
+  boostRemoveVanityNote,
+  boostRowMeta,
+  boostedServerSummaryLabel,
+  boostedServersCountLabel,
+  BOOST_LIST_COPY,
   ownBoostsLabel,
   serverBoostsSummaryLabel,
 } from "./billing-boost";
@@ -39,6 +45,13 @@ describe("textos para boostear", () => {
   it("la tarjeta usa el costo real", () => {
     expect(BOOST_ACTION_COPY.cta).toBe("Boostear por 100 puntos");
     expect(BOOST_ACTION_COPY.description).toContain("100 puntos");
+  });
+
+  it("en el tope explica cuándo se puede volver a boostear", () => {
+    expect(BOOST_ACTION_COPY.capCta).toBe("Nivel máximo alcanzado");
+    expect(boostCapNote("Club de Lectura")).toBe(
+      "Club de Lectura ya tiene los 30 boosts del nivel 3. Vas a poder boostear de nuevo si alguien retira uno.",
+    );
   });
 
   it("la tarjeta de Puntos usa el costo real", () => {
@@ -101,6 +114,17 @@ describe("boostOutcomeCopy", () => {
     ).toBe("No sos miembro de este servidor. Te devolvimos los puntos.");
   });
 
+  it("nombra al servidor si se rechazó por el tope", () => {
+    expect(
+      boostOutcomeCopy("rejected", {
+        ...context,
+        statusDetail: "max_level_reached",
+      }).description,
+    ).toBe(
+      "Club de Lectura llegó al nivel máximo antes de que se aplicara tu boost. Te devolvimos los puntos.",
+    );
+  });
+
   it("tiene texto para cada resultado", () => {
     for (const outcome of [
       "applying",
@@ -120,6 +144,12 @@ describe("boostRejectionReason", () => {
     );
     expect(boostRejectionReason("no_response")).toBe(
       "El servidor no respondió a tiempo.",
+    );
+  });
+
+  it("conoce el rechazo por tope", () => {
+    expect(boostRejectionReason("max_level_reached")).toBe(
+      "El servidor llegó al nivel máximo antes de que se aplicara tu boost.",
     );
   });
 
@@ -152,6 +182,16 @@ describe("reembolso y retiro", () => {
     );
   });
 
+  it("en el tope avisa que la URL queda guardada", () => {
+    expect(boostRemoveImpact(30)).toBe(
+      "El servidor baja al nivel 2. Pierde para todos: URL personalizada e insignia Servidor Boosteado.",
+    );
+    expect(boostRemoveVanityNote(30)).toBe(
+      "La URL queda guardada y vuelve a funcionar si llega otra vez a 30.",
+    );
+    expect(boostRemoveVanityNote(20)).toBeUndefined();
+  });
+
   it("o en qué nivel sigue", () => {
     expect(boostRemoveImpact(20)).toBe(
       "El servidor queda con 19 boosts y sigue en el nivel 2.",
@@ -178,5 +218,109 @@ describe("BOOST_TIER_SUMMARIES", () => {
         perks: "URL personalizada e insignia Servidor Boosteado",
       },
     ]);
+  });
+});
+
+describe("boostRowMeta", () => {
+  const local = (month: number, day: number, hour = 12, minute = 0) =>
+    new Date(2026, month - 1, day, hour, minute).toISOString();
+  const row = {
+    points: 100,
+    status_detail: "",
+    created_at: local(11, 12),
+    updated_at: local(11, 12),
+  };
+
+  it("un activo dice desde cuándo", () => {
+    expect(boostRowMeta({ ...row, status: "active" })).toBe(
+      "Desde el 12 nov 2026, 12:00",
+    );
+  });
+
+  it("un retirado muestra las dos fechas y que no hubo reembolso", () => {
+    expect(
+      boostRowMeta({
+        ...row,
+        status: "removed",
+        created_at: local(11, 3, 10, 5),
+        updated_at: local(11, 11, 18, 42),
+      }),
+    ).toBe(
+      "Del 3 nov, 10:05 al 11 nov 2026, 18:42 · no se devolvieron los puntos",
+    );
+  });
+
+  it("uno que no se aplicó dice el motivo y el reembolso", () => {
+    expect(
+      boostRowMeta({
+        ...row,
+        status: "failed",
+        status_detail: "server_suspended",
+        updated_at: local(11, 13),
+      }),
+    ).toBe(
+      "13 nov 2026, 12:00 · el servidor está suspendido · te devolvimos los 100 puntos",
+    );
+  });
+
+  it("uno pendiente espera al servidor", () => {
+    expect(
+      boostRowMeta(
+        { ...row, status: "pending", created_at: local(11, 15, 18, 42) },
+        new Date(2026, 10, 15, 18, 43),
+      ),
+    ).toBe("Hoy, 18:42 · esperando la confirmación del servidor");
+  });
+
+  it("el pie avisa que los retirados quedan en la lista", () => {
+    expect(BOOST_LIST_COPY.footnote).toContain(
+      "Los retirados quedan en esta lista.",
+    );
+  });
+});
+
+describe("Servidores que boosteaste", () => {
+  it("resume nivel, total, activos y retirados", () => {
+    expect(
+      boostedServerSummaryLabel(
+        { active: 1, removed: 1 },
+        { level: 1, boostCount: 6 },
+      ),
+    ).toBe("Nivel 1 · 6 en total · 1 tuyo activo · 1 retirado");
+    expect(
+      boostedServerSummaryLabel(
+        { active: 3, removed: 0 },
+        { level: 2, boostCount: 18 },
+      ),
+    ).toBe("Nivel 2 · 18 en total · 3 tuyos activos");
+  });
+
+  it("en el nivel 3 dice Nivel máximo", () => {
+    expect(
+      boostedServerSummaryLabel(
+        { active: 7, removed: 2 },
+        { level: 3, boostCount: 30 },
+      ),
+    ).toBe("Nivel máximo · 30 en total · 7 tuyos activos · 2 retirados");
+  });
+
+  it("si todos están retirados no hay ninguno activo", () => {
+    expect(
+      boostedServerSummaryLabel(
+        { active: 0, removed: 2 },
+        { level: 1, boostCount: 9 },
+      ),
+    ).toBe("Nivel 1 · 9 en total · ningún activo · 2 retirados");
+  });
+
+  it("si ya no sos miembro no hay nivel", () => {
+    expect(boostedServerSummaryLabel({ active: 1, removed: 0 }, null)).toBe(
+      "Ya no sos miembro · 1 tuyo activo",
+    );
+  });
+
+  it("cuenta los servidores", () => {
+    expect(boostedServersCountLabel(1)).toBe("1 servidor");
+    expect(boostedServersCountLabel(14)).toBe("14 servidores");
   });
 });
