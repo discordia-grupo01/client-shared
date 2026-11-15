@@ -114,7 +114,6 @@ export function boostActivePerksLabel(level: BoostLevel): string {
 export const BOOST_MAX_LEVEL_DETAIL =
   "Este servidor tiene todos los beneficios de boosts.";
 
-
 export const BOOSTED_BADGE_COPY = {
   label: "Servidor Boosteado",
   caption: "Insignia",

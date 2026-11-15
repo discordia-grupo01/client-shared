@@ -10,7 +10,6 @@ export const MAX_BOOST_LEVEL: BoostLevel = 3;
 
 export const BOOST_LEVELS: readonly BoostLevel[] = [0, 1, 2, 3];
 
-
 export const BOOST_MAX_COUNT = 30;
 
 export const BOOST_LEVEL_THRESHOLDS = [5, 15, BOOST_MAX_COUNT] as const;
