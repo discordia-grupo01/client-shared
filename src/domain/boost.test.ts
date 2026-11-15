@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BOOST_LEVEL_THRESHOLDS,
+  BOOST_MAX_COUNT,
   BOOST_PERKS,
   boostLevelFor,
   boostPerksAddedAt,
@@ -13,7 +15,9 @@ import {
   canSetServerBanner,
   canSetVanityUrl,
   canUseAnimatedServerIcon,
+  hasBoostedBadge,
   hasBoostPerk,
+  isBoostCapReached,
   isBoostPerk,
   requiredBoostLevelOf,
   toBoostLevel,
@@ -239,5 +243,27 @@ describe("boostProgress", () => {
       missing: 0,
       ratio: 1,
     });
+  });
+});
+
+describe("tope de boosts", () => {
+  it("es el umbral del último nivel", () => {
+    expect(BOOST_MAX_COUNT).toBe(30);
+    expect(BOOST_LEVEL_THRESHOLDS[BOOST_LEVEL_THRESHOLDS.length - 1]).toBe(
+      BOOST_MAX_COUNT,
+    );
+  });
+
+  it("se alcanza con 30 boosts y se libera al bajar de 30", () => {
+    expect(isBoostCapReached(29)).toBe(false);
+    expect(isBoostCapReached(30)).toBe(true);
+    expect(isBoostCapReached(31)).toBe(true);
+  });
+});
+
+describe("hasBoostedBadge", () => {
+  it("solo en el nivel 3", () => {
+    expect(hasBoostedBadge(2)).toBe(false);
+    expect(hasBoostedBadge(3)).toBe(true);
   });
 });

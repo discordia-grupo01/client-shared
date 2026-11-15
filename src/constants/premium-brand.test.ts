@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BOOSTED_BADGE,
+  boostedBadgeStrokeWidth,
   BOOST_ACTION_ICON,
   BOOST_LEVEL_ICON,
   brandViewBox,
@@ -32,6 +34,7 @@ describe("PREMIUM_BRAND_COLORS", () => {
       PREMIUM_BADGE,
       BOOST_LEVEL_ICON,
       BOOST_ACTION_ICON,
+      BOOSTED_BADGE,
     ]).matchAll(/"(?:fill|stroke|filledStroke|emptyStroke)":"(\w+)"/g);
     for (const [, name] of used) {
       expect(Object.keys(PREMIUM_BRAND_COLORS)).toContain(name);
@@ -78,5 +81,22 @@ describe("BOOST_LEVEL_ICON", () => {
     expect(tightViewBox.width).toBe(right - left + 2);
     expect(tightViewBox.y).toBe(top - 1);
     expect(tightViewBox.height).toBe(bottom - top + 2);
+  });
+});
+
+describe("BOOSTED_BADGE", () => {
+  it("las barras y la pieza quedan dentro del hexágono", () => {
+    const pieces = [...BOOSTED_BADGE.bars, BOOSTED_BADGE.piece];
+    for (const piece of pieces) {
+      expect(piece.x).toBeGreaterThanOrEqual(3.4);
+      expect(piece.x + piece.width).toBeLessThanOrEqual(20.6);
+    }
+  });
+
+  it("el borde afina con el tamaño", () => {
+    expect(boostedBadgeStrokeWidth(16)).toBe(1.8);
+    expect(boostedBadgeStrokeWidth(18)).toBe(1.6);
+    expect(boostedBadgeStrokeWidth(26)).toBe(1.4);
+    expect(boostedBadgeStrokeWidth(56)).toBe(1.2);
   });
 });

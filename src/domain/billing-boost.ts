@@ -1,10 +1,15 @@
-import { BOOST_COST_POINTS } from "../constants/boost";
+import {
+  BOOST_COST_POINTS,
+  BOOSTED_SERVERS_PAGE_SIZE,
+  BOOSTS_PAGE_SIZE,
+} from "../constants/boost";
 import type { BillingTone } from "./billing";
 import {
   type BoostLevel,
   type BoostPerk,
   boostLevelFor,
   boostPerksForLevel,
+  isBoostCapReached,
 } from "./boost";
 
 export type BoostStatus = "pending" | "active" | "failed" | "removed";
@@ -21,6 +26,52 @@ export interface Boost {
 
 export interface BoostsResponse {
   boosts: Boost[];
+}
+
+export interface BoostPage {
+  boosts: Boost[];
+  total: number;
+  active: number;
+  limit: number;
+  offset: number;
+}
+
+export function boostsPageParams(
+  serverId: string,
+  page: number,
+  pageSize: number = BOOSTS_PAGE_SIZE,
+): Record<string, string> {
+  return {
+    server_id: serverId,
+    limit: String(pageSize),
+    offset: String((Math.max(1, page) - 1) * pageSize),
+  };
+}
+
+export interface BoostedServer {
+  server_id: string;
+  active: number;
+  pending: number;
+  failed: number;
+  removed: number;
+  last_boost_at: string;
+}
+
+export interface BoostedServersPage {
+  servers: BoostedServer[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export function boostedServersPageParams(
+  page: number,
+  pageSize: number = BOOSTED_SERVERS_PAGE_SIZE,
+): Record<string, string> {
+  return {
+    limit: String(pageSize),
+    offset: String((Math.max(1, page) - 1) * pageSize),
+  };
 }
 
 export interface BoostRequest {
@@ -78,6 +129,20 @@ export function groupBoostsByServer(
 
 export function canAffordBoost(balance: number): boolean {
   return balance >= BOOST_COST_POINTS;
+}
+
+export type BoostBlockReason = "cap" | "balance";
+
+export function boostBlockReason({
+  boostCount,
+  balance,
+}: {
+  boostCount: number;
+  balance: number;
+}): BoostBlockReason | null {
+  if (isBoostCapReached(boostCount)) return "cap";
+  if (!canAffordBoost(balance)) return "balance";
+  return null;
 }
 
 export function pointsMissingForBoost(balance: number): number {

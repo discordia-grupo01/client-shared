@@ -50,6 +50,10 @@ export interface ThemeColors {
   boostColumn: string;
   boostLevelOutline: string;
   boostLevelEmpty: string;
+  boostWarnSoft: string;
+  boostWarnLine: string;
+  boostWarnText: string;
+  boostBadgeOutline: string;
 
   bgServers: string;
   bgChannels: string;
@@ -117,6 +121,10 @@ const dark: ThemeColors = {
   boostColumn: "rgba(107, 149, 189, 0.12)",
   boostLevelOutline: "rgba(245, 242, 235, 0.35)",
   boostLevelEmpty: "#a8c6df",
+  boostWarnSoft: "rgba(232, 198, 106, 0.12)",
+  boostWarnLine: "rgba(232, 198, 106, 0.25)",
+  boostWarnText: "#e8c66a",
+  boostBadgeOutline: "#e8c66a",
 
   bgServers: "#0f1922",
   bgChannels: "#1c293b",
@@ -187,6 +195,10 @@ const light: ThemeColors = {
   // los módulos, y las barras llenas llevan un borde oscuro.
   boostLevelOutline: "rgba(28, 41, 59, 0.18)",
   boostLevelEmpty: "#6b95bd",
+  boostWarnSoft: "rgba(212, 169, 62, 0.16)",
+  boostWarnLine: "rgba(143, 106, 18, 0.25)",
+  boostWarnText: "#735410",
+  boostBadgeOutline: "#8f6a12",
 
   bgServers: "#245c6b",
   bgChannels: "#eae5d9",
@@ -257,6 +269,10 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   boostColumn: "--boost-column",
   boostLevelOutline: "--boost-level-outline",
   boostLevelEmpty: "--boost-level-empty",
+  boostWarnSoft: "--boost-warn-soft",
+  boostWarnLine: "--boost-warn-line",
+  boostWarnText: "--boost-warn-text",
+  boostBadgeOutline: "--boost-badge-outline",
 
   bgServers: "--bg-servers",
   bgChannels: "--bg-channels",

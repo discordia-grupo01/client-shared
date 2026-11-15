@@ -41,6 +41,10 @@
   --color-boost-column: var(--boost-column);
   --color-boost-level-outline: var(--boost-level-outline);
   --color-boost-level-empty: var(--boost-level-empty);
+  --color-boost-warn-soft: var(--boost-warn-soft);
+  --color-boost-warn-line: var(--boost-warn-line);
+  --color-boost-warn: var(--boost-warn-text);
+  --color-boost-badge-outline: var(--boost-badge-outline);
   --color-on-accent: var(--on-accent);
   --color-on-accent-muted: var(--on-accent-muted);
   --color-on-accent-subtle: var(--on-accent-subtle);

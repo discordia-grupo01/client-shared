@@ -4,6 +4,9 @@ import {
   activeBoostCount,
   balanceAfterBoost,
   type Boost,
+  boostBlockReason,
+  boostedServersPageParams,
+  boostsPageParams,
   boostLevelChange,
   canAffordBoost,
   groupBoostsByServer,
@@ -85,6 +88,21 @@ describe("saldo para boostear", () => {
   });
 });
 
+describe("boostBlockReason", () => {
+  it("deja boostear con saldo y lugar", () => {
+    expect(boostBlockReason({ boostCount: 29, balance: 100 })).toBeNull();
+  });
+
+  it("frena por saldo", () => {
+    expect(boostBlockReason({ boostCount: 7, balance: 40 })).toBe("balance");
+  });
+
+  it("el tope gana al saldo", () => {
+    expect(boostBlockReason({ boostCount: 30, balance: 40 })).toBe("cap");
+    expect(boostBlockReason({ boostCount: 30, balance: 500 })).toBe("cap");
+  });
+});
+
 describe("boostLevelChange", () => {
   it("el boost 15 sube al nivel 2 y suma banner y 25 MB", () => {
     expect(levelChangeIfBoosted(14)).toEqual({
@@ -120,5 +138,24 @@ describe("boostLevelChange", () => {
       gained: [],
       lost: [],
     });
+  });
+});
+
+describe("boostsPageParams", () => {
+  it("pide la página de un servidor con offset 0-based", () => {
+    expect(boostsPageParams("club", 1)).toEqual({
+      server_id: "club",
+      limit: "10",
+      offset: "0",
+    });
+    expect(boostsPageParams("club", 2).offset).toBe("10");
+    expect(boostsPageParams("club", 0).offset).toBe("0");
+  });
+});
+
+describe("boostedServersPageParams", () => {
+  it("pide 10 servidores por página", () => {
+    expect(boostedServersPageParams(1)).toEqual({ limit: "10", offset: "0" });
+    expect(boostedServersPageParams(3)).toEqual({ limit: "10", offset: "20" });
   });
 });
