@@ -65,3 +65,18 @@ describe("brandViewBox", () => {
     expect(brandViewBox(PREMIUM_BADGE.viewBox)).toBe("-48 -54 96 108");
   });
 });
+
+describe("BOOST_LEVEL_ICON", () => {
+  it("el viewBox ajustado deja las barras con un margen parejo", () => {
+    const { bars, tightViewBox } = BOOST_LEVEL_ICON;
+    const left = Math.min(...bars.map((bar) => bar.x));
+    const right = Math.max(...bars.map((bar) => bar.x + bar.width));
+    const top = Math.min(...bars.map((bar) => bar.y));
+    const bottom = Math.max(...bars.map((bar) => bar.y + bar.height));
+
+    expect(tightViewBox.x).toBe(left - 1);
+    expect(tightViewBox.width).toBe(right - left + 2);
+    expect(tightViewBox.y).toBe(top - 1);
+    expect(tightViewBox.height).toBe(bottom - top + 2);
+  });
+});

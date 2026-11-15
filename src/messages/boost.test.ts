@@ -4,6 +4,7 @@ import { BOOST_PERKS } from "../domain/boost";
 
 import {
   BOOST_PERK_LABELS,
+  BOOST_SHOWCASE_ART_COPY,
   BOOST_SHOWCASE_COPY,
   BOOST_TABLE_NOTE,
   BOOST_TABLE_ROW_LABELS,
@@ -20,6 +21,8 @@ import {
   boostPerkAvailableFrom,
   boostPerkLevelLabel,
   boostPerkUnlockProgress,
+  boostPerksSentence,
+  boostsSectionTitleFor,
 } from "./boost";
 
 describe("textos de boosts", () => {
@@ -136,6 +139,29 @@ describe("textos de la sección Boosts", () => {
       expect(BOOST_SHOWCASE_COPY[perk].title).not.toBe("");
     }
     expect(BOOST_TABLE_NOTE).toContain("50 MB");
+  });
+
+  it("los dibujos de las tarjetas usan los límites reales", () => {
+    expect(BOOST_SHOWCASE_ART_COPY.extraEmojiSlots).toBe("+20");
+    expect(BOOST_SHOWCASE_ART_COPY.attachmentLimit).toBe("25 MB");
+    expect(BOOST_SHOWCASE_ART_COPY.invitePath).toBe("/invite/");
+  });
+
+  it("la insignia describe la marca en el perfil", () => {
+    expect(BOOST_SHOWCASE_COPY.boosted_badge.detail).toBe(
+      "Una marca permanente distingue al servidor en su perfil.",
+    );
+  });
+
+  it("nombra el servidor en el título de la sección", () => {
+    expect(boostsSectionTitleFor("Taller")).toBe("Boosts de Taller");
+  });
+
+  it("une los beneficios en una frase", () => {
+    expect(boostPerksSentence(["custom_banner", "larger_attachments"])).toBe(
+      "banner del servidor y adjuntos de 25 MB",
+    );
+    expect(boostPerksSentence(["animated_icon"])).toBe("ícono animado");
   });
 
   it("arma el chip de un beneficio bloqueado", () => {

@@ -8,6 +8,18 @@ import {
 
 import { BOOSTED_MAX_ATTACHMENT_MB, MAX_ATTACHMENT_MB } from "./attachments";
 
+export const BOOST_COST_POINTS = 100;
+
+export const BOOST_STATUS_POLL_MS = 4_000;
+
+export const BOOST_STATUS_TIMEOUT_MS = 30_000;
+
+export const BOOSTS_LIST_MAX_LIMIT = 100;
+
+export const BOOST_SECTION_TABS = ["boost", "benefits"] as const;
+
+export type BoostSectionTab = (typeof BOOST_SECTION_TABS)[number];
+
 export const BASE_EMOJI_SLOTS = 50;
 export const BOOSTED_EMOJI_SLOTS = 70;
 

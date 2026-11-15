@@ -37,6 +37,7 @@ export const BILLING_SECTIONS = [
   "premium",
   "subscriptions",
   "points",
+  "boosts",
   "transactions",
 ] as const;
 

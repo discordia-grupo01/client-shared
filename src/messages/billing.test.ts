@@ -22,6 +22,19 @@ describe("billingErrorMessage", () => {
     }
   });
 
+  it("dice cuántos puntos faltan para boostear", () => {
+    expect(
+      billingErrorMessage("INSUFFICIENT_POINTS", {
+        balance: 40,
+        cost: 100,
+        missing: 60,
+      }),
+    ).toBe("Te faltan 60 puntos para boostear este servidor.");
+    expect(billingErrorMessage("INSUFFICIENT_POINTS")).toBe(
+      BILLING_ERROR_MESSAGES.INSUFFICIENT_POINTS,
+    );
+  });
+
   it("cae al genérico con códigos desconocidos", () => {
     expect(billingErrorMessage("OTRO")).toBe(UNEXPECTED_ERROR_MESSAGE);
     expect(billingErrorMessage(500)).toBe(UNEXPECTED_ERROR_MESSAGE);
