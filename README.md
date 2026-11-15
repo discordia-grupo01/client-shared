@@ -86,12 +86,12 @@ npm test
 
 Corre los tests con Vitest. Para revisar el resto del código:
 
-| Qué | Comando |
-|---|---|
-| Linter (ESLint) | `npm run lint` |
-| Tipos (TypeScript) | `npm run typecheck` |
-| Compilar | `npm run build` |
-| Formato | `npm run format:check` (y `npm run format` para arreglarlo) |
+| Qué                | Comando                                                     |
+| ------------------ | ----------------------------------------------------------- |
+| Linter (ESLint)    | `npm run lint`                                              |
+| Tipos (TypeScript) | `npm run typecheck`                                         |
+| Compilar           | `npm run build`                                             |
+| Formato            | `npm run format:check` (y `npm run format` para arreglarlo) |
 
 El CI corre todo eso en cada pull request. El repositorio se formatea con Prettier; activá el hook una vez por clon:
 
