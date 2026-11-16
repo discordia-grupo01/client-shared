@@ -125,6 +125,63 @@ describe("voiceSessionReducer", () => {
     expect(state.notice).toBe("Se cortó");
   });
 
+  describe("ensordecer", () => {
+    it("deja de escuchar y apaga el microfono", () => {
+      const state = reduce([{ type: "toggle_deafen" }]);
+      expect(state.deafened).toBe(true);
+      expect(state.muted).toBe(true);
+    });
+
+    it("al volver deja el microfono como estaba", () => {
+      expect(
+        reduce([{ type: "toggle_deafen" }, { type: "toggle_deafen" }]).muted,
+      ).toBe(false);
+      expect(
+        reduce([
+          { type: "toggle_mute" },
+          { type: "toggle_deafen" },
+          { type: "toggle_deafen" },
+        ]).muted,
+      ).toBe(true);
+    });
+
+    it("activar el microfono tambien vuelve a escuchar", () => {
+      const state = reduce([
+        { type: "toggle_deafen" },
+        { type: "toggle_mute" },
+      ]);
+      expect(state.deafened).toBe(false);
+      expect(state.muted).toBe(false);
+    });
+
+    it("silenciado por un moderador puede ensordecer, pero no recupera el microfono", () => {
+      const state = reduce([
+        { type: "speak_permission", allowed: false },
+        { type: "toggle_deafen" },
+        { type: "toggle_mute" },
+        { type: "toggle_deafen" },
+      ]);
+      expect(state.deafened).toBe(false);
+      expect(state.muted).toBe(true);
+    });
+
+    it("se conserva al cambiar de canal y al terminar la llamada", () => {
+      const deafened = reduce(
+        [{ type: "toggle_deafen" }, { type: "join_requested", target: gaming }],
+        connected([participant("ana")]),
+      );
+      expect(deafened.deafened).toBe(true);
+      const ended = voiceSessionReducer(deafened, {
+        type: "ended",
+        notice: null,
+      });
+      expect(ended.deafened).toBe(true);
+      expect(voiceSessionReducer(ended, { type: "toggle_deafen" }).muted).toBe(
+        false,
+      );
+    });
+  });
+
   it("descarta el aviso", () => {
     const state = reduce([
       { type: "ended", notice: "Se cortó" },

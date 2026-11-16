@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isCameraMediaError,
+  isMicMediaError,
   parseVoiceBridgeCommand,
   parseVoiceBridgeEvent,
   serializeVoiceBridgeMessage,
+  voiceMediaErrorOf,
   type VoiceBridgeCommand,
   type VoiceBridgeEvent,
   withParticipantProfiles,
@@ -38,6 +41,8 @@ describe("parseVoiceBridgeEvent", () => {
     { type: "disconnected", reason: "removed" },
     { type: "error", error: "mic_denied" },
     { type: "error", error: "camera_denied" },
+    { type: "error", error: "mic_in_use" },
+    { type: "error", error: "camera_not_found" },
   ];
 
   it.each(events)("vuelve igual despues de serializar: $type", (event) => {
@@ -97,6 +102,7 @@ describe("parseVoiceBridgeCommand", () => {
     { type: "setMicrophoneEnabled", enabled: false },
     { type: "setCameraEnabled", enabled: true },
     { type: "setMutedForMe", identity: "u-beto", muted: true },
+    { type: "setDeafened", deafened: true },
     {
       type: "setAppearance",
       theme: "light",
@@ -276,5 +282,36 @@ describe("withParticipantProfiles", () => {
 
   it("deja como esta a quien no tiene perfil", () => {
     expect(withParticipantProfiles([beto], [])).toEqual([beto]);
+  });
+});
+
+describe("voiceMediaErrorOf", () => {
+  const named = (name: string) => Object.assign(new Error("x"), { name });
+
+  it("traduce los errores de getUserMedia por dispositivo", () => {
+    expect(voiceMediaErrorOf("mic", named("NotAllowedError"))).toBe(
+      "mic_denied",
+    );
+    expect(voiceMediaErrorOf("camera", named("NotReadableError"))).toBe(
+      "camera_in_use",
+    );
+    expect(voiceMediaErrorOf("mic", named("NotFoundError"))).toBe(
+      "mic_not_found",
+    );
+  });
+
+  it("lo que no es de permisos ni del dispositivo es un fallo generico", () => {
+    expect(voiceMediaErrorOf("camera", named("TimeoutError"))).toBe(
+      "camera_failed",
+    );
+    expect(voiceMediaErrorOf("mic", "raro")).toBe("mic_failed");
+    expect(voiceMediaErrorOf("mic", null)).toBe("mic_failed");
+  });
+
+  it("dice de que dispositivo es cada error", () => {
+    expect(isMicMediaError("mic_in_use")).toBe(true);
+    expect(isMicMediaError("camera_denied")).toBe(false);
+    expect(isCameraMediaError("camera_failed")).toBe(true);
+    expect(isCameraMediaError("connect_failed")).toBe(false);
   });
 });

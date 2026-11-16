@@ -62,6 +62,14 @@ describe("voiceMediaErrorMessage", () => {
   it("explica que hace falta la camara", () => {
     expect(voiceMediaErrorMessage("camera_denied")).toMatch(/cámara/);
   });
+
+  it("distingue el dispositivo ocupado o ausente del permiso", () => {
+    expect(voiceMediaErrorMessage("mic_in_use")).toMatch(/Otra aplicación/);
+    expect(voiceMediaErrorMessage("camera_not_found")).toMatch(
+      /ninguna cámara/,
+    );
+    expect(voiceMediaErrorMessage("mic_failed")).toMatch(/micrófono/);
+  });
 });
 
 describe("voiceDisconnectMessage", () => {

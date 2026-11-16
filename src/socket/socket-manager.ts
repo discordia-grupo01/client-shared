@@ -67,6 +67,12 @@ export const SOCKET_RETRY_MAX_MS = 30 * 1000;
  * (inmediato, 1, 2, 4, 8, 16 y 30 s) son poco mas de un minuto.
  */
 export const SOCKET_MAX_RETRIES = 7;
+/**
+ * Tiempo abierto para dar la conexion por buena y volver el backoff a cero. Si
+ * algo en el medio (un antivirus, un proxy) acepta el socket y lo corta enseguida,
+ * resetear en `onOpen` haria reintentar sin espera y sin limite.
+ */
+export const SOCKET_STABLE_OPEN_MS = 10 * 1000;
 
 interface SocketState<S> {
   socket: S;
@@ -75,9 +81,10 @@ interface SocketState<S> {
   leases: number;
   idleTimer: unknown;
   retryTimer: unknown;
+  stableTimer: unknown;
   /** Hay una reconexion en curso: ignora cierres hasta que termine. */
   reconnecting: boolean;
-  /** Cierres seguidos sin llegar a abrir: si el servidor rechaza siempre, no martillar. */
+  /** Cierres seguidos sin quedar abierto un rato: si el servidor rechaza siempre, no martillar. */
   failures: number;
   /** La plataforma pidio no reconectar (ej. la pagina se esta yendo). */
   reconnectSuspended: boolean;
@@ -236,6 +243,7 @@ export function createSocketManager<S extends RealtimeSocket>(
       leases: 0,
       idleTimer: null,
       retryTimer: null,
+      stableTimer: null,
       reconnecting: false,
       failures: 0,
       reconnectSuspended: false,
@@ -256,7 +264,11 @@ export function createSocketManager<S extends RealtimeSocket>(
       }) ?? (() => {});
 
     socket.onOpen(() => {
-      current.failures = 0;
+      clearStableTimer(current);
+      current.stableTimer = setTimeout(() => {
+        current.stableTimer = null;
+        current.failures = 0;
+      }, SOCKET_STABLE_OPEN_MS);
     });
     socket.onClose(() => handleClose(current));
     socket.connect();
@@ -271,6 +283,7 @@ export function createSocketManager<S extends RealtimeSocket>(
   function handleClose(current: SocketState<S>): void {
     if (state !== current || current.reconnecting || current.reconnectSuspended)
       return;
+    clearStableTimer(current);
     current.reconnecting = true;
     current.gaveUp = false;
     current.failures += 1;
@@ -288,7 +301,7 @@ export function createSocketManager<S extends RealtimeSocket>(
     let delayMs = SOCKET_RETRY_MIN_MS;
     let ticketFailures = 0;
     // El primer cierre se reintenta enseguida; si el siguiente tambien cierra sin
-    // abrir, se espera cada vez mas (1 s, 2 s... hasta 30 s).
+    // haber quedado abierto, se espera cada vez mas (1 s, 2 s... hasta 30 s).
     if (current.failures > 1) {
       const backoffMs = Math.min(
         SOCKET_RETRY_MIN_MS * 2 ** (current.failures - 2),
@@ -331,12 +344,18 @@ export function createSocketManager<S extends RealtimeSocket>(
     }
   }
 
+  function clearStableTimer(current: SocketState<S>): void {
+    if (current.stableTimer) clearTimeout(current.stableTimer);
+    current.stableTimer = null;
+  }
+
   function closeSocket(): void {
     const current = state;
     if (!current) return;
     state = null;
     if (current.idleTimer) clearTimeout(current.idleTimer);
     if (current.retryTimer) clearTimeout(current.retryTimer);
+    clearStableTimer(current);
     current.stopLifecycle();
     current.socket.disconnect();
   }
