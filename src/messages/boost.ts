@@ -13,6 +13,7 @@ import {
   boostPerksForLevel,
   boostsMissingFor,
   boostsRequiredFor,
+  hasBoostPerk,
   MAX_BOOST_LEVEL,
   requiredBoostLevelOf,
 } from "../domain/boost";
@@ -126,17 +127,43 @@ export function boostedBadgeTooltip(level: BoostLevel): string {
 
 export const BOOST_MAX_LEVEL_NOTE = `Si alguien retira un boost, el servidor baja al nivel ${MAX_BOOST_LEVEL - 1} y se puede volver a boostear.`;
 
-export function boostsToNextLevelParts(
+export interface BoostsMissingParts {
+  lead: string;
+  amount: string;
+  tail: string;
+}
+
+function boostsMissingParts(
   level: Exclude<BoostLevel, 0>,
   boostCount: number,
-): { lead: string; amount: string; tail: string } {
+  tail: string,
+): BoostsMissingParts {
   const missing = boostsMissingFor(level, boostCount);
   return {
     lead: missing === 1 ? "Falta" : "Faltan",
     amount: boostCountLabel(missing),
-    tail: `para llegar al nivel ${level}`,
+    tail,
   };
 }
+
+export function boostsToNextLevelParts(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+): BoostsMissingParts {
+  return boostsMissingParts(level, boostCount, `para llegar al nivel ${level}`);
+}
+
+export function boostsForLevelParts(
+  level: Exclude<BoostLevel, 0>,
+  boostCount: number,
+): BoostsMissingParts {
+  return boostsMissingParts(level, boostCount, `para el nivel ${level}`);
+}
+
+export const BOOST_PROGRESS_STRIP_COPY = {
+  ariaLabel: "Beneficios de boosts",
+  benefitsLink: "Ver qué suma cada nivel",
+} as const;
 
 /** "7 / 15" */
 export function boostProgressCountLabel(
@@ -243,12 +270,76 @@ export const BOOST_SHOWCASE_ART_COPY = {
   badge: "Servidor Boosteado",
 } as const;
 
+function missingBoostsLabel(missing: number): string {
+  return missing === 1 ? "falta 1" : `faltan ${missing}`;
+}
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function boostLockedChipLabel(
   level: Exclude<BoostLevel, 0>,
   boostCount: number,
   short = false,
 ): string {
-  const missing = boostsMissingFor(level, boostCount);
-  if (short) return `${missing === 1 ? "Falta" : "Faltan"} ${missing}`;
-  return `Nivel ${level} · ${missing === 1 ? "falta" : "faltan"} ${missing}`;
+  const missing = missingBoostsLabel(boostsMissingFor(level, boostCount));
+  if (short) return capitalize(missing);
+  return `${boostLevelLabel(level)} · ${missing}`;
 }
+
+export interface BoostBenefitChipCopy {
+  level: Exclude<BoostLevel, 0>;
+  locked: boolean;
+  label: string;
+  detail: string;
+  title: string;
+  accessibilityLabel: string;
+}
+
+export function boostBenefitChip(
+  perk: BoostPerk,
+  level: BoostLevel,
+  boostCount: number,
+): BoostBenefitChipCopy {
+  const perkLevel = BOOST_PERK_LEVEL[perk];
+  const label = boostLevelLabel(perkLevel);
+  if (hasBoostPerk(level, perk)) {
+    const title = boostPerkLevelLabel(perk);
+    return {
+      level: perkLevel,
+      locked: false,
+      label,
+      detail: "",
+      title,
+      accessibilityLabel: title,
+    };
+  }
+  const missing = boostsMissingFor(perkLevel, boostCount);
+  return {
+    level: perkLevel,
+    locked: true,
+    label,
+    detail: missing === 0 ? "" : `· ${missingBoostsLabel(missing)}`,
+    title: boostPerkAvailableFrom(perk),
+    accessibilityLabel: boostsUntilLevelLabel(perkLevel, boostCount),
+  };
+}
+
+export function boostBenefitLockedLabel(perk: BoostPerk): string {
+  return `${BOOST_PERK_LABELS[perk]}, bloqueado hasta el nivel ${BOOST_PERK_LEVEL[perk]}`;
+}
+
+export const SERVER_BANNER_BENEFIT_COPY = {
+  title: BOOST_PERK_LABELS.custom_banner,
+  locked: "Mostrá una imagen propia arriba de la lista de canales.",
+} as const;
+
+export const ANIMATED_SERVER_ICON_COPY = {
+  title: "Ícono del servidor animado",
+  unlocked:
+    "Ya podés usar un GIF como foto del servidor. Se mueve en la lista de servidores.",
+  locked: `En el nivel ${BOOST_PERK_LEVEL.animated_icon}, la foto del servidor puede ser un GIF que se mueve en la lista de servidores.`,
+  badge: "GIF",
+  upload: "Subir un GIF",
+} as const;
