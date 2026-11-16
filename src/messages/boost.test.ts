@@ -4,6 +4,8 @@ import { BOOST_PERKS } from "../domain/boost";
 
 import {
   ANIMATED_SERVER_ICON_COPY,
+  ATTACHMENT_BOOST_OFFER_COPY,
+  attachmentLimitLabel,
   BOOST_PROGRESS_STRIP_COPY,
   boostBenefitChip,
   boostBenefitLockedLabel,
@@ -267,5 +269,28 @@ describe("insignia Servidor Boosteado", () => {
   it("se nombra igual en el cartel y en el aria-label", () => {
     expect(BOOSTED_BADGE_COPY.label).toBe("Servidor Boosteado");
     expect(boostedBadgeTooltip(3)).toBe("Servidor Boosteado · Nivel 3");
+  });
+});
+
+describe("adjuntos que superan el límite del servidor", () => {
+  it("ofrece el nivel 2 y recuerda Premium", () => {
+    expect(ATTACHMENT_BOOST_OFFER_COPY.title).toBe("Adjuntos de hasta 25 MB");
+    expect(ATTACHMENT_BOOST_OFFER_COPY.detail).toBe(
+      "En el nivel 2 de boosts, todos los miembros suben hasta 25 MB en los canales de este servidor.",
+    );
+    expect(ATTACHMENT_BOOST_OFFER_COPY.premiumLead).toBe("o 50 MB siempre con");
+  });
+
+  it("arma el límite del botón de adjuntar según dónde se escribe", () => {
+    expect(attachmentLimitLabel({ serverLevel: 1 })).toBe(
+      "Hasta 10 MB · 25 MB desde el",
+    );
+    expect(attachmentLimitLabel({ serverLevel: 2 })).toBe(
+      "Hasta 25 MB en este servidor",
+    );
+    expect(attachmentLimitLabel()).toBe("Hasta 10 MB · 50 MB con Premium");
+    expect(attachmentLimitLabel({ serverLevel: 0, premium: true })).toBe(
+      "Hasta 50 MB",
+    );
   });
 });

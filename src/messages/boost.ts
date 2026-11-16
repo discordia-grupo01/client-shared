@@ -1,8 +1,14 @@
 import {
   BOOSTED_MAX_ATTACHMENT_MB,
+  MAX_ATTACHMENT_MB,
   PREMIUM_MAX_ATTACHMENT_MB,
 } from "../constants/attachments";
-import { BASE_EMOJI_SLOTS, BOOSTED_EMOJI_SLOTS } from "../constants/boost";
+import {
+  type AttachmentLimitOptions,
+  BASE_EMOJI_SLOTS,
+  BOOSTED_EMOJI_SLOTS,
+  canBoostAttachmentLimit,
+} from "../constants/boost";
 import type { ApiErrorDetails } from "../domain/errors";
 import { INVITE_PATH } from "../format/invite-link";
 import {
@@ -343,3 +349,24 @@ export const ANIMATED_SERVER_ICON_COPY = {
   badge: "GIF",
   upload: "Subir un GIF",
 } as const;
+
+export const ATTACHMENT_BOOST_OFFER_COPY = {
+  title: BOOST_PERK_LABELS.larger_attachments,
+  detail: `En el nivel ${BOOST_PERK_LEVEL.larger_attachments} de boosts, todos los miembros suben hasta ${BOOSTED_MAX_ATTACHMENT_MB} MB en los canales de este servidor.`,
+  benefits: "Ver beneficios de boosts",
+  premiumLead: `o ${PREMIUM_MAX_ATTACHMENT_MB} MB siempre con`,
+  premium: "Premium",
+} as const;
+
+export function attachmentLimitLabel(
+  options: AttachmentLimitOptions = {},
+): string {
+  if (options.premium) return `Hasta ${PREMIUM_MAX_ATTACHMENT_MB} MB`;
+  if (options.serverLevel === undefined) {
+    return `Hasta ${MAX_ATTACHMENT_MB} MB · ${PREMIUM_MAX_ATTACHMENT_MB} MB con Premium`;
+  }
+  if (canBoostAttachmentLimit(options)) {
+    return `Hasta ${MAX_ATTACHMENT_MB} MB · ${BOOSTED_MAX_ATTACHMENT_MB} MB desde el`;
+  }
+  return `Hasta ${BOOSTED_MAX_ATTACHMENT_MB} MB en este servidor`;
+}
