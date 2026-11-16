@@ -49,8 +49,12 @@ export type VoiceBridgeCommand =
   | { type: "setParticipantProfiles"; profiles: VoiceParticipantProfile[] }
   | { type: "disconnect" };
 
+export type VoiceMediaDevice = "mic" | "camera";
+
 export type VoiceMediaError =
-  "mic_denied" | "camera_denied" | "connect_failed" | "audio_blocked";
+  | `${VoiceMediaDevice}_${"denied" | "in_use" | "not_found" | "failed"}`
+  | "connect_failed"
+  | "audio_blocked";
 
 export type VoiceBridgeEvent =
   | { type: "ready" }
@@ -79,10 +83,57 @@ const DISCONNECT_REASONS: readonly VoiceDisconnectReason[] = [
 ];
 const MEDIA_ERRORS: readonly VoiceMediaError[] = [
   "mic_denied",
+  "mic_in_use",
+  "mic_not_found",
+  "mic_failed",
   "camera_denied",
+  "camera_in_use",
+  "camera_not_found",
+  "camera_failed",
   "connect_failed",
   "audio_blocked",
 ];
+/**
+ * Por que no se pudo prender el microfono o la camara, segun el `name` del error
+ * del navegador (`getUserMedia`, que LiveKit deja pasar tal cual). Lo que no es
+ * de permisos ni del dispositivo (ej. LiveKit no llego a publicar) es `failed`.
+ */
+export function voiceMediaErrorOf(
+  device: VoiceMediaDevice,
+  error: unknown,
+): VoiceMediaError {
+  const name =
+    typeof error === "object" && error !== null && "name" in error
+      ? (error as { name: unknown }).name
+      : undefined;
+  switch (name) {
+    case "NotAllowedError":
+    case "PermissionDeniedError":
+    case "SecurityError":
+      return `${device}_denied`;
+    case "NotReadableError":
+    case "TrackStartError":
+    case "AbortError":
+      return `${device}_in_use`;
+    case "NotFoundError":
+    case "DevicesNotFoundError":
+    case "OverconstrainedError":
+      return `${device}_not_found`;
+    default:
+      return `${device}_failed`;
+  }
+}
+
+/** El error es del microfono: hay que volver a silenciarlo. */
+export function isMicMediaError(error: VoiceMediaError): boolean {
+  return error.startsWith("mic_");
+}
+
+/** El error es de la camara: hay que dejarla apagada. */
+export function isCameraMediaError(error: VoiceMediaError): boolean {
+  return error.startsWith("camera_");
+}
+
 const THEME_NAMES: readonly ThemeName[] = ["dark", "light"];
 
 type Json = Record<string, unknown>;
