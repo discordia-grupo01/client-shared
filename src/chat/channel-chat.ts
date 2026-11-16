@@ -128,8 +128,13 @@ export function chatStateForAccessRevoked(
   };
 }
 
-/** Un canal recien creado puede no estar todavia en la cache de messaging (llega por un evento). */
-export const NOT_FOUND_ATTEMPTS = 3;
+/**
+ * Un canal recien creado puede no estar todavia en la cache de messaging (llega
+ * por un evento, que puede tardar varios segundos si hay cola). Con los
+ * reintentos de Phoenix (1, 2, 5 y 10 s) son unos 18 s antes de darlo por
+ * inexistente.
+ */
+export const NOT_FOUND_ATTEMPTS = 5;
 
 /** Estado del chat cuando falla la PRIMERA carga del historial. */
 export function chatStatusForLoadError(code?: MessageErrorCode): ChatStatus {
