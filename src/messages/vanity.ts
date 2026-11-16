@@ -15,6 +15,7 @@ export const VANITY_URL_COPY = {
   copied: "Copiado",
   change: "Cambiar",
   remove: "Quitar",
+  locked: `Un link corto que no vence, para invitar a quien quieras. Se activa en el nivel ${BOOST_PERK_LEVEL.vanity_url}.`,
 } as const;
 
 export const VANITY_REMOVE_COPY = {

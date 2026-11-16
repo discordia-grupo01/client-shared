@@ -12,10 +12,14 @@
  * pantalla, eso se queda en cada app y no se fuerza aca.
  */
 
+import { MAX_ICON_FILE_MB } from "../constants/limits";
+import type { BoostLevel } from "../domain/boost";
 import type { ModerationAuditAction } from "../domain/moderation-audit";
 import type { ReportResolutionAction, ReportSanction } from "../domain/report";
 import type { VoiceParticipant } from "../domain/voice";
 import { isScreenShareIdentity } from "../domain/voice-screen-share";
+import { formatImageTypes } from "../format/image";
+import { serverIconTypes } from "../validation/image";
 
 // --- Home sin servidores ---
 export const EMPTY_HOME_TITLE = "Tu espacio está esperándote";
@@ -368,12 +372,17 @@ export const EVERYONE_VIEW_CHANNELS_OFF_CONFIRM = "Quitar permiso";
  */
 export const SERVER_NAME_LABEL = "Nombre del servidor";
 export const SERVER_NAME_PLACEHOLDER = "Mi servidor épico";
-export const BANNER_PRESETS_LABEL = "O elegí un fondo";
+export const BANNER_PRESETS_LABEL = "Fondos predefinidos";
 export const ADD_BANNER_LABEL = "Agregar banner";
 export const CHANGE_BANNER_LABEL = "Cambiar banner";
 export const REMOVE_BANNER_LABEL = "Quitar banner";
 export const BOOST_SERVER_LABEL = "Boostear servidor";
 export const CHANGE_SERVER_ICON_LABEL = "Cambiar ícono";
+
+/** "PNG, JPG, WebP o GIF · Máx. 5 MB": suma GIF solo si el nivel lo permite. */
+export function serverIconFormatsHint(boostLevel: BoostLevel = 0): string {
+  return `${formatImageTypes(serverIconTypes(boostLevel))} · Máx. ${MAX_ICON_FILE_MB} MB`;
+}
 
 /**
  * --- Eliminar servidor ---

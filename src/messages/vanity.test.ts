@@ -9,6 +9,7 @@ import {
   VANITY_CODE_TAKEN,
   VANITY_PAUSED_DETAIL,
   VANITY_SAVE_FAILED,
+  VANITY_URL_COPY,
   vanityPausedTitle,
   vanityRemoveImpact,
 } from "./vanity";
@@ -67,6 +68,14 @@ describe("avisos de la URL", () => {
     );
     expect(VANITY_PAUSED_DETAIL).toBe(
       "El servidor bajó al nivel 2. La URL sigue siendo tuya y vuelve a funcionar sola al llegar otra vez a 30 boosts.",
+    );
+  });
+});
+
+describe("URL personalizada bloqueada", () => {
+  it("dice en qué nivel se activa", () => {
+    expect(VANITY_URL_COPY.locked).toBe(
+      "Un link corto que no vence, para invitar a quien quieras. Se activa en el nivel 3.",
     );
   });
 });
