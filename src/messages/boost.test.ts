@@ -218,7 +218,10 @@ describe("ficha de nivel de un beneficio", () => {
 
   it("nombra el beneficio bloqueado para el grupo accesible", () => {
     expect(boostBenefitLockedLabel("custom_banner")).toBe(
-      "Banner del servidor, bloqueado hasta el nivel 2",
+      "Banner del servidor: se desbloquea en el nivel 2",
+    );
+    expect(boostBenefitLockedLabel("vanity_url")).toBe(
+      "URL de invitación personalizada: se desbloquea en el nivel 3",
     );
   });
 });
