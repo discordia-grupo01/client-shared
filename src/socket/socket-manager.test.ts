@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createSocketManager,
   SOCKET_MAX_RETRIES,
+  SOCKET_STABLE_OPEN_MS,
   type SocketLifecycleControls,
   type SocketManager,
   type SocketTicketResult,
@@ -189,6 +190,7 @@ describe("reconexion con un ticket nuevo", () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(socket.params()).toEqual({ ticket: "B" });
     socket.openCallback?.();
+    await vi.advanceTimersByTimeAsync(SOCKET_STABLE_OPEN_MS);
 
     fetchTicket.mockResolvedValue(ticket("C"));
     socket.closeCallback?.();
@@ -252,7 +254,7 @@ describe("reconexion con un ticket nuevo", () => {
     expect(socket.connect).toHaveBeenCalledTimes(3);
   });
 
-  it("el backoff vuelve a cero cuando el socket llega a abrir", async () => {
+  it("el backoff vuelve a cero cuando el socket queda abierto un rato", async () => {
     const socket = await openAndClose();
     fetchTicket.mockResolvedValue(ticket("X"));
 
@@ -263,10 +265,45 @@ describe("reconexion con un ticket nuevo", () => {
     expect(socket.connect).toHaveBeenCalledTimes(2);
 
     socket.openCallback?.();
+    await vi.advanceTimersByTimeAsync(SOCKET_STABLE_OPEN_MS);
     socket.closeCallback?.();
     await vi.advanceTimersByTimeAsync(0);
 
     expect(socket.connect).toHaveBeenCalledTimes(3);
+  });
+
+  it("si abre y se corta enseguida, el backoff sigue creciendo", async () => {
+    const socket = await openAndClose();
+    fetchTicket.mockResolvedValue(ticket("X"));
+
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(socket.connect).toHaveBeenCalledTimes(1);
+
+    // Abre y se corta antes de quedar estable: espera 1 s, no reintenta enseguida.
+    socket.openCallback?.();
+    await vi.advanceTimersByTimeAsync(100);
+    socket.closeCallback?.();
+    await vi.advanceTimersByTimeAsync(500);
+    expect(socket.connect).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(socket.connect).toHaveBeenCalledTimes(2);
+  });
+
+  it("si abre y se corta una y otra vez, se rinde tras el maximo de intentos", async () => {
+    const socket = await openAndClose();
+    fetchTicket.mockResolvedValue(ticket("X"));
+    const gaveUp = vi.fn();
+    manager.onSocketGaveUp(gaveUp);
+
+    for (let i = 0; i <= SOCKET_MAX_RETRIES; i++) {
+      socket.openCallback?.();
+      socket.closeCallback?.();
+      await vi.advanceTimersByTimeAsync(60_000);
+    }
+
+    expect(gaveUp).toHaveBeenCalledTimes(1);
+    expect(socket.connect).toHaveBeenCalledTimes(SOCKET_MAX_RETRIES);
   });
 
   it("si la sesion murio al pedir el ticket cierra el socket y avisa", async () => {
