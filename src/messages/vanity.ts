@@ -41,6 +41,12 @@ export const VANITY_INVITE_COPY = {
   copied: "Copiado",
 } as const;
 
+export const VANITY_INVITE_LOCKED_COPY = {
+  title: "Link propio del servidor",
+  detail: `Con el nivel ${BOOST_PERK_LEVEL.vanity_url} de boosts, el servidor tiene un link corto que no vence y no tiene límite de usos.`,
+  benefits: "Ver beneficios",
+} as const;
+
 export const VANITY_CODE_TAKEN =
   "Ese link ya lo usa otro servidor. Probá con otro.";
 

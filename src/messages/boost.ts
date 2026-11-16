@@ -327,7 +327,7 @@ export function boostBenefitChip(
 }
 
 export function boostBenefitLockedLabel(perk: BoostPerk): string {
-  return `${BOOST_PERK_LABELS[perk]}, bloqueado hasta el nivel ${BOOST_PERK_LEVEL[perk]}`;
+  return `${BOOST_PERK_LABELS[perk]}: se desbloquea en el nivel ${BOOST_PERK_LEVEL[perk]}`;
 }
 
 export const SERVER_BANNER_BENEFIT_COPY = {

@@ -7,6 +7,7 @@ import {
   NO_PERMISSION_VANITY,
   saveVanityFailureMessage,
   VANITY_CODE_TAKEN,
+  VANITY_INVITE_LOCKED_COPY,
   VANITY_PAUSED_DETAIL,
   VANITY_SAVE_FAILED,
   VANITY_URL_COPY,
@@ -76,6 +77,14 @@ describe("URL personalizada bloqueada", () => {
   it("dice en qué nivel se activa", () => {
     expect(VANITY_URL_COPY.locked).toBe(
       "Un link corto que no vence, para invitar a quien quieras. Se activa en el nivel 3.",
+    );
+  });
+});
+
+describe("link propio en la invitación", () => {
+  it("explica qué da el nivel 3 mientras está bloqueado", () => {
+    expect(VANITY_INVITE_LOCKED_COPY.detail).toBe(
+      "Con el nivel 3 de boosts, el servidor tiene un link corto que no vence y no tiene límite de usos.",
     );
   });
 });
