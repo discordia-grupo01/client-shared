@@ -38,9 +38,6 @@ export const VOICE_MIC_FAILED =
   "No pudimos activar el micrófono. Intentá de nuevo.";
 export const VOICE_CAMERA_FAILED =
   "No pudimos activar la cámara. Intentá de nuevo.";
-export const VOICE_MIC_ERROR_TITLE = "No pudimos usar el micrófono";
-export const VOICE_CAMERA_ERROR_TITLE = "No pudimos usar la cámara";
-export const VOICE_MEDIA_ERROR_DISMISS = "Entendido";
 export const VOICE_AUDIO_BLOCKED =
   "Tocá en cualquier lugar de la pantalla para escuchar la llamada.";
 export const VOICE_MODERATOR_MUTED =
