@@ -54,6 +54,8 @@ export interface ThemeColors {
   boostWarnLine: string;
   boostWarnText: string;
   boostBadgeOutline: string;
+  boostCta: string;
+  boostOnCta: string;
 
   bgServers: string;
   bgChannels: string;
@@ -125,6 +127,8 @@ const dark: ThemeColors = {
   boostWarnLine: "rgba(232, 198, 106, 0.25)",
   boostWarnText: "#e8c66a",
   boostBadgeOutline: "#e8c66a",
+  boostCta: "#f5f2eb",
+  boostOnCta: "#1c293b",
 
   bgServers: "#0f1922",
   bgChannels: "#1c293b",
@@ -199,6 +203,8 @@ const light: ThemeColors = {
   boostWarnLine: "rgba(143, 106, 18, 0.25)",
   boostWarnText: "#735410",
   boostBadgeOutline: "#8f6a12",
+  boostCta: "#245c6b",
+  boostOnCta: "#ffffff",
 
   bgServers: "#245c6b",
   bgChannels: "#eae5d9",
@@ -273,6 +279,8 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   boostWarnLine: "--boost-warn-line",
   boostWarnText: "--boost-warn-text",
   boostBadgeOutline: "--boost-badge-outline",
+  boostCta: "--boost-cta",
+  boostOnCta: "--boost-on-cta",
 
   bgServers: "--bg-servers",
   bgChannels: "--bg-channels",

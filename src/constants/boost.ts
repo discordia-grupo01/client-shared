@@ -6,7 +6,11 @@ import {
   hasBoostPerk,
 } from "../domain/boost";
 
-import { BOOSTED_MAX_ATTACHMENT_MB, MAX_ATTACHMENT_MB } from "./attachments";
+import {
+  BOOSTED_MAX_ATTACHMENT_MB,
+  MAX_ATTACHMENT_MB,
+  PREMIUM_MAX_ATTACHMENT_MB,
+} from "./attachments";
 
 export const BOOST_COST_POINTS = 100;
 
@@ -33,10 +37,40 @@ export function emojiSlotsFor(level: BoostLevel): number {
     : BASE_EMOJI_SLOTS;
 }
 
-export function serverAttachmentMbFor(level: BoostLevel): number {
+export function serverAttachmentMbFor(
+  level: BoostLevel,
+  premium = false,
+): number {
+  if (premium) return PREMIUM_MAX_ATTACHMENT_MB;
   return hasBoostPerk(level, "larger_attachments")
     ? BOOSTED_MAX_ATTACHMENT_MB
     : MAX_ATTACHMENT_MB;
+}
+
+export interface AttachmentLimitOptions {
+  premium?: boolean;
+  serverLevel?: BoostLevel;
+}
+
+export function attachmentLimitMbFor({
+  premium = false,
+  serverLevel,
+}: AttachmentLimitOptions = {}): number {
+  if (serverLevel === undefined) {
+    return premium ? PREMIUM_MAX_ATTACHMENT_MB : MAX_ATTACHMENT_MB;
+  }
+  return serverAttachmentMbFor(serverLevel, premium);
+}
+
+export function canBoostAttachmentLimit({
+  premium = false,
+  serverLevel,
+}: AttachmentLimitOptions = {}): boolean {
+  return (
+    !premium &&
+    serverLevel !== undefined &&
+    !hasBoostPerk(serverLevel, "larger_attachments")
+  );
 }
 
 export type BoostTableCell =

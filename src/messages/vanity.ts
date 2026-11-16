@@ -15,6 +15,7 @@ export const VANITY_URL_COPY = {
   copied: "Copiado",
   change: "Cambiar",
   remove: "Quitar",
+  locked: `Un link corto que no vence, para invitar a quien quieras. Se activa en el nivel ${BOOST_PERK_LEVEL.vanity_url}.`,
 } as const;
 
 export const VANITY_REMOVE_COPY = {
@@ -38,6 +39,12 @@ export const VANITY_INVITE_COPY = {
   divider: "o una invitación temporal",
   copy: "Copiar",
   copied: "Copiado",
+} as const;
+
+export const VANITY_INVITE_LOCKED_COPY = {
+  title: "Link propio del servidor",
+  detail: `Con el nivel ${BOOST_PERK_LEVEL.vanity_url} de boosts, el servidor tiene un link corto que no vence y no tiene límite de usos.`,
+  benefits: "Ver beneficios",
 } as const;
 
 export const VANITY_CODE_TAKEN =
