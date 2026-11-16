@@ -27,6 +27,20 @@ export const VOICE_MIC_DENIED =
   "Necesitamos acceso al micrófono para que te escuchen. Habilitalo en la configuración y volvé a entrar.";
 export const VOICE_CAMERA_DENIED =
   "Necesitamos acceso a la cámara para que te vean. Habilitala en la configuración e intentá de nuevo.";
+export const VOICE_MIC_IN_USE =
+  "Otra aplicación está usando el micrófono. Cerrala e intentá de nuevo.";
+export const VOICE_CAMERA_IN_USE =
+  "Otra aplicación está usando la cámara. Cerrala e intentá de nuevo.";
+export const VOICE_MIC_NOT_FOUND = "No encontramos ningún micrófono conectado.";
+export const VOICE_CAMERA_NOT_FOUND =
+  "No encontramos ninguna cámara conectada.";
+export const VOICE_MIC_FAILED =
+  "No pudimos activar el micrófono. Intentá de nuevo.";
+export const VOICE_CAMERA_FAILED =
+  "No pudimos activar la cámara. Intentá de nuevo.";
+export const VOICE_MIC_ERROR_TITLE = "No pudimos usar el micrófono";
+export const VOICE_CAMERA_ERROR_TITLE = "No pudimos usar la cámara";
+export const VOICE_MEDIA_ERROR_DISMISS = "Entendido";
 export const VOICE_AUDIO_BLOCKED =
   "Tocá en cualquier lugar de la pantalla para escuchar la llamada.";
 export const VOICE_MODERATOR_MUTED =
@@ -74,7 +88,13 @@ export function voiceErrorMessage(
 
 const MEDIA_ERROR_MESSAGES: Readonly<Record<VoiceMediaError, string>> = {
   mic_denied: VOICE_MIC_DENIED,
+  mic_in_use: VOICE_MIC_IN_USE,
+  mic_not_found: VOICE_MIC_NOT_FOUND,
+  mic_failed: VOICE_MIC_FAILED,
   camera_denied: VOICE_CAMERA_DENIED,
+  camera_in_use: VOICE_CAMERA_IN_USE,
+  camera_not_found: VOICE_CAMERA_NOT_FOUND,
+  camera_failed: VOICE_CAMERA_FAILED,
   connect_failed: VOICE_CONNECT_FAILED,
   audio_blocked: VOICE_AUDIO_BLOCKED,
 };
