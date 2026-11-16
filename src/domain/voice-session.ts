@@ -40,6 +40,10 @@ export interface VoiceSessionState {
   target: VoiceSessionTarget | null;
   status: VoiceConnectionStatus;
   muted: boolean;
+  /** No se escucha a nadie. Ensordecido tambien queda con el microfono apagado. */
+  deafened: boolean;
+  /** Como estaba el microfono antes de ensordecer, para dejarlo igual al volver. */
+  mutedBeforeDeafen: boolean;
   cameraOn: boolean;
   screenSharing: boolean;
   canSpeak: boolean;
@@ -61,6 +65,7 @@ export type VoiceSessionAction =
   | { type: "ended"; notice: string | null }
   | { type: "dismiss_notice" }
   | { type: "toggle_mute" }
+  | { type: "toggle_deafen" }
   | { type: "toggle_camera" }
   | { type: "toggle_screen_share" }
   | { type: "toggle_muted_for_me"; identity: string }
@@ -70,6 +75,8 @@ export const initialVoiceSessionState: VoiceSessionState = {
   target: null,
   status: "idle",
   muted: false,
+  deafened: false,
+  mutedBeforeDeafen: false,
   cameraOn: false,
   screenSharing: false,
   canSpeak: true,
@@ -117,6 +124,8 @@ export function voiceSessionReducer(
       return {
         ...initialVoiceSessionState,
         muted: state.muted,
+        deafened: state.deafened,
+        mutedBeforeDeafen: state.mutedBeforeDeafen,
         notice: action.notice,
         focus: state.focus,
       };
@@ -124,7 +133,22 @@ export function voiceSessionReducer(
       return { ...state, notice: null };
     case "toggle_mute":
       if (!state.canSpeak) return state;
+      // Activar el microfono ensordecido es volver a escuchar tambien.
+      if (state.deafened) return { ...state, muted: false, deafened: false };
       return { ...state, muted: !state.muted };
+    case "toggle_deafen":
+      return state.deafened
+        ? {
+            ...state,
+            deafened: false,
+            muted: state.canSpeak ? state.mutedBeforeDeafen : true,
+          }
+        : {
+            ...state,
+            deafened: true,
+            mutedBeforeDeafen: state.muted,
+            muted: true,
+          };
     case "toggle_camera":
       return state.target ? { ...state, cameraOn: !state.cameraOn } : state;
     case "toggle_screen_share":
