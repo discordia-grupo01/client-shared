@@ -102,6 +102,7 @@ describe("parseVoiceBridgeCommand", () => {
     { type: "setMicrophoneEnabled", enabled: false },
     { type: "setCameraEnabled", enabled: true },
     { type: "setMutedForMe", identity: "u-beto", muted: true },
+    { type: "setDeafened", deafened: true },
     {
       type: "setAppearance",
       theme: "light",
