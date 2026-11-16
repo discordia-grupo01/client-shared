@@ -35,6 +35,8 @@ export type VoiceBridgeCommand =
   | { type: "setMicrophoneEnabled"; enabled: boolean }
   | { type: "setCameraEnabled"; enabled: boolean }
   | { type: "setMutedForMe"; identity: string; muted: boolean }
+  /** Ensordecido no suena nadie, ni siquiera quien no esta en `setMutedForMe`. */
+  | { type: "setDeafened"; deafened: boolean }
   | { type: "setPinned"; identity: string | null }
   | {
       type: "setAppearance";
@@ -221,6 +223,10 @@ export function parseVoiceBridgeCommand(
     case "setCameraEnabled":
       return typeof message.enabled === "boolean"
         ? { type: "setCameraEnabled", enabled: message.enabled }
+        : null;
+    case "setDeafened":
+      return typeof message.deafened === "boolean"
+        ? { type: "setDeafened", deafened: message.deafened }
         : null;
     case "setMutedForMe":
       return isNonEmptyString(message.identity) &&
