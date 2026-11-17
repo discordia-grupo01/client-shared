@@ -46,6 +46,7 @@ export * from "./domain/platform-status";
 export * from "./domain/resource-change";
 export * from "./domain/block";
 export * from "./domain/word-filter";
+export * from "./domain/emoji";
 export * from "./domain/moderation";
 export * from "./domain/moderation-audit";
 export * from "./domain/report";
@@ -94,6 +95,7 @@ export * from "./validation/attachment";
 export * from "./validation/message";
 export * from "./validation/message-search";
 export * from "./validation/word-filter";
+export * from "./validation/emoji";
 export * from "./validation/vanity";
 export * from "./validation/report";
 
@@ -128,6 +130,8 @@ export * from "./messages/billing";
 export * from "./messages/boost";
 export * from "./messages/billing-boost";
 export * from "./messages/vanity";
+export * from "./messages/emoji";
+export * from "./messages/server-settings";
 
 // --- Formatters ---
 export * from "./format/call-duration";
