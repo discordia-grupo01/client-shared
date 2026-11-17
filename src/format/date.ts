@@ -16,10 +16,31 @@ export function formatMemberSince(isoDate: string): string {
   }).format(date);
 }
 
-/**
- * Dias que faltan para una fecha ISO, redondeado. Nunca negativo: si ya paso,
- * devuelve 0 y el llamador muestra "vencida" por otro lado.
- */
+const SHORT_MONTHS = [
+  "ene",
+  "feb",
+  "mar",
+  "abr",
+  "may",
+  "jun",
+  "jul",
+  "ago",
+  "sep",
+  "oct",
+  "nov",
+  "dic",
+] as const;
+
+export function dayAndMonth(date: Date): string {
+  return `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`;
+}
+
+export function formatDayAndMonth(isoDate: string): string {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return "";
+  return dayAndMonth(date);
+}
+
 export function daysUntil(iso: string): number {
   const ms = new Date(iso).getTime() - Date.now();
   return Math.max(0, Math.round(ms / (24 * 60 * 60 * 1000)));
