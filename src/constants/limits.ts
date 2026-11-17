@@ -174,3 +174,18 @@ export const MESSAGE_JUMP_WINDOW = 50;
 
 export const VANITY_CODE_MIN_LENGTH = 3;
 export const VANITY_CODE_MAX_LENGTH = 32;
+
+export const EMOJI_NAME_MIN = 2;
+export const EMOJI_NAME_MAX = 32;
+
+export const EMOJI_NAME_PATTERN = new RegExp(
+  `^[A-Za-z0-9_]{${EMOJI_NAME_MIN},${EMOJI_NAME_MAX}}$`,
+);
+
+export const MAX_EMOJI_FILE_MB = 5;
+
+export const ALLOWED_EMOJI_TYPES = [
+  "image/png",
+  "image/webp",
+  "image/gif",
+] as const;
