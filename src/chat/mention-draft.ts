@@ -1,4 +1,9 @@
-import { encodeMentions, type PickedMention } from "../format/mention-tokens";
+import type { CustomEmojiRef } from "../domain/custom-emoji";
+import {
+  customEmojiDraftText,
+  encodeDraft,
+} from "../format/custom-emoji-draft";
+import type { PickedMention } from "../format/mention-tokens";
 import { messageCodeRanges } from "../format/message-markdown";
 import {
   activeMentionQuery,
@@ -13,6 +18,8 @@ export interface MentionDraftState {
   text: string;
   cursor: number;
   picked: PickedMention[];
+  /** Emojis del servidor elegidos: en el texto se ven como `:nombre:`. */
+  pickedEmojis: CustomEmojiRef[];
   selectedIndex: number;
   isDismissed: boolean;
 }
@@ -24,6 +31,7 @@ export type MentionDraftAction =
   | { type: "pick"; applied: AppliedMention }
   | { type: "dismiss" }
   | { type: "append"; text: string }
+  | { type: "pickEmoji"; emoji: CustomEmojiRef }
   /** Reemplaza todo el borrador (al empezar a editar un mensaje). */
   | { type: "load"; text: string; picked: PickedMention[] }
   | { type: "reset" };
@@ -31,11 +39,13 @@ export type MentionDraftAction =
 export function createMentionDraft(
   text = "",
   picked: PickedMention[] = [],
+  pickedEmojis: CustomEmojiRef[] = [],
 ): MentionDraftState {
   return {
     text,
     cursor: text.length,
     picked,
+    pickedEmojis,
     selectedIndex: 0,
     isDismissed: false,
   };
@@ -86,6 +96,20 @@ export function mentionDraftReducer(
         text: state.text + action.text,
         cursor: state.cursor + action.text.length,
       };
+    case "pickEmoji": {
+      const text = customEmojiDraftText(action.emoji);
+      const isKnown = state.pickedEmojis.some(
+        (emoji) => emoji.id === action.emoji.id,
+      );
+      return {
+        ...state,
+        text: state.text + text,
+        cursor: state.text.length + text.length,
+        pickedEmojis: isKnown
+          ? state.pickedEmojis
+          : [...state.pickedEmojis, action.emoji],
+      };
+    }
     case "load":
       return createMentionDraft(action.text, action.picked);
     case "reset":
@@ -116,9 +140,10 @@ export function mentionDraftView(
     active,
     candidates,
     isOpen: candidates.length > 0 && !state.isDismissed,
-    encoded: encodeMentions(
+    encoded: encodeDraft(
       state.text,
       state.picked,
+      state.pickedEmojis,
       messageCodeRanges(state.text),
     ),
   };

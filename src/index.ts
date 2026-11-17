@@ -156,6 +156,7 @@ export * from "./format/message-author";
 export * from "./format/message-mentions";
 export * from "./format/mention-tokens";
 export * from "./format/mention-draft-segments";
+export * from "./format/custom-emoji-draft";
 export * from "./format/billing";
 
 // --- Chat ---
