@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { PERMISSION_COPY } from "../constants/roles";
 
 import {
+  canOpenServerSettings,
   highestRoleOf,
   outranksRole,
   removesViewChannelsFromEveryone,
@@ -10,6 +11,35 @@ import {
   sortRolesByPosition,
   topPosition,
 } from "./role";
+
+describe("canOpenServerSettings", () => {
+  const withPermissions = (...permissions: string[]) => ({
+    isOwner: false,
+    roles: [{ permissions }],
+  });
+
+  it("el owner siempre entra", () => {
+    expect(canOpenServerSettings({ isOwner: true, roles: [] })).toBe(true);
+  });
+
+  it("alcanza con un permiso de gestion cualquiera", () => {
+    expect(canOpenServerSettings(withPermissions("MANAGE_SERVER"))).toBe(true);
+    expect(canOpenServerSettings(withPermissions("MANAGE_ROLES"))).toBe(true);
+    expect(canOpenServerSettings(withPermissions("BAN_MEMBERS"))).toBe(true);
+    expect(canOpenServerSettings(withPermissions("MANAGE_MESSAGES"))).toBe(
+      true,
+    );
+  });
+
+  it("un miembro sin permisos de gestion no la ve", () => {
+    expect(canOpenServerSettings({ isOwner: false, roles: [] })).toBe(false);
+    expect(
+      canOpenServerSettings(
+        withPermissions("VIEW_CHANNELS", "SEND_MESSAGES", "KICK_MEMBERS"),
+      ),
+    ).toBe(false);
+  });
+});
 
 describe("topPosition", () => {
   it("es undefined para el owner, aunque tenga roles", () => {
