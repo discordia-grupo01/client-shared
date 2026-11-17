@@ -47,6 +47,7 @@ export * from "./domain/resource-change";
 export * from "./domain/block";
 export * from "./domain/word-filter";
 export * from "./domain/emoji";
+export * from "./domain/custom-emoji";
 export * from "./domain/moderation";
 export * from "./domain/moderation-audit";
 export * from "./domain/report";
@@ -155,6 +156,7 @@ export * from "./format/message-author";
 export * from "./format/message-mentions";
 export * from "./format/mention-tokens";
 export * from "./format/mention-draft-segments";
+export * from "./format/custom-emoji-draft";
 export * from "./format/billing";
 
 // --- Chat ---

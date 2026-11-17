@@ -124,6 +124,9 @@ export const BANNED_WORDS_SAVE_FAILED = failedTo(
 export const EMOJIS_LOAD_FAILED = failedTo("cargar los emojis del servidor");
 export const EMOJI_UPLOAD_FAILED = failedTo("subir el emoji");
 export const EMOJI_DELETE_FAILED = failedTo("eliminar el emoji");
+export const CUSTOM_EMOJIS_LOAD_FAILED = failedTo(
+  "cargar los emojis personalizados",
+);
 
 // --- Reportes ---
 export const REPORT_CREATE_FAILED = failedTo("enviar el reporte");
