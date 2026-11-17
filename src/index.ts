@@ -131,6 +131,7 @@ export * from "./messages/boost";
 export * from "./messages/billing-boost";
 export * from "./messages/vanity";
 export * from "./messages/emoji";
+export * from "./messages/server-settings";
 
 // --- Formatters ---
 export * from "./format/call-duration";
