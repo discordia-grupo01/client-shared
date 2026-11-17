@@ -7,6 +7,7 @@ import {
   isCustomEmojiToken,
   needsPremiumForCustomEmoji,
   parseCustomEmojiTokens,
+  premiumReasonForCustomEmoji,
 } from "./custom-emoji";
 
 const MATE = "0f1d3a9e-2b4c-4d7e-8a1b-5c6d7e8f9012";
@@ -74,6 +75,21 @@ describe("cuando hace falta Premium", () => {
     expect(needsPremiumForCustomEmoji(animado, "s1")).toBe(true);
     expect(needsPremiumForCustomEmoji(estatico, "s2")).toBe(true);
     expect(needsPremiumForCustomEmoji(estatico, null)).toBe(true);
+  });
+
+  it("el motivo es ser animado solo en su propio servidor", () => {
+    expect(premiumReasonForCustomEmoji(animado, "s1")).toBe("animated");
+    expect(premiumReasonForCustomEmoji(estatico, "s1")).toBeNull();
+  });
+
+  it("en un mensaje directo el motivo es el mismo para el animado y el quieto", () => {
+    expect(premiumReasonForCustomEmoji(animado, null)).toBe("other-server");
+    expect(premiumReasonForCustomEmoji(estatico, null)).toBe("other-server");
+  });
+
+  it("en otro servidor tampoco distingue entre animado y quieto", () => {
+    expect(premiumReasonForCustomEmoji(animado, "s2")).toBe("other-server");
+    expect(premiumReasonForCustomEmoji(estatico, "s2")).toBe("other-server");
   });
 
   it("con Premium se puede usar cualquiera", () => {

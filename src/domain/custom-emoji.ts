@@ -55,11 +55,21 @@ export function isCustomEmojiToken(text: string): boolean {
   return WHOLE_CUSTOM_EMOJI_TOKEN.test(text);
 }
 
+export type CustomEmojiPremiumReason = "animated" | "other-server";
+
+export function premiumReasonForCustomEmoji(
+  emoji: Pick<ServerEmoji, "animated" | "server_id">,
+  serverId: string | null,
+): CustomEmojiPremiumReason | null {
+  if (emoji.server_id !== serverId) return "other-server";
+  return emoji.animated ? "animated" : null;
+}
+
 export function needsPremiumForCustomEmoji(
   emoji: Pick<ServerEmoji, "animated" | "server_id">,
   serverId: string | null,
 ): boolean {
-  return emoji.animated || emoji.server_id !== serverId;
+  return premiumReasonForCustomEmoji(emoji, serverId) !== null;
 }
 
 export interface CustomEmojiUse {
