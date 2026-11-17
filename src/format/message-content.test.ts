@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { tokenizeMessageContent } from "./message-content";
+import { isEmojiOnlyContent, tokenizeMessageContent } from "./message-content";
 
 const ROLE_ID = "3b1c2d4e-1111-4222-8333-444455556666";
 
@@ -89,5 +89,57 @@ describe("tokenizeMessageContent", () => {
       .filter((token) => token.kind !== "text")
       .map((token) => token.kind);
     expect(kinds).toEqual(["user", "role", "everyone", "channel"]);
+  });
+});
+
+const MATE_ID = "0f1d3a9e-2b4c-4d7e-8a1b-5c6d7e8f9012";
+
+describe("emojis personalizados", () => {
+  it("los separa del texto con su nombre y su id", () => {
+    expect(tokenizeMessageContent(`tomá <:mate:${MATE_ID}>`)).toEqual([
+      { kind: "text", value: "tomá " },
+      {
+        kind: "custom_emoji",
+        value: `<:mate:${MATE_ID}>`,
+        id: MATE_ID,
+        name: "mate",
+        animated: false,
+      },
+    ]);
+  });
+
+  it("marca los animados", () => {
+    const [token] = tokenizeMessageContent(`<a:mate:${MATE_ID}>`);
+    expect(token).toEqual({
+      kind: "custom_emoji",
+      value: `<a:mate:${MATE_ID}>`,
+      id: MATE_ID,
+      name: "mate",
+      animated: true,
+    });
+  });
+
+  it("lo que no tiene la forma exacta queda como texto", () => {
+    expect(tokenizeMessageContent(":mate:")).toEqual([
+      { kind: "text", value: ":mate:" },
+    ]);
+  });
+});
+
+describe("isEmojiOnlyContent", () => {
+  it("es cierto con emojis unicode, personalizados o los dos", () => {
+    expect(isEmojiOnlyContent("😀")).toBe(true);
+    expect(isEmojiOnlyContent("😀 🎉  🥳")).toBe(true);
+    expect(isEmojiOnlyContent(`<:mate:${MATE_ID}>`)).toBe(true);
+    expect(isEmojiOnlyContent(`😀 <a:mate:${MATE_ID}>`)).toBe(true);
+    expect(isEmojiOnlyContent("1️⃣")).toBe(true);
+  });
+
+  it("es falso si hay texto, menciones o nada", () => {
+    expect(isEmojiOnlyContent("hola 😀")).toBe(false);
+    expect(isEmojiOnlyContent("1")).toBe(false);
+    expect(isEmojiOnlyContent("<@u_9f2> 😀")).toBe(false);
+    expect(isEmojiOnlyContent("   ")).toBe(false);
+    expect(isEmojiOnlyContent("")).toBe(false);
   });
 });

@@ -184,6 +184,8 @@ export const EMOJI_NAME_PATTERN = new RegExp(
 
 export const MAX_EMOJI_FILE_MB = 5;
 
+export const MAX_CUSTOM_EMOJI_IDS = 100;
+
 export const ALLOWED_EMOJI_TYPES = [
   "image/png",
   "image/webp",

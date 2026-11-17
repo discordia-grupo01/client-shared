@@ -23,11 +23,11 @@ import { NETWORK_ERROR_MESSAGE, SESSION_EXPIRED_MESSAGE } from "./errors";
 import { messageFor, type ReasonCatalog } from "./message-for";
 import { NO_PERMISSION_EMOJIS } from "./permissions";
 
-export const EMOJIS_SECTION_TITLE = "Emojis del servidor";
-export const EMOJIS_SECTION_SUBTITLE = "Lugares y emojis para el chat";
+export const EMOJIS_SECTION_TITLE = "Emojis personalizados";
+export const EMOJIS_SECTION_SUBTITLE = "Emojis para el chat";
 
 export function emojisSectionTitleFor(serverName: string): string {
-  return `Emojis de ${serverName}`;
+  return `Emojis personalizados de ${serverName}`;
 }
 
 export const EMOJIS_SECTION_DESCRIPTION =
@@ -39,10 +39,59 @@ export function emojiLabel(name: string): string {
 
 export const EMOJI_ANIMATED_BADGE = "GIF";
 
-export const EMOJI_SLOTS_LABEL = "Lugares";
+export const EMOJI_PREMIUM_REQUIRED_LABEL = "Para usarlo necesitás Premium";
 
-export function emojiSlotsCountLabel(used: number, max: number): string {
-  return `${used} de ${max}`;
+export const CUSTOM_EMOJI_PICKER_COPY = {
+  note: "Usá GIF y emojis de todos tus servidores.",
+  cta: "Ver Premium",
+  categoryTag: "Premium",
+  animated: "animado",
+  locked: "Necesitás Premium para usarlo",
+} as const;
+
+function customEmojiHead(name: string, animated: boolean): string {
+  return animated
+    ? `${emojiLabel(name)} · ${CUSTOM_EMOJI_PICKER_COPY.animated}`
+    : emojiLabel(name);
+}
+
+export function customEmojiTooltip(
+  name: string,
+  { animated, locked }: { animated: boolean; locked: boolean },
+): string {
+  const head = customEmojiHead(name, animated);
+  return locked ? `${head}\n${CUSTOM_EMOJI_PICKER_COPY.locked}` : head;
+}
+
+export const CUSTOM_EMOJI_PREMIUM_OFFER_COPY = {
+  title: "Los emojis animados son de Premium",
+  detail:
+    "Con Premium usás los emojis animados y los de todos tus servidores, también en mensajes directos.",
+  cta: "Conocé Plan Premium",
+} as const;
+
+export const CUSTOM_EMOJI_REACTION_OFFER_COPY = {
+  title: "Sumarte a esta reacción es de Premium",
+  detail:
+    "Las reacciones con emojis animados (GIF) las puede usar quien tiene Premium. La ves igual que todos.",
+  cta: CUSTOM_EMOJI_PICKER_COPY.cta,
+  locked: "Sumarte es de Premium",
+} as const;
+
+export function customEmojiReactionTooltip(
+  name: string,
+  { animated, locked }: { animated: boolean; locked: boolean },
+): string {
+  const head = customEmojiHead(name, animated);
+  return locked ? `${head}\n${CUSTOM_EMOJI_REACTION_OFFER_COPY.locked}` : head;
+}
+
+export function emojiCapacityTitleFor(serverName: string): string {
+  return `Capacidad de ${serverName}`;
+}
+
+export function emojiSlotsTotalLabel(max: number): string {
+  return `/ ${max} lugares usados`;
 }
 
 export function emojiSlotsHint(level: BoostLevel): string {
