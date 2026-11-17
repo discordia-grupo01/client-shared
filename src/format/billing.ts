@@ -1,3 +1,5 @@
+import { dayAndMonth } from "./date";
+
 function groupThousands(value: number): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -31,25 +33,6 @@ const BILLING_DATE_TIME = new Intl.DateTimeFormat("es-AR", {
 export function formatBillingDate(iso: string): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? "" : BILLING_DATE_TIME.format(date);
-}
-
-const SHORT_MONTHS = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-] as const;
-
-function dayAndMonth(date: Date): string {
-  return `${date.getDate()} ${SHORT_MONTHS[date.getMonth()]}`;
 }
 
 function clockTime(date: Date): string {

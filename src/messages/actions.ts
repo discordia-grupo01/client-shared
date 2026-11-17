@@ -120,6 +120,11 @@ export const BANNED_WORDS_SAVE_FAILED = failedTo(
   "guardar las palabras prohibidas",
 );
 
+// --- Emojis del servidor ---
+export const EMOJIS_LOAD_FAILED = failedTo("cargar los emojis del servidor");
+export const EMOJI_UPLOAD_FAILED = failedTo("subir el emoji");
+export const EMOJI_DELETE_FAILED = failedTo("eliminar el emoji");
+
 // --- Reportes ---
 export const REPORT_CREATE_FAILED = failedTo("enviar el reporte");
 export const REPORTS_LOAD_FAILED = failedTo("cargar los reportes");
