@@ -4,6 +4,7 @@ import {
   attachmentLimitMbFor,
   BOOST_TABLE_ROWS,
   canBoostAttachmentLimit,
+  canOfferPremiumForAttachment,
   emojiSlotsFor,
   serverAttachmentMbFor,
 } from "./boost";
@@ -50,6 +51,19 @@ describe("límite de adjuntos por nivel y Premium", () => {
       false,
     );
     expect(canBoostAttachmentLimit()).toBe(false);
+  });
+});
+
+describe("canOfferPremiumForAttachment", () => {
+  it("ofrece Premium solo en un DM y si todavía no lo tiene", () => {
+    expect(canOfferPremiumForAttachment()).toBe(true);
+    expect(canOfferPremiumForAttachment({ premium: true })).toBe(false);
+  });
+
+  it("en un servidor no lo ofrece, ahí manda la tarjeta de boosts", () => {
+    for (const serverLevel of [0, 1, 2, 3] as const) {
+      expect(canOfferPremiumForAttachment({ serverLevel })).toBe(false);
+    }
   });
 });
 

@@ -73,6 +73,14 @@ export function canBoostAttachmentLimit({
   );
 }
 
+/** En un DM los boosts no cuentan: el único camino para subir más es Premium. */
+export function canOfferPremiumForAttachment({
+  premium = false,
+  serverLevel,
+}: AttachmentLimitOptions = {}): boolean {
+  return !premium && serverLevel === undefined;
+}
+
 export type BoostTableCell =
   { kind: "amount"; value: string } | { kind: "check"; included: boolean };
 
