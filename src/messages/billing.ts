@@ -1,4 +1,8 @@
 import {
+  MAX_ATTACHMENT_MB,
+  PREMIUM_MAX_ATTACHMENT_MB,
+} from "../constants/attachments";
+import {
   type BillingSection,
   POINTS_PURCHASE_EXPIRY_HOURS,
 } from "../constants/billing";
@@ -127,6 +131,18 @@ export const PREMIUM_SHOWCASE_BENEFITS: readonly PremiumBenefit[] = [
     description: "Se ve en tu perfil, para vos y para los demás.",
   },
 ];
+
+export const PREMIUM_SHOWCASE_ART_COPY = {
+  attachmentKind: "PDF",
+  attachmentName: "apuntes.pdf",
+  attachmentBaseLimit: `${MAX_ATTACHMENT_MB} MB`,
+  attachmentLimit: `${PREMIUM_MAX_ATTACHMENT_MB} MB`,
+  animatedKind: "GIF",
+  globalEmojisTitle: "Todos tus servidores",
+  globalEmojisHint: "En cualquier chat",
+  profileLabel: "Tu perfil",
+  badge: "PREMIUM",
+} as const;
 
 export interface PremiumActionLabels {
   subscribe: string;
