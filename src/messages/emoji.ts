@@ -23,11 +23,11 @@ import { NETWORK_ERROR_MESSAGE, SESSION_EXPIRED_MESSAGE } from "./errors";
 import { messageFor, type ReasonCatalog } from "./message-for";
 import { NO_PERMISSION_EMOJIS } from "./permissions";
 
-export const EMOJIS_SECTION_TITLE = "Emojis del servidor";
-export const EMOJIS_SECTION_SUBTITLE = "Lugares y emojis para el chat";
+export const EMOJIS_SECTION_TITLE = "Emojis personalizados";
+export const EMOJIS_SECTION_SUBTITLE = "Emojis para el chat";
 
 export function emojisSectionTitleFor(serverName: string): string {
-  return `Emojis de ${serverName}`;
+  return `Emojis personalizados de ${serverName}`;
 }
 
 export const EMOJIS_SECTION_DESCRIPTION =
@@ -39,10 +39,14 @@ export function emojiLabel(name: string): string {
 
 export const EMOJI_ANIMATED_BADGE = "GIF";
 
-export const EMOJI_SLOTS_LABEL = "Lugares";
+export const EMOJI_PREMIUM_REQUIRED_LABEL = "Para usarlo necesitás Premium";
 
-export function emojiSlotsCountLabel(used: number, max: number): string {
-  return `${used} de ${max}`;
+export function emojiCapacityTitleFor(serverName: string): string {
+  return `Capacidad de ${serverName}`;
+}
+
+export function emojiSlotsTotalLabel(max: number): string {
+  return `/ ${max} lugares disponibles`;
 }
 
 export function emojiSlotsHint(level: BoostLevel): string {

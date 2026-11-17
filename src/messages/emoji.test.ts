@@ -16,7 +16,8 @@ import {
   emojiDeleteTitle,
   emojiFileDetail,
   emojiLabel,
-  emojiSlotsCountLabel,
+  emojiCapacityTitleFor,
+  emojiSlotsTotalLabel,
   emojiSlotsHint,
   emojiUploadErrorFor,
   emojisSectionTitleFor,
@@ -34,13 +35,14 @@ const failure = (
 describe("textos de la seccion", () => {
   it("titula con el nombre del servidor y muestra el emoji como se escribe", () => {
     expect(emojisSectionTitleFor("Club de lectura")).toBe(
-      "Emojis de Club de lectura",
+      "Emojis personalizados de Club de lectura",
     );
     expect(emojiLabel("festejo")).toBe(":festejo:");
   });
 
-  it("los lugares dicen cuantos se usaron sobre el tope", () => {
-    expect(emojiSlotsCountLabel(6, 70)).toBe("6 de 70");
+  it("la capacidad lleva el nombre del servidor y el tope de lugares", () => {
+    expect(emojiCapacityTitleFor("Física")).toBe("Capacidad de Física");
+    expect(emojiSlotsTotalLabel(70)).toBe("/ 70 lugares usados");
   });
 
   it("el nivel 1 explica los 20 lugares extra segun si ya los tiene", () => {
