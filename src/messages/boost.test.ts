@@ -5,6 +5,7 @@ import { BOOST_PERKS } from "../domain/boost";
 import {
   ANIMATED_SERVER_ICON_COPY,
   ATTACHMENT_BOOST_OFFER_COPY,
+  ATTACHMENT_PREMIUM_OFFER_COPY,
   attachmentLimitLabel,
   BOOST_PROGRESS_STRIP_COPY,
   boostBenefitChip,
@@ -288,9 +289,19 @@ describe("adjuntos que superan el límite del servidor", () => {
     expect(attachmentLimitLabel({ serverLevel: 2 })).toBe(
       "Hasta 25 MB en este servidor",
     );
-    expect(attachmentLimitLabel()).toBe("Hasta 10 MB · 50 MB con Premium");
+    expect(attachmentLimitLabel()).toBe("Hasta 10 MB en mensajes directos");
     expect(attachmentLimitLabel({ serverLevel: 0, premium: true })).toBe(
       "Hasta 50 MB",
     );
+  });
+});
+
+describe("adjuntos que superan el límite en un mensaje directo", () => {
+  it("recuerda el límite y lleva a Premium", () => {
+    expect(ATTACHMENT_PREMIUM_OFFER_COPY.title).toBe("Adjuntos de hasta 50 MB");
+    expect(ATTACHMENT_PREMIUM_OFFER_COPY.detail).toBe(
+      "En mensajes directos el límite es 10 MB. Con Premium subís hasta 50 MB en cualquier chat.",
+    );
+    expect(ATTACHMENT_PREMIUM_OFFER_COPY.cta).toBe("Conocé Plan Premium");
   });
 });

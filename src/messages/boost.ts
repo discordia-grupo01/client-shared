@@ -358,12 +358,18 @@ export const ATTACHMENT_BOOST_OFFER_COPY = {
   premium: "Premium",
 } as const;
 
+export const ATTACHMENT_PREMIUM_OFFER_COPY = {
+  title: `Adjuntos de hasta ${PREMIUM_MAX_ATTACHMENT_MB} MB`,
+  detail: `En mensajes directos el límite es ${MAX_ATTACHMENT_MB} MB. Con Premium subís hasta ${PREMIUM_MAX_ATTACHMENT_MB} MB en cualquier chat.`,
+  cta: "Conocé Plan Premium",
+} as const;
+
 export function attachmentLimitLabel(
   options: AttachmentLimitOptions = {},
 ): string {
   if (options.premium) return `Hasta ${PREMIUM_MAX_ATTACHMENT_MB} MB`;
   if (options.serverLevel === undefined) {
-    return `Hasta ${MAX_ATTACHMENT_MB} MB · ${PREMIUM_MAX_ATTACHMENT_MB} MB con Premium`;
+    return `Hasta ${MAX_ATTACHMENT_MB} MB en mensajes directos`;
   }
   if (canBoostAttachmentLimit(options)) {
     return `Hasta ${MAX_ATTACHMENT_MB} MB · ${BOOSTED_MAX_ATTACHMENT_MB} MB desde el`;
