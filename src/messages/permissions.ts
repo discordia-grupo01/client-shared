@@ -52,6 +52,13 @@ export const NO_PERMISSION_ROLE_MEMBERS = noPermissionFor(
 export const NO_PERMISSION_WORD_FILTER = noPermissionFor(
   "editar las palabras prohibidas",
 );
+/**
+ * Subir y borrar emojis pide `MANAGE_SERVER`. Verlos no: cualquier miembro
+ * entra a la seccion y los usa en el chat.
+ */
+export const NO_PERMISSION_EMOJIS = noPermissionFor(
+  "gestionar los emojis de este servidor",
+);
 /** Ver y cerrar reportes exige ser moderador: los tres permisos juntos. */
 export const NO_PERMISSION_REPORTS = noPermissionFor("revisar los reportes");
 /** El registro de auditoria exige lo mismo que los reportes. */
