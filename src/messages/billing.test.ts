@@ -11,6 +11,7 @@ import {
   paymentRejectionReason,
   PAYMENT_REJECTED_DEFAULT,
   premiumActionLabels,
+  PREMIUM_SHOWCASE_ART_COPY,
   premiumStatusCopy,
 } from "./billing";
 import { UNEXPECTED_ERROR_MESSAGE } from "./errors";
@@ -170,5 +171,18 @@ describe("BILLING_COPY", () => {
       "Activo hasta el 5 de diciembre de 2026",
     );
     expect(BILLING_COPY.buyPackage("550 puntos")).toBe("Comprar 550 puntos");
+  });
+});
+
+describe("PREMIUM_SHOWCASE_ART_COPY", () => {
+  it("los dibujos de las tarjetas usan los límites reales", () => {
+    expect(PREMIUM_SHOWCASE_ART_COPY.attachmentBaseLimit).toBe("10 MB");
+    expect(PREMIUM_SHOWCASE_ART_COPY.attachmentLimit).toBe("50 MB");
+  });
+
+  it("no deja ningún texto vacío", () => {
+    for (const text of Object.values(PREMIUM_SHOWCASE_ART_COPY)) {
+      expect(text.trim()).not.toBe("");
+    }
   });
 });
