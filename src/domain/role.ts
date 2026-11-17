@@ -150,6 +150,25 @@ export function hasPermission(
 }
 
 /**
+ * Permisos que abren Configuracion del servidor. Cada seccion tiene el suyo
+ * (Perfil y Emojis `MANAGE_SERVER`, Palabras prohibidas `MANAGE_MESSAGES`,
+ * Roles `MANAGE_ROLES`, Baneos `BAN_MEMBERS`), asi que con cualquiera de los
+ * cuatro hay por lo menos una seccion que mostrar.
+ */
+export const SERVER_SETTINGS_PERMISSIONS = [
+  "MANAGE_SERVER",
+  "MANAGE_MESSAGES",
+  "MANAGE_ROLES",
+  "BAN_MEMBERS",
+] as const satisfies readonly RolePermission[];
+
+export function canOpenServerSettings(ctx: PermissionContext): boolean {
+  return SERVER_SETTINGS_PERMISSIONS.some((permission) =>
+    hasPermission(ctx, permission),
+  );
+}
+
+/**
  * Contexto minimo para evaluar rango jerarquico del lado del cliente. Espeja
  * `role.Standing` (`servers/internal/model/role/standing.go`): el owner esta
  * fuera de la jerarquia de roles (no tiene `position`) y siempre gana; el
