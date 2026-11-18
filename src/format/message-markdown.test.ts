@@ -515,6 +515,14 @@ describe("stripMessageMarkdown", () => {
       ),
     ).toBe(`a\nb\nel final: ${SPOILER_PREVIEW_TEXT}\nguia`);
   });
+
+  it("muestra los emojis personalizados por su nombre sin el id", () => {
+    expect(
+      stripMessageMarkdown(
+        "mirá <:arbol_de_decision:89589e80-4fd5-4c07-8e65-276949b2ddc9> y <a:festejo:89589e80-4fd5-4c07-8e65-276949b2ddc8> genial",
+      ),
+    ).toBe("mirá :arbol_de_decision: y :festejo: genial");
+  });
 });
 
 describe("messageMarkdownRanges", () => {
