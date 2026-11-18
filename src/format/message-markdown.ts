@@ -563,6 +563,7 @@ function inlineText(nodes: readonly MessageInline[]): string {
   return nodes
     .map((node) => {
       if (node.kind === "spoiler") return SPOILER_PREVIEW_TEXT;
+      if (node.kind === "custom_emoji") return `:${node.name}:`;
       return "children" in node ? inlineText(node.children) : node.value;
     })
     .join("");
