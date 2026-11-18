@@ -21,6 +21,7 @@ import {
   notificationPlace,
   notificationPreview,
   notificationUserIds,
+  locallyReadTransferIds,
 } from "./notification-history";
 
 const item = (
@@ -682,6 +683,78 @@ describe("transferencia de propiedad", () => {
     expect(
       isNotificationUnread(entry, { "transfer:t1": "2026-11-03T00:00:00Z" }),
     ).toBe(false);
+  });
+
+  it("lo que el servidor ya marco como leido no vuelve a salir sin leer, aunque no haya marca local", () => {
+    expect(isNotificationUnread(transfer("t1", { read: true }), {})).toBe(
+      false,
+    );
+    expect(isNotificationUnread(transfer("t1", { read: false }), {})).toBe(
+      true,
+    );
+  });
+
+  it("una marca local sigue valiendo si el servidor todavia no la marco", () => {
+    expect(
+      isNotificationUnread(transfer("t1", { read: false }), {
+        "transfer:t1": "2026-11-03T00:00:00Z",
+      }),
+    ).toBe(false);
+  });
+
+  it("el estado de leido del servidor solo cuenta en las transferencias", () => {
+    expect(isNotificationUnread(item("m1", { read: true }), {})).toBe(true);
+  });
+
+  describe("locallyReadTransferIds", () => {
+    const readHere = { "transfer:t1": "2026-11-03T00:00:00Z" };
+
+    it("devuelve las transferencias leidas en este dispositivo que el servidor no sabe", () => {
+      const items = [transfer("t1"), transfer("t2")];
+
+      expect(locallyReadTransferIds(items, readHere)).toEqual(["t1"]);
+    });
+
+    it("no repite las que el servidor ya marco como leidas", () => {
+      const items = [transfer("t1", { read: true }), transfer("t2")];
+
+      expect(
+        locallyReadTransferIds(items, {
+          ...readHere,
+          "transfer:t2": "2026-11-03T00:00:00Z",
+        }),
+      ).toEqual(["t2"]);
+    });
+
+    it("no devuelve nada si no se leyo nada en este dispositivo", () => {
+      expect(locallyReadTransferIds([transfer("t1")], {})).toEqual([]);
+    });
+
+    it("cuenta lo leido con todo marcado como leido", () => {
+      const items = [transfer("t1"), transfer("t2")];
+
+      expect(
+        locallyReadTransferIds(items, {
+          [NOTIFICATION_ALL_READ_KEY]: "2026-11-03T00:00:00Z",
+        }),
+      ).toEqual(["t1", "t2"]);
+    });
+
+    it("ignora lo que no es una transferencia", () => {
+      const items = [item("m1"), directMessage("m2")];
+
+      expect(
+        locallyReadTransferIds(items, {
+          [NOTIFICATION_ALL_READ_KEY]: "2026-11-03T00:00:00Z",
+        }),
+      ).toEqual([]);
+    });
+
+    it("no repite una transferencia", () => {
+      const items = [transfer("t1"), transfer("t1")];
+
+      expect(locallyReadTransferIds(items, readHere)).toEqual(["t1"]);
+    });
   });
 
   it("pide los nombres del dueño y del receptor, sin repetir", () => {
