@@ -201,11 +201,29 @@ export function isNotificationUnread(
   item: NotificationHistoryItem,
   marks: NotificationReadMarks,
 ): boolean {
+  if (isTransferNotification(item) && item.read === true) return false;
   const at = Date.parse(item.occurred_at);
   return [
     marks[notificationGroupKey(item)],
     marks[NOTIFICATION_ALL_READ_KEY],
   ].every((readAt) => readAt === undefined || at > Date.parse(readAt));
+}
+
+export const NOTIFICATION_TRANSFERS_READ_MAX_IDS = 100;
+
+export function locallyReadTransferIds(
+  items: readonly NotificationHistoryItem[],
+  marks: NotificationReadMarks,
+): string[] {
+  const ids = items
+    .filter(
+      (item) =>
+        isTransferNotification(item) &&
+        item.read !== true &&
+        !isNotificationUnread(item, marks),
+    )
+    .map((item) => item.message_id);
+  return [...new Set(ids)];
 }
 
 export function countUnreadNotifications(
