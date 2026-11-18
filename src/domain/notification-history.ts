@@ -29,6 +29,7 @@ export interface NotificationHistoryItem {
   conversation_id: string | null;
   to_user_id?: string | null;
   transfer_status?: NotificationTransferStatus | null;
+  read?: boolean;
 }
 
 export interface NotificationHistoryResponse {
@@ -48,3 +49,6 @@ export interface NotificationHistoryQuery {
   limit?: number;
   before?: string | null;
 }
+
+export type MarkTransfersReadResult =
+  { ok: true } | { ok: false; message: string };
