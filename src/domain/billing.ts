@@ -32,6 +32,7 @@ export type LedgerReason =
 export interface LedgerEntry {
   delta: number;
   reason: LedgerReason;
+  server_id?: string | null;   // present only for boost / boost_refund entries
   created_at: string;
 }
 
