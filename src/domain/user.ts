@@ -12,6 +12,8 @@ export interface User {
   status_emoji: string;
   /** Réplica de billing: `true` mientras Premium esté activo (incluido el período pago después de cancelar). */
   premium: boolean;
+  /** `false` en una cuenta creada solo con Google que todavía no definió contraseña. */
+  has_password: boolean;
   created_at: string;
 }
 

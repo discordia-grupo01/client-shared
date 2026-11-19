@@ -12,6 +12,8 @@ import {
   PIN_MIN_LENGTH,
 } from "../constants/limits";
 import type {
+  ChangePasswordErrors,
+  ChangePasswordValues,
   ForgotPasswordErrors,
   ForgotPasswordValues,
   LoginErrors,
@@ -56,6 +58,9 @@ const HAS_DIGIT = /\d/;
  * Exportada porque el BFF de `web-client` tambien la muestra cuando el back
  * rechaza la contraseña, y la decia con un tercer texto distinto.
  */
+export const SAME_PASSWORD_RULE_MESSAGE =
+  "La nueva contraseña tiene que ser distinta de la actual";
+
 export const PASSWORD_RULE_MESSAGE = `Usá ${PASSWORD_MIN}+ caracteres con una mayúscula, una minúscula y un número`;
 
 /**
@@ -172,6 +177,28 @@ export function validateSetPassword(
   return errors;
 }
 
+export function validateChangePassword(
+  values: ChangePasswordValues,
+): ChangePasswordErrors {
+  const errors: ChangePasswordErrors = {};
+  if (values.currentPassword === "") {
+    errors.currentPassword = "Ingresá tu contraseña actual";
+  }
+
+  errors.newPassword = passwordStrengthError(values.newPassword);
+  if (!errors.newPassword && values.newPassword === values.currentPassword) {
+    errors.newPassword = SAME_PASSWORD_RULE_MESSAGE;
+  }
+
+  if (values.confirmPassword === "") {
+    errors.confirmPassword = "Confirmá tu contraseña";
+  } else if (values.confirmPassword !== values.newPassword) {
+    errors.confirmPassword = "Las contraseñas no coinciden";
+  }
+
+  return errors;
+}
+
 export function validatePinSetup(values: PinSetupValues): PinSetupErrors {
   const errors: PinSetupErrors = {};
   errors.pin = pinFormatError(values.pin);
@@ -198,6 +225,7 @@ export function hasErrors(
     | ForgotPasswordErrors
     | ResetPasswordErrors
     | SetPasswordErrors
+    | ChangePasswordErrors
     | PinSetupErrors
     | PinLoginErrors
     | TwoFactorCodeErrors
