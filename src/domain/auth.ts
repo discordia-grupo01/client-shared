@@ -1,6 +1,5 @@
 import type { User } from "./user";
 
-/** Respuesta de `POST /v1/login` y `POST /v1/refresh`. */
 export interface AuthResponse {
   user: User;
   token: string;
@@ -110,11 +109,6 @@ export interface ResetPasswordErrors {
   confirmPassword?: string;
 }
 
-/**
- * `POST /v1/me/password`: le da una contraseña a una cuenta que nunca tuvo
- * una (alta puramente federada por Google). No es un cambio de contraseña
- * -- el backend la rechaza si la cuenta ya tiene una.
- */
 export interface SetPasswordValues {
   password: string;
   confirmPassword: string;
@@ -134,10 +128,21 @@ export interface SetPasswordErrors {
 export type SetPasswordResult =
   { ok: true } | { ok: false; message: string; alreadySet?: boolean };
 
-/**
- * Activar el PIN de acceso rápido (historia "Registro con PIN"). Solo se usa
- * en app-mobile
- */
+export interface ChangePasswordValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordErrors {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
+export type ChangePasswordResult =
+  { ok: true } | { ok: false; message: string; passwordNotSet?: boolean };
+
 export interface PinSetupValues {
   pin: string;
   confirmPin: string;
@@ -148,7 +153,6 @@ export interface PinSetupErrors {
   confirmPin?: string;
 }
 
-/** Login rápido con PIN: sin email, se resuelve por `device_id` (CA2). */
 export interface PinLoginValues {
   pin: string;
 }

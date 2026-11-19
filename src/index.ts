@@ -111,6 +111,7 @@ export * from "./messages/notification-settings";
 export * from "./messages/push";
 export * from "./messages/blocks";
 export * from "./messages/auth";
+export * from "./messages/account-password";
 export * from "./messages/account-suspension";
 export * from "./messages/server-suspension";
 export * from "./messages/two-factor";
