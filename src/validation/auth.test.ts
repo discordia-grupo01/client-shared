@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   hasErrors,
   normalizeName,
+  PASSWORD_RULE_MESSAGE,
+  validateChangePassword,
   validateForgotPassword,
   validateLogin,
   validateRegister,
@@ -181,6 +183,51 @@ describe("validateResetPassword", () => {
   it("marca cuando las contrasenas no coinciden", () => {
     expect(
       validateResetPassword({ ...valid, confirmPassword: "Otra123" })
+        .confirmPassword,
+    ).toBe("Las contraseñas no coinciden");
+  });
+});
+
+describe("validateChangePassword", () => {
+  const valid = {
+    currentPassword: "Actual123",
+    newPassword: "Nueva1234",
+    confirmPassword: "Nueva1234",
+  };
+
+  it("no devuelve errores con datos validos", () => {
+    expect(hasErrors(validateChangePassword(valid))).toBe(false);
+  });
+
+  it("exige la contraseña actual", () => {
+    expect(
+      validateChangePassword({ ...valid, currentPassword: "" }).currentPassword,
+    ).toBe("Ingresá tu contraseña actual");
+  });
+
+  it("aplica la regla de fuerza a la nueva", () => {
+    expect(
+      validateChangePassword({
+        ...valid,
+        newPassword: "corta",
+        confirmPassword: "corta",
+      }).newPassword,
+    ).toBe(PASSWORD_RULE_MESSAGE);
+  });
+
+  it("rechaza que la nueva sea igual a la actual", () => {
+    expect(
+      validateChangePassword({
+        ...valid,
+        newPassword: "Actual123",
+        confirmPassword: "Actual123",
+      }).newPassword,
+    ).toBe("La nueva contraseña tiene que ser distinta de la actual");
+  });
+
+  it("exige que la confirmacion coincida", () => {
+    expect(
+      validateChangePassword({ ...valid, confirmPassword: "Otra1234" })
         .confirmPassword,
     ).toBe("Las contraseñas no coinciden");
   });
