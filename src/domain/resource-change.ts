@@ -13,6 +13,7 @@ export const CHANGE_RESOURCES = [
   "reports",
   "emojis",
   "notifications",
+  "notices",
   "metrics",
   "points",
   "boosts",
