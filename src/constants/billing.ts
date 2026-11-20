@@ -47,9 +47,6 @@ export function isBillingSection(value: string): value is BillingSection {
   return (BILLING_SECTIONS as readonly string[]).includes(value);
 }
 
-/** Filas por página en "Compras con dinero" y "Movimientos de puntos". */
-export const BILLING_HISTORY_PAGE_SIZE = 10;
-
 /** Solapa que se abre al volver de Mercado Pago, según lo que se pagó. */
 export const PAYMENT_RETURN_SECTION = {
   premium: "subscriptions",

@@ -1,8 +1,5 @@
-import {
-  BOOST_COST_POINTS,
-  BOOSTED_SERVERS_PAGE_SIZE,
-  BOOSTS_PAGE_SIZE,
-} from "../constants/boost";
+import { BOOST_COST_POINTS } from "../constants/boost";
+import { DEFAULT_PAGE_SIZE } from "../format/pagination";
 import type { BillingTone } from "./billing";
 import {
   type BoostLevel,
@@ -39,7 +36,7 @@ export interface BoostPage {
 export function boostsPageParams(
   serverId: string,
   page: number,
-  pageSize: number = BOOSTS_PAGE_SIZE,
+  pageSize: number = DEFAULT_PAGE_SIZE,
 ): Record<string, string> {
   return {
     server_id: serverId,
@@ -66,7 +63,7 @@ export interface BoostedServersPage {
 
 export function boostedServersPageParams(
   page: number,
-  pageSize: number = BOOSTED_SERVERS_PAGE_SIZE,
+  pageSize: number = DEFAULT_PAGE_SIZE,
 ): Record<string, string> {
   return {
     limit: String(pageSize),
