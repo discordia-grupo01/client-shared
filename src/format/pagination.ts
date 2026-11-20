@@ -1,13 +1,10 @@
 /**
- * Paginacion en memoria, para listas que el backend no filtra ni pagina como
- * la UI necesita (la de baneados: el back no filtra por nombre de usuario, asi
- * que buscar por nombre y paginar lo hace el front).
- *
- * Las paginas son 1-based, porque es lo que ve el usuario.
+ * Paginacion de las listas. Las paginas son 1-based, porque es lo que ve el
+ * usuario.
  */
 
-export const DEFAULT_PAGE_SIZE = 15;
-export const TRANSFER_CANDIDATES_PAGE_SIZE = 10;
+/** Filas por pagina en todas las listas paginadas. */
+export const DEFAULT_PAGE_SIZE = 10;
 
 /** Cuantos numeros de pagina se muestran a la vez en la barra. */
 export const PAGE_WINDOW_SIZE = 5;

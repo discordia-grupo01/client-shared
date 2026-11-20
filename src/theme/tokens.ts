@@ -37,6 +37,8 @@ export interface ThemeColors {
   railSurfaceHover: string;
   railActiveBg: string;
   railActiveText: string;
+  /** Igual en los dos temas: el `warning` claro es más oscuro y se ve apagado. */
+  amber: string;
   boostYellow: string;
   boostPaper: string;
   boostInk: string;
@@ -110,6 +112,7 @@ const dark: ThemeColors = {
   railSurfaceHover: "rgba(36, 92, 107, 0.3)",
   railActiveBg: "#245c6b",
   railActiveText: "#ffffff",
+  amber: "#f0b232",
   boostYellow: "#e8c66a",
   boostPaper: "#f5f2eb",
   boostInk: "#1c293b",
@@ -182,6 +185,7 @@ const light: ThemeColors = {
   railSurfaceHover: "rgba(168, 198, 223, 0.3)",
   railActiveBg: "#fce3a4",
   railActiveText: "#18181b",
+  amber: "#f0b232",
   boostYellow: "#d4a93e",
   boostPaper: "#f5f2eb",
   boostInk: "#1c293b",
@@ -262,6 +266,7 @@ export const THEME_CSS_VARS: Record<keyof ThemeColors, string> = {
   railSurfaceHover: "--rail-surface-hover",
   railActiveBg: "--rail-active-bg",
   railActiveText: "--rail-active-text",
+  amber: "--amber",
   boostYellow: "--boost-yellow",
   boostPaper: "--boost-paper",
   boostInk: "--boost-ink",
