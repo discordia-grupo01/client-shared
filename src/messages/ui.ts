@@ -292,7 +292,6 @@ export const BANS_MEMBERS_EMPTY_SEARCH =
   "No hay miembros que coincidan con la búsqueda.";
 export const BANS_MEMBERS_SEARCH_LABEL =
   "Buscar miembros por nombre de usuario";
-export const VIEW_PROFILE_LABEL = "Ver perfil";
 export const BANS_SEARCH_LABEL = "Buscar baneados por nombre de usuario";
 export const BANS_SEARCH_PLACEHOLDER = "Buscar entre los baneados...";
 export const BANS_EMPTY = "No hay usuarios baneados.";
@@ -570,8 +569,6 @@ export const REPORT_DETAIL_PLACEHOLDER =
   "Sumá lo que ayude a los moderadores a entender qué pasó";
 export const REPORT_SUBMIT_ACTION = "Enviar reporte";
 export const REPORT_CANCEL_ACTION = "Cancelar";
-export const REPORT_SENT_NOTICE =
-  "Reporte enviado. Los moderadores lo van a revisar.";
 export const REPORT_SENT_TITLE = "Reporte enviado";
 export const REPORT_SENT_BODY = "Los moderadores lo van a revisar.";
 export function reportAudienceNotice(serverName: string): string {
@@ -610,6 +607,8 @@ export const RESOLVE_REPORT_ACTION = "Resolver";
 export const DISMISS_REPORT_ACTION = "Descartar";
 export const REPORT_RESOLVED_BADGE = "Resuelto";
 export const REPORT_DISMISSED_BADGE = "Descartado";
+export const REPORT_RESOLVED_NOTICE = "Reporte resuelto.";
+export const REPORT_DISMISSED_NOTICE = "Reporte descartado.";
 const RESOLUTION_ACTION_LABELS: Record<ReportResolutionAction, string> = {
   delete_message: "Mensaje eliminado",
   mute: "Silenciado",
