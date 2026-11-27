@@ -24,6 +24,10 @@ export const ACCOUNT_PASSWORD_COPY = {
   cancel: "Cancelar",
   changed: "Tu contraseña se actualizó.",
   set: "Tu contraseña quedó guardada.",
+  changedTitle: "Contraseña actualizada",
+  changedBody: "A partir de ahora usá la nueva contraseña para iniciar sesión.",
+  setTitle: "Contraseña guardada",
+  setBody: "Ya podés iniciar sesión con tu correo y esta contraseña.",
 } as const;
 
 export const CURRENT_PASSWORD_INVALID = "La contraseña actual es incorrecta.";
